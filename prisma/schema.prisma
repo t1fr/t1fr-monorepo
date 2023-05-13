@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource sqlite {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model News {
+  id    Int    @id
+  title String
+
+  @@map("news")
+}
+
+model Vehicle {
+  key         String  @id
+  class       String
+  subclass    String
+  nation      String
+  englishName String  @map("english_name")
+  chineseName String? @map("chinese_name")
+  arcadeBR    Float   @map("arcade_br")
+  realisticBR Float   @map("realistic_br")
+  simulateBR  Float   @map("simulate_br")
+}
+
+model Member {
+  id              Int               @id @default(autoincrement())
+  discordId       String            @unique @map("discord_id")
+  nickname        String
+  accounts        GameAccount[]
+  memberType      Int               @map("member_type")
+  AbsensePointLog AbsensePointLog[]
+  PenaltyPointLog PenaltyPointLog[]
+  RewardPointLog  RewardPointLog[]
+
+  @@map("members")
+}
+
+model GameAccount {
+  num            Int      @id
+  id             String
+  personalRating Int      @map("personal_rating")
+  activity       Int
+  joinDate       DateTime @map("join_date")
+  title          String
+  owner          Member?  @relation(fields: [memberId], references: [discordId], onDelete: SetNull)
+  memberId       String?  @map("member_id")
+  accountType    Int?     @map("account_type")
+
+  @@map("game_accounts")
+}
+
+model Config {
+  key   String @id
+  value String
+
+  @@map("configs")
+}
+
+model Section {
+  from         DateTime @unique @map("from_date")
+  to           DateTime @unique @map("to_date")
+  battleRating Float    @map("battle_rating")
+
+  @@index([from, to])
+  @@map("sections")
+}
+
+model PenaltyPointLog {
+  id       Int     @id @default(autoincrement())
+  member   Member? @relation(fields: [memberId], references: [id], onDelete: NoAction)
+  memberId Int?    @map("member_id")
+  delta    Int
+  reason   String
+
+  @@map("penalty_point_logs")
+}
+
+model RewardPointLog {
+  id       Int     @id @default(autoincrement())
+  member   Member? @relation(fields: [memberId], references: [id], onDelete: NoAction)
+  memberId Int?    @map("member_id")
+  delta    Int
+  reason   String
+
+  @@map("reward_point_logs")
+}
+
+model AbsensePointLog {
+  id       Int     @id @default(autoincrement())
+  member   Member? @relation(fields: [memberId], references: [discordId], onDelete: NoAction)
+  memberId String? @map("member_discord_id")
+  delta    Float
+  reason   String
+
+  @@map("absence_point_logs")
+}
