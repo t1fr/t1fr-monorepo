@@ -8,6 +8,9 @@ RUN npm install
 
 COPY . .
 
+RUN npx prisma migrate dev --name init
+
+
 RUN npm run build
 
 CMD ["node", "dist/main.js"]

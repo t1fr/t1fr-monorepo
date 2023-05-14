@@ -6,26 +6,25 @@ export enum AccountType {
   ALT_PRIVATE,
   MAIN_PUBLIC,
   ALT_PUBLIC,
-  SPONSOR
+  SPONSOR,
+  ALT_SEMIPUBLIC,
 }
 
 const accountTypeDictionary = new Map([
-  [AccountType.MAIN_CORE, ['聯隊戰主帳', 'SQB Main']],
-  [AccountType.MAIN_CASUAL, ['休閒主帳', 'Casual Main']],
-  [AccountType.ALT_PRIVATE, ['個人小帳', 'Private Alt']],
-  [AccountType.MAIN_PUBLIC, ['公用主帳', 'Public Main']],
-  [AccountType.ALT_PUBLIC, ['公用小帳', 'Public Alt']],
-  [AccountType.SPONSOR, ['獎勵贊助者', 'Sponsor']],
+  [AccountType.MAIN_CORE, ':regional_indicator_s: 聯隊戰主帳'],
+  [AccountType.MAIN_CASUAL, ':regional_indicator_n: 休閒主帳'],
+  [AccountType.ALT_PRIVATE, ':regional_indicator_a: 個人小帳'],
+  [AccountType.MAIN_PUBLIC, ':regional_indicator_b: 公用主帳'],
+  [AccountType.ALT_PUBLIC, ':regional_indicator_c: 公用小帳'],
+  [AccountType.ALT_SEMIPUBLIC, ':regional_indicator_d: 半公用小帳'],
+  [AccountType.SPONSOR, ':regional_indicator_x: 獎勵贊助者'],
 ]);
 
 export function getAccountTypeOptions() {
   return [...accountTypeDictionary].map<ApplicationCommandOptionChoiceData>(pair => ({ name: pair[1][0], value: pair[0] }));
 }
 
-export function getAccountTypeChineseName(value: number) {
-  return accountTypeDictionary.get(value)!![0] ?? '未知帳號類型';
+export function getAccountTypeName(value: number) {
+  return accountTypeDictionary.get(value) ?? '未知帳號類型';
 }
 
-export function getAccountTypeEnglishName(value: number) {
-  return accountTypeDictionary.get(value)!![1] ?? '未知帳號類型';
-}

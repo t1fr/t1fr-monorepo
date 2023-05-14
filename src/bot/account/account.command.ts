@@ -2,7 +2,7 @@ import { Injectable, Logger, UseInterceptors } from '@nestjs/common';
 import { AccountRepo } from '../../repository/account.repo';
 import { Context, createCommandGroupDecorator, NumberOption, Options, SlashCommandContext, StringOption, Subcommand } from 'necord';
 import { MessageFlagsBitField } from 'discord.js';
-import { AccountType, getAccountTypeChineseName } from '../../enum/AccountType';
+import { AccountType, getAccountTypeName } from '../../enum/AccountType';
 import { MemberType } from '../../enum/MemberType';
 import { AccountAutocompleteInterceptor } from './account.autocomplete';
 
@@ -89,12 +89,12 @@ export class AccountCommand {
   private async onAutolink(@Context() [interaction]: SlashCommandContext) {
     await interaction.deferReply();
     const ownershipData = await this.accountRepo.joinOnId();
+      // 只有找得到連結且帳號類型未知的才更新
     const unlinkableId = ownershipData.filter(ownership => ownership.member_type === null).map(ownership => ownership.account_id);
 
     let successCount = 0;
 
     for (const ownership of ownershipData.filter(ownership => ownership.member_id !== null)) {
-      // 只有找得到連結且帳號類型未知的才更新
       let accountType = undefined;
       if (ownership.member_type === MemberType.CORE) {
         accountType = AccountType.MAIN_CORE;
@@ -136,7 +136,7 @@ export class AccountCommand {
   private async onSetType(@Context() [interaction]: SlashCommandContext, @Options() { accountNum, accountType }: SetTypeOption) {
     const gameAccount = await this.accountRepo.update({ num: accountNum }, { accountType: accountType });
     await interaction.reply({
-      content: `已成功設置 ID 為 ${gameAccount.id} 的帳號類型為 ${getAccountTypeChineseName(accountType)}`,
+      content: `已成功設置 ID 為 ${gameAccount.id} 的帳號類型為 ${getAccountTypeName(accountType)}`,
       options: { flags: [MessageFlagsBitField.Flags.SuppressNotifications] },
     });
   }

@@ -1,5 +1,5 @@
 import { AccountSeasonResult, PointCalculateStage } from './reward-point.service';
-import { AccountType, getAccountTypeEnglishName } from '../enum/AccountType';
+import { AccountType, getAccountTypeName } from '../enum/AccountType';
 
 class AccountTypeStage implements PointCalculateStage {
   calculate(results: AccountSeasonResult[]): AccountSeasonResult[] {
@@ -10,7 +10,7 @@ class AccountTypeStage implements PointCalculateStage {
         case AccountType.MAIN_CASUAL:
         case AccountType.ALT_PUBLIC:
           result.point *= 0;
-          result.reasons.push(`cos ${getAccountTypeEnglishName(result.accountType)} ➔*0 ${result.point}`);
+          result.reasons.push(`cos ${getAccountTypeName(result.accountType)} ➔*0 ${result.point}`);
           break;
         case AccountType.ALT_PRIVATE:
           let factor = 2;
@@ -21,11 +21,11 @@ class AccountTypeStage implements PointCalculateStage {
             lookupTable.set(result.memberId, 1);
           }
           result.point = Math.floor(result.point / factor);
-          result.reasons.push(`Cos  ${getAccountTypeEnglishName(result.accountType)} ➔/${factor} ${result.point}`);
+          result.reasons.push(`Cos  ${getAccountTypeName(result.accountType)} ➔/${factor} ${result.point}`);
           break;
         case AccountType.MAIN_PUBLIC:
           result.point = Math.floor(result.point / 3);
-          result.reasons.push(`cos ${getAccountTypeEnglishName(result.accountType)} ➔/3 ${result.point}`);
+          result.reasons.push(`cos ${getAccountTypeName(result.accountType)} ➔/3 ${result.point}`);
           break;
       }
     });

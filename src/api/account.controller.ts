@@ -1,6 +1,6 @@
 import { Controller, Get, Res } from '@nestjs/common';
 import { AccountRepo } from '../repository/account.repo';
-import { AccountType, getAccountTypeChineseName } from '../enum/AccountType';
+import { AccountType, getAccountTypeName } from '../enum/AccountType';
 import { Response } from 'express';
 import { HttpStatusCode } from 'axios';
 
@@ -14,7 +14,10 @@ export class AccountController {
       id: true,
       accountType: true,
       owner: {
-        select: { discordId: true },
+        select: {
+          discordId: true,
+          nickname: true,
+        },
       },
       personalRating: true,
       activity: true,
@@ -26,6 +29,7 @@ export class AccountController {
         account.id!!,
         account.accountType!!,
         account.owner?.discordId ?? '未知',
+        account.owner?.nickname ?? '未知',
         account.personalRating!!,
         account.activity!!,
         account.joinDate!!,
@@ -37,15 +41,19 @@ export class AccountController {
 
 class AccountApiResponseItem {
   private readonly accountTypeName: string;
+  private readonly accountTypeCode: string;
 
   constructor(
     private readonly inGameId: string,
     accountType: AccountType,
     private readonly discordId: string,
+    private readonly discordNickname: string,
     private readonly personalRating: number,
     private readonly activity: number,
-    private readonly joinData: Date,
+    private readonly joinDate: Date,
   ) {
-    this.accountTypeName = getAccountTypeChineseName(accountType);
+    const [emoji, name] = getAccountTypeName(accountType).split(' ');
+    this.accountTypeName = name;
+    this.accountTypeCode = emoji.replace(':regional_indicator_', '').replace(':', '');
   }
 }

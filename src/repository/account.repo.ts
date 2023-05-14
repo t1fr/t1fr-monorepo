@@ -73,7 +73,6 @@ export class AccountRepo implements OnModuleInit {
         activity: parseInt(activity),
         joinDate: joinDate,
         title: role,
-        accountType: AccountType.MAIN_CORE,
       });
       if (i % 5 === 0) {
         await callback(progressBar.setFractionalValue(0.15 + (i + 1) / cellValues.length * 0.85));
