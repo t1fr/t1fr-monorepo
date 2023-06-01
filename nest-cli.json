@@ -7,7 +7,8 @@
     "assets": [
       {
         "include": "../config/*.yaml",
-        "outDir": "./dist/config"
+        "outDir": "./dist/config",
+        "watchAssets": true
       }
     ]
   }

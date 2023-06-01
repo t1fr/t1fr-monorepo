@@ -6,8 +6,6 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "migrate:init": "npx prisma migrate dev --name init",
-    "migrate:create-only": "npx prisma migrate dev --create-only",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -35,6 +33,7 @@
     "flatten-anything": "^3.0.3",
     "joi": "^17.9.2",
     "js-yaml": "^4.1.0",
+    "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "necord": "^5.8.0",
     "reflect-metadata": "^0.1.13",
@@ -48,10 +47,11 @@
     "@types/express": "^4.17.13",
     "@types/jest": "29.5.0",
     "@types/js-yaml": "^4.0.5",
+    "@types/lodash": "^4.14.195",
     "@types/node": "18.15.11",
     "@types/supertest": "^2.0.11",
-    "@typescript-eslint/eslint-plugin": "^5.0.0",
-    "@typescript-eslint/parser": "^5.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.7",
+    "@typescript-eslint/parser": "^5.59.7",
     "eslint": "^8.40.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
@@ -64,7 +64,7 @@
     "ts-loader": "^9.2.3",
     "ts-node": "^10.0.0",
     "tsconfig-paths": "4.2.0",
-    "typescript": "^4.7.4"
+    "typescript": "^5.0.4"
   },
   "jest": {
     "moduleFileExtensions": [

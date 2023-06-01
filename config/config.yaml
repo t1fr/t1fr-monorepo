@@ -1,9 +1,13 @@
+port: 3000
 bot:
-  roles:
-    core_player: "1046629026355228762"
-    casual_player: "1103384315599015987"
-    squad_battle: "1054766361991204864"
+#  token: "MTAxMzI4MDYyNjAwMDAwMzEzMg.GraHyA.PeM2Vdp4quwx00obzUwBsRo-6bQJDrmhsjsugo"
+  token: "MTExMTYzMDMwMzM2NzI4Njc5NA.GxsuSs.QzO3SKY8IDZZbgrele8dq0_6HuVD5LKkz1iORU"
+  constant:
+    roles:
+      core_player: 1046629026355228762
+      casual_player: 1103384315599015987
+      squad_battle: 1054766361991204864
 
 crawler:
   urls:
-    squad_account_list: "https://warthunder.com/en/community/claninfo/The%20First%20Frontline%20Rangers"
+    squad_account_list: https://warthunder.com/en/community/claninfo/The%20First%20Frontline%20Rangers

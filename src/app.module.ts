@@ -1,49 +1,49 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { NecordModule } from 'necord';
-import { IntentsBitField } from 'discord.js';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import * as Joi from 'joi';
-import { RepositoryModule } from './repository/repository.module';
-import { DiscordBotModule } from './bot/bot.module';
-import { GlobalHttpModule } from './http/http.module';
-import PointModule from './points/point.module';
-import ApiModule from './api/api.module';
+import { Module } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { NecordModule } from "necord";
+import { IntentsBitField } from "discord.js";
+import { SquadronModule } from "@/modules/squadron/squadron.module";
+import { GlobalHttpModule } from "@/modules/http/http.module";
+import RewardModule from "@/modules/point/reward/reward.module";
+import { load } from "js-yaml";
+import { readFileSync } from "fs";
+import { join } from "path";
+import ScheduleModule from "@/modules/schedule/schedule.module";
+import BotConfigModule from "@/modules/bot-config/bot-config.module";
 
 const intents = [
-  IntentsBitField.Flags.Guilds,
-  IntentsBitField.Flags.GuildVoiceStates,
-  IntentsBitField.Flags.Guilds,
-  IntentsBitField.Flags.GuildMembers,
-  IntentsBitField.Flags.GuildMessages,
-  IntentsBitField.Flags.MessageContent,
+	IntentsBitField.Flags.Guilds,
+	IntentsBitField.Flags.GuildVoiceStates,
+	IntentsBitField.Flags.Guilds,
+	IntentsBitField.Flags.GuildMembers,
+	IntentsBitField.Flags.GuildMessages,
+	IntentsBitField.Flags.MessageContent,
 ];
 
-const validationSchema = Joi.object({
-  'YAML_CONFIG_FILE': Joi.string().required(),
-});
+function configuration() {
+	return load(readFileSync(join(__dirname, "config/config.yaml"), "utf-8")) as Record<string, any>;
+}
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      cache: true,
-      validationSchema: validationSchema,
-    }),
-    NecordModule.forRoot({
-      token: process.env.DISCORD_BOT_TOKEN ?? '',
-      intents: intents,
-    }),
-    GlobalHttpModule,
-    RepositoryModule,
-    DiscordBotModule,
-    PointModule,
-    ApiModule
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+	imports: [
+		ConfigModule.forRoot({
+			isGlobal: true,
+			load: [configuration],
+		}),
+		NecordModule.forRootAsync({
+			imports: [ConfigModule],
+			inject: [ConfigService],
+			useFactory: (configService: ConfigService) => ({
+				token: configService.getOrThrow("bot.token"),
+				intents: intents,
+				development: ["1046623840710705152"],
+			}),
+		}),
+		GlobalHttpModule,
+		SquadronModule,
+		RewardModule,
+		ScheduleModule,
+		BotConfigModule,
+	],
 })
-
-export class AppModule {
-}
+export class AppModule {}

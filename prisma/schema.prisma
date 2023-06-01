@@ -7,12 +7,16 @@ generator client {
 
 datasource sqlite {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:../database/dev.db"
 }
 
 model News {
-  id    Int    @id
-  title String
+  id          Int      @id
+  title       String
+  description String
+  pageUrl     String   @map("page_url")
+  imageUrl    String   @map("image_url")
+  createAt    DateTime @default(now()) @map("create_at")
 
   @@map("news")
 }
