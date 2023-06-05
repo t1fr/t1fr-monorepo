@@ -13,4 +13,9 @@ export class SectionRepo {
 			update: { battleRating: data.battleRating },
 		});
 	}
+
+	public getCurrentSection() {
+		const now = new Date();
+		return this.prisma.section.findFirst({ where: { from: { lte: now }, to: { gte: now } } });
+	}
 }

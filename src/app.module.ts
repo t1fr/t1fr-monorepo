@@ -8,8 +8,9 @@ import RewardModule from "@/modules/point/reward/reward.module";
 import { load } from "js-yaml";
 import { readFileSync } from "fs";
 import { join } from "path";
-import ScheduleModule from "@/modules/schedule/schedule.module";
+import BattleScheduleModule from "@/modules/battle-schedule/battle-schedule.module";
 import BotConfigModule from "@/modules/bot-config/bot-config.module";
+import { ScheduleModule } from "@nestjs/schedule";
 
 const intents = [
 	IntentsBitField.Flags.Guilds,
@@ -26,10 +27,8 @@ function configuration() {
 
 @Module({
 	imports: [
-		ConfigModule.forRoot({
-			isGlobal: true,
-			load: [configuration],
-		}),
+		ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
+		ScheduleModule.forRoot(),
 		NecordModule.forRootAsync({
 			imports: [ConfigModule],
 			inject: [ConfigService],
@@ -42,7 +41,7 @@ function configuration() {
 		GlobalHttpModule,
 		SquadronModule,
 		RewardModule,
-		ScheduleModule,
+		BattleScheduleModule,
 		BotConfigModule,
 	],
 })

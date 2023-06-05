@@ -1,14 +1,24 @@
 import { Injectable } from "@nestjs/common";
 import { Context, Ctx, Modal, ModalContext, ModalParam, Options, SlashCommand, SlashCommandContext } from "necord";
-import { ActionRowBuilder, ModalActionRowComponentBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+import {
+	ActionRowBuilder,
+	ChannelType,
+	Client,
+	ModalActionRowComponentBuilder,
+	ModalBuilder,
+	TextChannel,
+	TextInputBuilder,
+	TextInputStyle,
+} from "discord.js";
 import * as moment from "moment";
 import { BotConfigRepo } from "@/modules/bot-config/bot-config.repo";
-import { SectionRepo } from "@/modules/schedule/section.repo";
-import { SetScheduleOption } from "@/modules/schedule/set-schedule.option";
+import { SectionRepo } from "@/modules/battle-schedule/section.repo";
+import { SetScheduleOption } from "@/modules/battle-schedule/set-schedule.option";
+import { Cron, CronExpression } from "@nestjs/schedule";
 
 @Injectable()
 export class SetScheduleCommand {
-	constructor(private dynamicConfigService: BotConfigRepo, private sectionRepo: SectionRepo) {}
+	constructor(private dynamicConfigService: BotConfigRepo, private sectionRepo: SectionRepo, private readonly client: Client) {}
 
 	private scheduleTextInput = new TextInputBuilder()
 		.setCustomId("schedule-text")
@@ -39,6 +49,30 @@ export class SetScheduleCommand {
 	@SlashCommand({ name: "set-schedule", description: "輸入論壇聯隊戰日程，發布日程表" })
 	async onSetSchedule(@Context() [interaction]: SlashCommandContext, @Options() { isNotify }: SetScheduleOption) {
 		return interaction.showModal(this.createModal(isNotify));
+	}
+
+	@Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, { utcOffset: 0 })
+	@SlashCommand({ name: "update-bulletin", description: "更新顯示用頻道名稱" })
+	async onUpdateBulletin(@Context() [interaction]: SlashCommandContext) {
+		const section = await this.sectionRepo.getCurrentSection();
+		const messages = { reply: "賽程表未更新，沒有當前時間的 BR 資料", category: "聯隊戰", announcement: "今日分房：新賽季" };
+		if (section) {
+			const brString = section.battleRating.toFixed(1).replace(/\d/g, digitToFullwidth);
+			messages.reply = "已更新成功";
+			messages.announcement = `今日分房：${brString}`;
+			messages.category = `聯隊戰：${brString}`;
+		}
+		const category = this.client.channels.resolve("1046624503276515339");
+		if (category && category.type === ChannelType.GuildCategory) {
+			category.setName(messages.category);
+		}
+
+		const channel = this.client.channels.resolve("1047751571708051486");
+		if (channel && channel.type === ChannelType.GuildVoice) {
+			channel.setName(messages.announcement);
+		}
+
+		if (interaction) interaction.reply(messages.reply);
 	}
 
 	@Modal("set-sechedule/:isNotify")
@@ -107,4 +141,21 @@ export class SetScheduleCommand {
 
 class Section {
 	constructor(public from: Date, public to: Date, public battleRating: number) {}
+}
+
+const digitFullwidthMap = {
+	"0": "０",
+	"1": "１",
+	"2": "２",
+	"3": "３",
+	"4": "４",
+	"5": "５",
+	"6": "６",
+	"7": "７",
+	"8": "８",
+	"9": "９",
+};
+
+function digitToFullwidth(digit: "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9") {
+	return digitFullwidthMap[digit];
 }
