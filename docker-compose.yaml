@@ -1,8 +1,9 @@
 version: "2"
 services:
   backend:
+    build: .
+    image: t1fr/smsb
     container_name: squadron-management-backend
-    image: t1fr/smsb:latest
     volumes:
       - ./database/:/app/database/
     env_file:
