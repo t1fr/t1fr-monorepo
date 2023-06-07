@@ -1,0 +1,11 @@
+version: "2"
+services:
+  backend:
+    container_name: squadron-management-backend
+    image: t1fr/smsb:latest
+    volumes:
+      - ./database/:/app/database/
+    env_file:
+      - .env
+    ports:
+      - "6518:3000"
