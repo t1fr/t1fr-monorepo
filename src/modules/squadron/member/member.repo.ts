@@ -31,8 +31,4 @@ export class MemberRepo implements OnModuleInit {
 	async onModuleInit() {
 		this.cache = await this.prisma.member.findMany({ select: { discordId: true, nickname: true } });
 	}
-
-	async selectAll() {
-		return this.prisma.member.findMany();
-	}
 }
