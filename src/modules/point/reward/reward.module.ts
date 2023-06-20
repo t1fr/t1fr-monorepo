@@ -4,10 +4,12 @@ import { AccountTypeStage } from "@/modules/point/reward/stages/account-type.sta
 import { RatingStage } from "@/modules/point/reward/stages/rating.stage";
 import { BudgetStage } from "@/modules/point/reward/stages/budget.stage";
 import { CalculateStage } from "@/modules/point/reward/stages/calculate.stage.interface";
+import { PrismaService } from "@/prisma.service";
 
 @Module({
 	exports: [RewardService],
 	providers: [
+		PrismaService,
 		RewardService,
 		AccountTypeStage,
 		RatingStage,

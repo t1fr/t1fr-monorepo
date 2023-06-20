@@ -5,21 +5,18 @@ import { Prisma } from "@prisma/client";
 import { HttpService } from "@nestjs/axios";
 import * as Cheerio from "cheerio";
 import * as moment from "moment";
-import { ProgressBar } from "@/utility/ProgressBar";
-
-export type ProgressCallback = (progressBar: string) => Promise<void>;
 
 @Injectable()
 export class AccountRepo implements OnModuleInit {
 	private readonly logger: Logger = new Logger(AccountRepo.name);
 
 	private cache: { num: number; id: string }[] = [];
+	constructor(private dynamicConfig: BotConfigRepo, private prisma: PrismaService, private httpService: HttpService) {}
 
 	private get squadAccountListUrl() {
 		return this.dynamicConfig.getValue("crawler.urls.squad_account_list");
 	}
 
-	constructor(private dynamicConfig: BotConfigRepo, private prisma: PrismaService, private httpService: HttpService) {}
 
 	private async getHtml(url: string): Promise<string | null> {
 		let data: string | null = null;
@@ -32,13 +29,10 @@ export class AccountRepo implements OnModuleInit {
 		return data;
 	}
 
-	public async fetchFromWeb(callback: ProgressCallback) {
+	public async fetchFromWeb() {
 		const html = await this.getHtml(await this.squadAccountListUrl);
 		if (!html) return;
 
-		const progressBar = new ProgressBar();
-
-		await callback(progressBar.setFractionalValue(0.1));
 		const $ = Cheerio.load(html);
 		const columnsCount = 6;
 		const cellValues = $(".squadrons-members__grid-item")
@@ -47,8 +41,6 @@ export class AccountRepo implements OnModuleInit {
 			.map((element, index) =>
 				index % 6 === 1 ? $(element).children("a").attr("href")?.trim() ?? "未知" : $(element).text().trim(),
 			);
-
-		await callback(progressBar.setFractionalValue(0.15));
 
 		const inputs: Prisma.GameAccountCreateInput[] = [];
 		for (let i = 0; i < cellValues.length; i += columnsCount) {
@@ -61,11 +53,9 @@ export class AccountRepo implements OnModuleInit {
 				joinDate: moment(row[5], "DD.MM.YYYY").toDate(),
 				title: row[4],
 			});
-			if (i % 5 === 0) await callback(progressBar.setFractionalValue(0.15 + ((i + 1) / cellValues.length) * 0.85));
 		}
 
-		await callback(progressBar.setFractionalValue(1));
-		return await Promise.all(inputs.map((input) => this.upsert(input)));
+		return Promise.all(inputs.map((input) => this.upsert(input)));
 	}
 
 	async upsert(data: Prisma.GameAccountCreateInput) {

@@ -5,5 +5,4 @@ export interface AccountSeasonResult {
 	accountType: AccountType;
 	personalRating: number;
 	memberId: string;
-	num: number;
 }

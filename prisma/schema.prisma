@@ -34,7 +34,6 @@ model Vehicle {
 }
 
 model Member {
-  id              Int               @id @default(autoincrement())
   discordId       String            @unique @map("discord_id")
   nickname        String
   accounts        GameAccount[]
@@ -78,8 +77,8 @@ model Section {
 
 model PenaltyPointLog {
   id       Int     @id @default(autoincrement())
-  member   Member? @relation(fields: [memberId], references: [id], onDelete: NoAction)
-  memberId Int?    @map("member_id")
+  member   Member? @relation(fields: [memberId], references: [discordId], onDelete: NoAction)
+  memberId String? @map("member_discord_id")
   delta    Int
   reason   String
 
@@ -88,8 +87,8 @@ model PenaltyPointLog {
 
 model RewardPointLog {
   id       Int     @id @default(autoincrement())
-  member   Member? @relation(fields: [memberId], references: [id], onDelete: NoAction)
-  memberId Int?    @map("member_id")
+  member   Member? @relation(fields: [memberId], references: [discordId], onDelete: NoAction)
+  memberId String? @map("member_discord_id")
   delta    Int
   reason   String
 

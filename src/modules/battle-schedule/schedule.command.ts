@@ -1,24 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { Context, Ctx, Modal, ModalContext, ModalParam, Options, SlashCommand, SlashCommandContext } from "necord";
-import {
-	ActionRowBuilder,
-	ChannelType,
-	Client,
-	ModalActionRowComponentBuilder,
-	ModalBuilder,
-	TextChannel,
-	TextInputBuilder,
-	TextInputStyle,
-} from "discord.js";
+import { ActionRowBuilder, ChannelType, Client, ModalActionRowComponentBuilder, ModalBuilder, TextChannel, TextInputBuilder, TextInputStyle } from "discord.js";
 import * as moment from "moment";
 import { BotConfigRepo } from "@/modules/bot-config/bot-config.repo";
 import { SectionRepo } from "@/modules/battle-schedule/section.repo";
 import { SetScheduleOption } from "@/modules/battle-schedule/set-schedule.option";
-import { Cron, CronExpression } from "@nestjs/schedule";
+import { ScheduleService } from "@/modules/battle-schedule/schedule.service";
 
 @Injectable()
 export class SetScheduleCommand {
-	constructor(private dynamicConfigService: BotConfigRepo, private sectionRepo: SectionRepo, private readonly client: Client) {}
+	constructor(private dynamicConfigService: BotConfigRepo, private readonly scheduleService: ScheduleService, private sectionRepo: SectionRepo) {}
 
 	private scheduleTextInput = new TextInputBuilder()
 		.setCustomId("schedule-text")
@@ -51,28 +42,10 @@ export class SetScheduleCommand {
 		return interaction.showModal(this.createModal(isNotify));
 	}
 
-	@Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, { utcOffset: 0 })
 	@SlashCommand({ name: "update-bulletin", description: "更新顯示用頻道名稱" })
 	async onUpdateBulletin(@Context() [interaction]: SlashCommandContext) {
-		const section = await this.sectionRepo.getCurrentSection();
-		const messages = { reply: "賽程表未更新，沒有當前時間的 BR 資料", category: "聯隊戰", announcement: "今日分房：新賽季" };
-		if (section) {
-			const brString = section.battleRating.toFixed(1).replace(/\d/g, digitToFullwidth);
-			messages.reply = "已更新成功";
-			messages.announcement = `今日分房：${brString}`;
-			messages.category = `聯隊戰：${brString}`;
-		}
-		const category = this.client.channels.resolve("1046624503276515339");
-		if (category && category.type === ChannelType.GuildCategory) {
-			category.setName(messages.category);
-		}
-
-		const channel = this.client.channels.resolve("1047751571708051486");
-		if (channel && channel.type === ChannelType.GuildVoice) {
-			channel.setName(messages.announcement);
-		}
-
-		if (interaction) interaction.reply(messages.reply);
+		const updated = await this.scheduleService.updateBulletin();
+		interaction.reply(updated ? "已更新成功" : "賽程表未更新，沒有當前時間的 BR 資料");
 	}
 
 	@Modal("set-sechedule/:isNotify")
@@ -96,12 +69,7 @@ export class SetScheduleCommand {
 
 		scheduleMessage.push(`**${startMonth} ~ ${startMonth + 1} 月**聯隊戰行程`);
 
-		scheduleMessage.push(
-			"```",
-			"╭─────────┬─────────┬──────────╮",
-			"│  Start  │   End   │  Max BR  │",
-			"├─────────┼─────────┼──────────┤",
-		);
+		scheduleMessage.push("```", "╭─────────┬─────────┬──────────╮", "│  Start  │   End   │  Max BR  │", "├─────────┼─────────┼──────────┤");
 
 		const sectionRows = sections.map((section) => {
 			const startString = moment(section.from).format("MM/DD");
@@ -141,21 +109,4 @@ export class SetScheduleCommand {
 
 class Section {
 	constructor(public from: Date, public to: Date, public battleRating: number) {}
-}
-
-const digitFullwidthMap = {
-	"0": "０",
-	"1": "１",
-	"2": "２",
-	"3": "３",
-	"4": "４",
-	"5": "５",
-	"6": "６",
-	"7": "７",
-	"8": "８",
-	"9": "９",
-};
-
-function digitToFullwidth(digit: "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9") {
-	return digitFullwidthMap[digit];
 }

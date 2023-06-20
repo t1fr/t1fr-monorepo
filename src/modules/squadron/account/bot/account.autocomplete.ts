@@ -20,7 +20,6 @@ export class AccountAutocompleteInterceptor extends AutocompleteInterceptor {
 		const inputValue = focused.value.toString();
 
 		if (focused.name === "account-id") {
-			this.logger.log("account-id");
 			options = this.accountRepo
 				.selectAllNumAndId()
 				.filter((choice) => choice.id.includes(inputValue))

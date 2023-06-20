@@ -11,6 +11,7 @@ import { join } from "path";
 import BattleScheduleModule from "@/modules/battle-schedule/battle-schedule.module";
 import BotConfigModule from "@/modules/bot-config/bot-config.module";
 import { ScheduleModule } from "@nestjs/schedule";
+import LoggerModule from "@/modules/logging/logger.module";
 
 const intents = [
 	IntentsBitField.Flags.Guilds,
@@ -43,6 +44,7 @@ function configuration() {
 		RewardModule,
 		BattleScheduleModule,
 		BotConfigModule,
+		LoggerModule,
 	],
 })
 export class AppModule {}
