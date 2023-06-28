@@ -20,15 +20,13 @@ export class AccountAutocompleteInterceptor extends AutocompleteInterceptor {
 		const inputValue = focused.value.toString();
 
 		if (focused.name === "account-id") {
-			options = this.accountRepo
-				.selectAllNumAndId()
+			options = (await this.accountRepo.selectAllNumAndId())
 				.filter((choice) => choice.id.includes(inputValue))
 				.slice(0, 25)
 				.map((choice) => ({ name: choice.id, value: choice.num }));
 		}
 		if (focused.name === "member") {
-			options = this.memberRepo
-				.selectAllIdAndName()
+			options = (await this.memberRepo.selectAllIdAndName())
 				.filter((choice) => choice.nickname.includes(inputValue))
 				.slice(0, 25)
 				.map((choice) => ({ name: choice.nickname, value: choice.discordId }));

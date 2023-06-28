@@ -3,10 +3,8 @@ import { PrismaService } from "@/prisma.service";
 import { Member, Prisma } from "@prisma/client";
 
 @Injectable()
-export class MemberRepo implements OnModuleInit {
+export class MemberRepo  {
 	constructor(private prisma: PrismaService) {}
-
-	private cache: { discordId: string; nickname: string }[] = [];
 
 	async upsert(data: Prisma.MemberCreateInput): Promise<Member> {
 		return this.prisma.member.upsert({
@@ -25,10 +23,7 @@ export class MemberRepo implements OnModuleInit {
 	}
 
 	selectAllIdAndName() {
-		return this.cache;
+		return this.prisma.member.findMany({ select: { discordId: true, nickname: true } });
 	}
 
-	async onModuleInit() {
-		this.cache = await this.prisma.member.findMany({ select: { discordId: true, nickname: true } });
-	}
 }

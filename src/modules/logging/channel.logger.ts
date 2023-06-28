@@ -1,9 +1,10 @@
-import { ConsoleLogger, Injectable } from "@nestjs/common";
-import { Client } from "discord.js";
+import { ConsoleLogger, Injectable, OnApplicationBootstrap } from "@nestjs/common";
+import { Client, TextBasedChannel } from "discord.js";
 
 @Injectable()
-export class ChannelLogger extends ConsoleLogger {
+export class ChannelLogger extends ConsoleLogger implements OnApplicationBootstrap {
 	private readonly logChannelId = "1120693732824588328";
+	private logChannel: TextBasedChannel;
 
 	constructor(private readonly client: Client) {
 		super();
@@ -11,9 +12,20 @@ export class ChannelLogger extends ConsoleLogger {
 
 	log(message: any, context?: string) {
 		super.log(message, context);
-		const channel = this.client.channels.cache.find((channel) => channel.id === this.logChannelId);
+		this.logChannel.send([":pencil:", "`", message, "`"].join(""));
+	}
+
+	error(message: any, stack?: string, context?: string) {
+		super.error(message, stack, context);
+		this.logChannel.send([":exclamation:", "`", message, "`"].join(""));
+	}
+
+	async onApplicationBootstrap() {
+		const channel = await this.client.channels.fetch(this.logChannelId);
 		if (channel && channel.isTextBased()) {
-			channel.send(["```", message, "```"].join("\n"));
+			this.logChannel = channel;
+		} else {
+			this.error("無法找到日誌頻道");
 		}
 	}
 }
