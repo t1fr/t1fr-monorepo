@@ -14,8 +14,8 @@ const accountTypeDictionary = new Map<AccountType, string>([
 	[AccountType.MAIN_CORE, "🇸 聯隊戰主帳"],
 	[AccountType.MAIN_CASUAL, "🇳 休閒主帳"],
 	[AccountType.ALT_PRIVATE, "🇦 個人小帳"],
-	[AccountType.MAIN_PUBLIC, "🇧 公用主帳"],
-	[AccountType.ALT_PUBLIC, "🇨 公用小帳"],
+	[AccountType.MAIN_PUBLIC, "🇨 公用主帳"],
+	[AccountType.ALT_PUBLIC, "🇧 公用小帳"],
 	[AccountType.ALT_SEMIPUBLIC, "🇩 半公用小帳"],
 	[AccountType.SPONSOR, "🇽 獎勵贊助者"],
 ]);
