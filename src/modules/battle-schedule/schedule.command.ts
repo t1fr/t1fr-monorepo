@@ -64,7 +64,7 @@ export class SetScheduleCommand {
 		const scheduleMessage = [] as string[];
 
 		if (isNotify) {
-			scheduleMessage.push(`<@&${this.dynamicConfigService.getValue("bot.roles.core_player")}>`);
+			scheduleMessage.push(`<@&1046629026355228762>`);
 		}
 
 		scheduleMessage.push(`**${startMonth} ~ ${startMonth + 1} 月**聯隊戰行程`);
