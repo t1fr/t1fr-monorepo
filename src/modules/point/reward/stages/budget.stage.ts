@@ -6,7 +6,7 @@ import { groupBy } from "lodash";
 
 @Injectable()
 export class BudgetStage implements CalculateStage {
-	private readonly budget = 120;
+	private readonly budget = 250;
 
 	calculate(results: CalculateResult[], callback: StageCallback): CalculateResult[] {
 		callback("根據預算計算中");

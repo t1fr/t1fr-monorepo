@@ -41,8 +41,8 @@ export class AccountCommand {
 	@Subcommand({ name: "fetch", description: "從網頁上爬帳號資料" })
 	private async onFetch(@Context() [interaction]: SlashCommandContext) {
 		await interaction.deferReply();
-		const accounts = await this.accountService.fetchAccounts();
-		interaction.editReply({ content: accounts ? `成功更新 ${accounts.length} 位隊員資料` : "更新失敗" });
+		const updates = await this.accountService.fetchAccounts();
+		interaction.editReply({ content: updates ? `成功更新 ${updates} 位隊員資料` : "更新失敗" });
 	}
 
 	@Subcommand({ name: "set-owner", description: "指定擁有者" })

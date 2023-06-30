@@ -46,8 +46,8 @@ model Member {
 }
 
 model GameAccount {
-  num            Int      @id
-  id             String
+  num            Int      @id @default(autoincrement())
+  id             String   @unique
   personalRating Int      @map("personal_rating")
   activity       Int
   joinDate       DateTime @map("join_date")
@@ -55,6 +55,7 @@ model GameAccount {
   owner          Member?  @relation(fields: [memberId], references: [discordId], onDelete: SetNull)
   memberId       String?  @map("member_id")
   accountType    Int?     @map("account_type")
+  isExist        Boolean  @default(true) @map("is_exist")
 
   @@map("game_accounts")
 }

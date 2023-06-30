@@ -6,12 +6,13 @@ import { AccountType } from "@/modules/squadron/account/account-type.enum";
 import { AccountSeasonResult } from "@/modules/point/reward/account-season-result.model";
 import { groupBy } from "lodash";
 import { Cron, CronExpression } from "@nestjs/schedule";
+import { Client, ForumChannel } from "discord.js";
 
 @Injectable()
 export class AccountService {
 	private readonly logger = new Logger(AccountService.name);
 
-	constructor(private readonly accountRepo: AccountRepo, private readonly rewardPointService: RewardService) {}
+	constructor(private readonly accountRepo: AccountRepo, private readonly rewardPointService: RewardService, private readonly client: Client) {}
 
 	@Cron(CronExpression.EVERY_4_HOURS)
 	fetchAccounts() {
@@ -78,7 +79,10 @@ export class AccountService {
 		);
 
 		const messages = [];
+
+		let totalPoints = 0;
 		for (const groupsKey in groups) {
+			totalPoints += groups[groupsKey].reduce((acc, cur) => acc + cur.point, 0);
 			messages.push(
 				[
 					`## <@${groupsKey}>`,
@@ -88,6 +92,8 @@ export class AccountService {
 				].join("\n"),
 			);
 		}
+
+		messages.push(`本賽季結算發放總量：${totalPoints}`);
 
 		if (!isSimulate) {
 			const promises = results

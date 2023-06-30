@@ -29,7 +29,7 @@ export class AccountRepo {
 		return data;
 	}
 
-	public async fetchFromWeb() {
+	public async fetchFromWeb(isInitialize: boolean = false) {
 		const html = await this.getHtml(await this.squadAccountListUrl);
 		if (!html) return;
 
@@ -44,7 +44,6 @@ export class AccountRepo {
 		for (let i = 0; i < cellValues.length; i += columnsCount) {
 			const row = cellValues.slice(i, i + columnsCount);
 			inputs.push({
-				num: parseInt(row[0]),
 				id: `${row[1]}@`.match(/(?<==)(.*?)(?=@)/)?.[0] ?? "",
 				personalRating: parseInt(row[2]),
 				activity: parseInt(row[3]),
@@ -53,13 +52,26 @@ export class AccountRepo {
 			});
 		}
 
-		return Promise.all(inputs.map((input) => this.upsert(input)));
+		if (isInitialize) {
+			return (await Promise.all(inputs.map((input) => this.upsert(input)))).length;
+		} else {
+			let updates = 0;
+			for (let input of inputs) {
+				try {
+					await this.update({ id: input.id }, input);
+					updates++;
+				} catch (e) {
+					this.logger.error(e);
+				}
+			}
+			return updates;
+		}
 	}
 
 	async upsert(data: Prisma.GameAccountCreateInput) {
 		return this.prisma.gameAccount.upsert({
-			where: { num: data.num },
-			update: { id: data.id, personalRating: data.personalRating, activity: data.activity, title: data.title },
+			where: { id: data.id },
+			update: { personalRating: data.personalRating, activity: data.activity, title: data.title },
 			create: data,
 		});
 	}
@@ -74,13 +86,13 @@ export class AccountRepo {
 
 	async joinOnId() {
 		return this.prisma.$queryRaw<OwnershipData[]>`SELECT ga.num, ga.id AS account_id, ga.account_type, m.discord_id AS member_id, m.member_type
-          FROM game_accounts ga
-                   LEFT JOIN members m ON m.nickname LIKE '%' || ga.id
-          WHERE ga.account_type IS NULL `;
+                                                      FROM game_accounts ga
+                                                               LEFT JOIN members m ON m.nickname LIKE '%' || ga.id
+                                                      WHERE ga.account_type IS NULL `;
 	}
 
 	async accounts(select: Prisma.GameAccountSelect) {
-		return this.prisma.gameAccount.findMany({ select });
+		return this.prisma.gameAccount.findMany({ select, where: { isExist: true } });
 	}
 }
 
