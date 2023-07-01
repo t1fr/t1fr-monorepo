@@ -50,7 +50,7 @@ export class AccountCommand {
 	private async onSetOwner(@Context() [interaction]: SlashCommandContext, @Options() { accountNum, memberDiscordId }: SetOwnershipOption) {
 		const gameAccount = await this.accountService.setAccountOwner(accountNum, memberDiscordId);
 		await interaction.reply({
-			content: `已成功設置 ID 為 ${gameAccount.id} 的帳號擁有者為 <@${memberDiscordId}>`,
+			content: `已成功設置 ID 為 ${gameAccount?.id} 的帳號擁有者為 <@${memberDiscordId}>`,
 			options: { flags: [MessageFlagsBitField.Flags.SuppressNotifications] },
 		});
 	}
@@ -76,7 +76,7 @@ export class AccountCommand {
 	private async onSetType(@Context() [interaction]: SlashCommandContext, @Options() { accountNum, accountType }: SetAccountTypeOption) {
 		const gameAccount = await this.accountService.setAccountType(accountNum, accountType);
 		await interaction.reply({
-			content: `已成功設置 ID 為 ${gameAccount.id} 的帳號類型為 ${getAccountTypeName(accountType)}`,
+			content: `已成功設置 ID 為 ${gameAccount?.id} 的帳號類型為 ${getAccountTypeName(accountType)}`,
 			options: { flags: [MessageFlagsBitField.Flags.SuppressNotifications] },
 		});
 	}
