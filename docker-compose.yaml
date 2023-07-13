@@ -22,9 +22,12 @@ services:
   test-database:
     image: mysql:latest
     volumes:
-      - database:/var/lib/mysql
+      - database-test:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: t1fr
       MYSQL_DATABASE: squad_manage
     ports:
       - "13216:3306"
+volumes:
+  - database:
+  - database-test:
