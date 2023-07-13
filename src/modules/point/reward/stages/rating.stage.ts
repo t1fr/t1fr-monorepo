@@ -1,10 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { CalculateStage } from "@/modules/point/reward/stages/calculate.stage.interface";
 import { CalculateResult } from "@/modules/point/reward/calculate-result.model";
-import { StageCallback } from "@/modules/point/reward/reward.service";
 
 @Injectable()
 export class RatingStage implements CalculateStage {
+	private static readonly logger = new Logger(RatingStage.name);
 	private readonly thresholds = [
 		{ rating: 1700, point: 20 },
 		{ rating: 1690, point: 15 },
@@ -15,8 +15,8 @@ export class RatingStage implements CalculateStage {
 		{ rating: 500, point: 1 },
 	];
 
-	calculate(results: CalculateResult[], callback: StageCallback): CalculateResult[] {
-		callback("根據賽季評分計算中");
+	calculate(results: CalculateResult[]): CalculateResult[] {
+		RatingStage.logger.log("根據賽季評分計算中");
 		results.sort((a, b) => b.personalRating - a.personalRating);
 		let index = 0;
 		for (let i = 0; i < results.length; i++) {
@@ -30,7 +30,7 @@ export class RatingStage implements CalculateStage {
 				result.reasons.push(`本季個人評分為 ${result.personalRating}，大於門檻 ${rating}，因此獲得 ${point} 積分`);
 			}
 		}
-		callback("根據賽季評分計算完畢");
+		RatingStage.logger.log("根據賽季評分計算完畢");
 		return results;
 	}
 }

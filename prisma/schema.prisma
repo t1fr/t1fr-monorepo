@@ -37,7 +37,6 @@ model Member {
   discordId       String            @unique @map("discord_id")
   nickname        String
   accounts        GameAccount[]
-  memberType      Int               @map("member_type")
   AbsensePointLog AbsensePointLog[]
   PenaltyPointLog PenaltyPointLog[]
   RewardPointLog  RewardPointLog[]

@@ -8,7 +8,7 @@ import { PrismaService } from "@/prisma.service";
 export class RewardService {
 	constructor(@Inject("stages") private readonly stages: CalculateStage[], private prisma: PrismaService) {}
 
-	public calculate(seasonResult: AccountSeasonResult[], callback: StageCallback): CalculateResult[] {
+	public calculate(seasonResult: AccountSeasonResult[]): CalculateResult[] {
 		const rewardPointData: CalculateResult[] = seasonResult.map((account) => ({
 			...account,
 			point: 0,
@@ -16,12 +16,10 @@ export class RewardService {
 			reasons: [],
 		}));
 
-		return this.stages.reduce((acc, val) => val.calculate(acc, callback), rewardPointData);
+		return this.stages.reduce((acc, val) => val.calculate(acc), rewardPointData);
 	}
 
 	public append(memberId: string, delta: number, reason: string) {
 		return this.prisma.rewardPointLog.create({ data: { memberId, delta, reason } });
 	}
 }
-
-export type StageCallback = (message: string) => Promise<void>;

@@ -1,12 +1,11 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { AccountRepo } from "@/modules/squadron/account/account.repo";
 import { RewardService } from "@/modules/point/reward/reward.service";
-import { MemberType } from "@/modules/squadron/member/member-type.enum";
 import { AccountType } from "@/modules/squadron/account/account-type.enum";
 import { AccountSeasonResult } from "@/modules/point/reward/account-season-result.model";
 import { groupBy } from "lodash";
 import { Cron, CronExpression } from "@nestjs/schedule";
-import { Client, ForumChannel } from "discord.js";
+import { Client } from "discord.js";
 
 @Injectable()
 export class AccountService {
@@ -35,18 +34,16 @@ export class AccountService {
 		let successCount = 0;
 
 		for (const ownership of ownershipData.filter((ownership) => ownership.member_id !== null)) {
-			let accountType = undefined;
-			if (ownership.member_type === MemberType.CORE) {
-				accountType = AccountType.MAIN_CORE;
-			} else if (ownership.member_type === MemberType.CASUAL) {
-				accountType = AccountType.MAIN_CASUAL;
-			}
-			try {
-				await this.accountRepo.update({ num: ownership.num }, { owner: { connect: { discordId: ownership.member_id! } }, accountType: accountType });
-				successCount++;
-			} catch (e: any) {
-				this.logger.error(e);
-			}
+			await this.accountRepo
+				.update(
+					{ num: ownership.num },
+					{
+						owner: { connect: { discordId: ownership.member_id! } },
+						accountType: AccountType.MAIN_CORE,
+					},
+				)
+				.catch(this.logger.error);
+			successCount++;
 		}
 
 		return {
@@ -57,7 +54,7 @@ export class AccountService {
 		};
 	}
 
-	async calculateRewardPoint(isSimulate: boolean) {
+	async calculateRewardPoint(isSimulate: boolean, verbose: boolean) {
 		const accounts = (await this.accountRepo.accounts({
 			id: true,
 			accountType: true,
@@ -69,9 +66,7 @@ export class AccountService {
 			return ["有帳號未設置帳號類型或所有者，計算取消"];
 		}
 
-		const results = this.rewardPointService.calculate(accounts, async (message) => {
-			console.log(message);
-		});
+		const results = this.rewardPointService.calculate(accounts);
 
 		const groups = groupBy(
 			results.filter((result) => result.point > 0),
@@ -83,14 +78,14 @@ export class AccountService {
 		let totalPoints = 0;
 		for (const groupsKey in groups) {
 			totalPoints += groups[groupsKey].reduce((acc, cur) => acc + cur.point, 0);
-			messages.push(
-				[
-					`## <@${groupsKey}>`,
-					...groups[groupsKey].map((calculateResult) =>
-						[`* ${calculateResult.id}：${calculateResult.point} 積分 原因`, ...calculateResult.reasons.map((reason) => `\t* ${reason}`)].join("\n"),
-					),
-				].join("\n"),
-			);
+			const accounts = groups[groupsKey];
+			const accountDetails = accounts.map((calculateResult) => {
+				const temp = [`* ${calculateResult.id}：${calculateResult.point} 積分${verbose ? " 原因" : ""}`];
+				if (verbose) temp.push(...calculateResult.reasons.map((reason) => ` * ${reason}`));
+				return temp;
+			});
+
+			messages.push([`<@${groupsKey}>`, ...accountDetails].join("\n"));
 		}
 
 		messages.push(`本賽季結算發放總量：${totalPoints}`);

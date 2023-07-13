@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Context, createCommandGroupDecorator, SlashCommandContext, Subcommand } from "necord";
 import { MemberRepo } from "@/modules/squadron/member/member.repo";
-import { MemberType } from "@/modules/squadron/member/member-type.enum";
 import { BotConfigRepo } from "@/modules/bot-config/bot-config.repo";
 
 const MemberCommandDecorator = createCommandGroupDecorator({
@@ -36,13 +35,7 @@ export class MemberCommand {
 		const insertedMembers = await Promise.all(
 			members
 				.filter((member) => member.roles.cache.hasAny(coreRoleId, casualRoleId))
-				.map((member) =>
-					this.memberRepo.upsert({
-						discordId: member.id,
-						nickname: member.nickname ?? member.user.username,
-						memberType: member.roles.cache.has(coreRoleId) ? MemberType.CORE : MemberType.CASUAL,
-					}),
-				),
+				.map((member) => this.memberRepo.upsert({ discordId: member.id, nickname: member.nickname ?? member.user.username })),
 		);
 
 		interaction.followUp({

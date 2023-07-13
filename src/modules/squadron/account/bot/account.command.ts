@@ -24,6 +24,8 @@ class SetOwnershipOption {
 class CalculateRewardPointOption {
 	@BooleanOption({ name: "simulate", description: "是否試算，不紀錄結果", required: true })
 	isSimulate: boolean = true;
+	@BooleanOption({ name: "verbose", description: "是否顯示原因" })
+	verbose: boolean = false;
 }
 
 const AccountCommandGroup = createCommandGroupDecorator({
@@ -82,9 +84,9 @@ export class AccountCommand {
 	}
 
 	@Subcommand({ name: "reward-point", description: "計算當前隊員的積分點" })
-	async onCalculateRewardPoint(@Context() [interaction]: SlashCommandContext, @Options() { isSimulate }: CalculateRewardPointOption) {
+	async onCalculateRewardPoint(@Context() [interaction]: SlashCommandContext, @Options() { isSimulate, verbose }: CalculateRewardPointOption) {
 		await interaction.deferReply();
-		const messages = await this.accountService.calculateRewardPoint(isSimulate);
+		const messages = await this.accountService.calculateRewardPoint(isSimulate, verbose);
 
 		for (let i = 0; i < messages.length; i += 10) {
 			const message = messages.slice(i, i + 10).join("\n");

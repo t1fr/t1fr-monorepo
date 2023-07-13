@@ -1,15 +1,15 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { CalculateStage } from "@/modules/point/reward/stages/calculate.stage.interface";
 import { CalculateResult } from "@/modules/point/reward/calculate-result.model";
-import { StageCallback } from "@/modules/point/reward/reward.service";
 import { groupBy } from "lodash";
 
 @Injectable()
 export class BudgetStage implements CalculateStage {
+	private static readonly logger = new Logger(BudgetStage.name);
 	private readonly budget = 250;
 
-	calculate(results: CalculateResult[], callback: StageCallback): CalculateResult[] {
-		callback("根據預算計算中");
+	calculate(results: CalculateResult[]): CalculateResult[] {
+		BudgetStage.logger.log("根據預算計算中");
 
 		let totalPoints = results.reduce((acc, val) => acc + val.point, 0);
 		if (this.budget >= totalPoints) return results;
@@ -40,8 +40,7 @@ export class BudgetStage implements CalculateStage {
 				result.point += incretment;
 			});
 		}
-
-		callback("根據預算計算完畢");
+		BudgetStage.logger.log("根據預算計算完畢");
 		return Object.values(groups).reduce((acc, val) => acc.concat(val));
 	}
 }

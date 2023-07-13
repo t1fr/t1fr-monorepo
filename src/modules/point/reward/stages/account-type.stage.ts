@@ -1,13 +1,14 @@
 import { AccountType, getAccountTypeName } from "@/modules/squadron/account/account-type.enum";
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { CalculateStage } from "@/modules/point/reward/stages/calculate.stage.interface";
 import { CalculateResult } from "@/modules/point/reward/calculate-result.model";
-import { StageCallback } from "@/modules/point/reward/reward.service";
 
 @Injectable()
 export class AccountTypeStage implements CalculateStage {
-	calculate(results: CalculateResult[], callback: StageCallback): CalculateResult[] {
-		callback("根據帳號類型計算中");
+	private static readonly logger = new Logger(AccountTypeStage.name);
+
+	calculate(results: CalculateResult[]): CalculateResult[] {
+		AccountTypeStage.logger.log("根據帳號類型計算中");
 		const lookupTable = new Map<string, number>();
 		for (const result of results) {
 			if (result.point === 0) continue;
@@ -31,11 +32,9 @@ export class AccountTypeStage implements CalculateStage {
 					localReason.push(`因為帳號為 ${accountTypeName}`, "積分需除以 3", `變為 ${result.point} 積分`);
 					break;
 			}
-
-			result.reasons.push(localReason.join("，"));
+			if (localReason.length) result.reasons.push(localReason.join("，"));
 		}
-
-		callback("根據帳號類型計算完畢");
+		AccountTypeStage.logger.log("根據帳號類型計算完畢");
 		return results;
 	}
 }
