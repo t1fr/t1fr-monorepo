@@ -1,4 +1,4 @@
-version: "2"
+version: "3"
 services:
   backend:
     build: .
@@ -10,3 +10,21 @@ services:
       - .env
     ports:
       - "6518:3000"
+  prod-database:
+    image: mysql:latest
+    volumes:
+      - database:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: t1fr
+      MYSQL_DATABASE: squad_manage
+    ports:
+      - "13215:3306"
+  test-database:
+    image: mysql:latest
+    volumes:
+      - database:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: t1fr
+      MYSQL_DATABASE: squad_manage
+    ports:
+      - "13216:3306"
