@@ -57,7 +57,7 @@ export class AccountRepo {
 		} else {
 			let updates = 0;
 			for (let input of inputs) {
-				await this.update({ id: input.id }, input).catch();
+				await this.updateMany({ id: input.id }, input).catch();
 				updates++;
 			}
 			return updates;
@@ -74,6 +74,10 @@ export class AccountRepo {
 
 	public async update(where: Prisma.GameAccountWhereUniqueInput, data: Prisma.GameAccountUpdateInput) {
 		return this.prisma.gameAccount.update({ data: data, where: where });
+	}
+
+	public async updateMany(where: Prisma.GameAccountWhereUniqueInput, data: Prisma.GameAccountUpdateInput) {
+		return this.prisma.gameAccount.updateMany({ data: data, where: where });
 	}
 
 	public selectAllNumAndId() {
