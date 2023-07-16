@@ -26,6 +26,8 @@ model Vehicle {
   class       String
   subclass    String
   nation      String
+  wikiUrl     String? @map("wiki_url")
+  imageUrl    String? @map("image_url")
   englishName String  @map("english_name")
   chineseName String? @map("chinese_name")
   arcadeBR    Float   @map("arcade_br")
@@ -54,7 +56,7 @@ model GameAccount {
   owner          Member?  @relation(fields: [memberId], references: [discordId], onDelete: SetNull)
   memberId       String?  @map("member_id")
   accountType    Int?     @map("account_type")
-  isExist        Boolean  @default(true) @map("is_exist")
+  isExist        Boolean  @default(false) @map("is_exist")
 
   @@map("game_accounts")
 }
