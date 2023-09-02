@@ -3,13 +3,14 @@ import { BooleanOption, Context, createCommandGroupDecorator, NumberOption, Opti
 import { MessageFlagsBitField } from "discord.js";
 import { AccountAutocompleteInterceptor } from "@/modules/management/account/account.autocomplete";
 import { AccountService } from "@/modules/management/account/account.service";
+import { AccountType } from "@/modules/management/account/account.schema";
 
 class SetAccountTypeOption {
 	@NumberOption({ name: "account-id", description: "戰雷 ID", required: true, autocomplete: true })
-	accountNum: number;
+	accountId: string;
 
 	@NumberOption({ name: "account-type", description: "帳號類型", required: true, autocomplete: true })
-	accountType: number;
+	accountType: AccountType;
 }
 
 class SetOwnershipOption {
@@ -42,8 +43,8 @@ export class AccountCommand {
 	@Subcommand({ name: "fetch", description: "從網頁上爬帳號資料" })
 	private async onFetch(@Context() [interaction]: SlashCommandContext) {
 		await interaction.deferReply();
-		const updates = await this.accountService.fetchAccounts();
-		interaction.editReply({ content: updates ? `成功更新 ${updates} 位隊員資料` : "更新失敗" });
+		await this.accountService.fetchAccounts();
+		interaction.editReply({ content: `成功更新隊員資料` });
 	}
 
 	@Subcommand({ name: "set-owner", description: "指定擁有者" })
@@ -58,8 +59,8 @@ export class AccountCommand {
 
 	@UseInterceptors(AccountAutocompleteInterceptor)
 	@Subcommand({ name: "set-type", description: "設定帳號類型" })
-	private async onSetType(@Context() [interaction]: SlashCommandContext, @Options() { accountNum, accountType }: SetAccountTypeOption) {
-		const gameAccount = await this.accountService.setAccountType(accountNum, accountType);
+	private async onSetType(@Context() [interaction]: SlashCommandContext, @Options() { accountId, accountType }: SetAccountTypeOption) {
+		const gameAccount = await this.accountService.setAccountType(accountId, accountType);
 		await interaction.reply({
 			content: `已成功設置 ID 為 ${gameAccount?.id} 的帳號類型為 ${accountType}`,
 			options: { flags: [MessageFlagsBitField.Flags.SuppressNotifications] },
