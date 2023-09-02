@@ -71,6 +71,10 @@ export class AccountRepo {
 		return this.accountModel.find(filter);
 	}
 
+	public async listAllExistAccounts() {
+		return this.accountModel.find({ isExist: true }).populate("owner");
+	}
+
 	async joinOnId() {
 		return;
 	}
