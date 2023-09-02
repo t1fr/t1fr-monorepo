@@ -4,8 +4,6 @@ services:
     build: .
     image: t1fr/smsb
     container_name: squadron-management-backend
-    volumes:
-      - ./database/:/app/database/
     env_file:
       - .env
     ports:

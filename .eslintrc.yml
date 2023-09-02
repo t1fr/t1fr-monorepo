@@ -24,3 +24,7 @@ rules:
   semi:
     - error
     - always
+  no-restricted-syntax:
+    - error
+    - selector: TSEnumDeclaration,
+      message: "不要用 Enum"
