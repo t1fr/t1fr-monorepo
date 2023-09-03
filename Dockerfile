@@ -60,4 +60,4 @@ COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 # Start the server using the production build
 
 EXPOSE 3000
-CMD [ "npm", "run", "start:prod" ]
+CMD ["node", "dist/main.js"]
