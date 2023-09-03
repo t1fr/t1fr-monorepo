@@ -47,14 +47,16 @@ export class MemberCommand {
 		const accountReduce = accounts.reduce(
 			(acc, cur) => {
 				acc.id.push(`\`${cur._id}\``);
+				acc.type.push(`\`${cur.type}\``);
 				acc.activity.push(`\`${cur.activity}\``);
 				acc.personalRating.push(`\`${cur.personalRating}\``);
 				return acc;
 			},
-			{ id: [] as string[], activity: [] as string[], personalRating: [] as string[] },
+			{ id: [] as string[], activity: [] as string[], personalRating: [] as string[], type: [] as string[] },
 		);
 		const accountFields = [
 			{ name: "遊戲 ID", value: accountReduce.id.join("\n"), inline: true },
+			{ name: "類型", value: accountReduce.type.join("\n"), inline: true },
 			{ name: "個人評分", value: accountReduce.personalRating.join("\n"), inline: true },
 			{ name: "活躍度", value: accountReduce.activity.join("\n"), inline: true },
 		];

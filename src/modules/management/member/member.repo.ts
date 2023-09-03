@@ -4,7 +4,7 @@ import { Member } from "@/modules/management/member/member.schema";
 import { InjectModel } from "@nestjs/mongoose";
 
 export interface Summary {
-	accounts: { _id: string; activity: number; personalRating: number }[];
+	accounts: { _id: string; activity: number; personalRating: number, type: string }[];
 	points: { _id: string; sum: number; logs: { category: string; date: string; delta: number; detail: string }[] }[];
 }
 
