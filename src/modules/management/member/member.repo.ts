@@ -3,6 +3,11 @@ import { Model } from "mongoose";
 import { Member } from "@/modules/management/member/member.schema";
 import { InjectModel } from "@nestjs/mongoose";
 
+export interface Summary {
+	accounts: { _id: string; activity: number; personalRating: number }[];
+	points: { _id: string; sum: number; logs: { category: string; date: string; delta: number; detail: string }[] }[];
+}
+
 @Injectable()
 export class MemberRepo {
 	constructor(@InjectModel(Member.name) private readonly memberModel: Model<Member>) {}
@@ -17,5 +22,39 @@ export class MemberRepo {
 
 	async selectAllIdAndName() {
 		return this.memberModel.find();
+	}
+
+	async summary(userId: string): Promise<Summary> {
+		return (
+			await this.memberModel.aggregate<Summary>([
+				{ $match: { _id: userId } },
+				{
+					$lookup: {
+						from: "accounts",
+						localField: "_id",
+						foreignField: "owner",
+						as: "accounts",
+						pipeline: [{ $project: { type: true, personalRating: true, activity: true } }],
+					},
+				},
+				{
+					$lookup: {
+						from: "pointevents",
+						localField: "_id",
+						foreignField: "member",
+						as: "points",
+						pipeline: [
+							{
+								$group: {
+									_id: "$type",
+									sum: { $sum: "$delta" },
+									logs: { $push: { category: "$category", date: "$date", delta: "$delta", detail: "$comment" } },
+								},
+							},
+						],
+					},
+				},
+			])
+		)[0];
 	}
 }

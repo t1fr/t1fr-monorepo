@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { CalculateStage } from "@/modules/management/point/stages/stage";
-import { CalculateResult } from "@/modules/management/point/calculate-result.model";
 import { groupBy } from "lodash";
+import { CalculateResult } from '@/modules/management/point/reward.service';
 
 @Injectable()
 export class BudgetStage implements CalculateStage {
