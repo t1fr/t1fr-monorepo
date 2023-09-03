@@ -1,9 +1,11 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { Client, GuildMember } from "discord.js";
 import { DiscordRole } from "@/constant";
-import { MemberRepo } from "@/modules/management/member/member.repo";
+import { MemberRepo, Summary } from '@/modules/management/member/member.repo';
 import { Member } from "@/modules/management/member/member.schema";
-import { RewardService } from "@/modules/management/point/reward.service";
+import { PointRepo } from "@/modules/management/point/point.repo";
+import { PointEvent, PointType } from "@/modules/management/point/point.schema";
+import dayjs from "dayjs";
 
 @Injectable()
 export class MemberService implements OnModuleInit {
@@ -12,11 +14,11 @@ export class MemberService implements OnModuleInit {
 	constructor(
 		private readonly client: Client,
 		private readonly memberRepo: MemberRepo,
-		private readonly rewardService: RewardService,
+		private readonly pointRepo: PointRepo,
 	) {}
 
 	async onModuleInit() {
-		const guild = this.client.guilds.resolve("1046623840710705152");
+		const guild = await this.client.guilds.resolve("1046623840710705152");
 		if (!guild) return;
 		const members = await guild.members.fetch();
 		if (!members) return;
@@ -34,7 +36,11 @@ export class MemberService implements OnModuleInit {
 		return { _id: member.id, nickname: member.nickname ?? member.displayName };
 	}
 
-	async award(member: string, delta: number, reason: string) {
-		await this.rewardService.appendRaw(member, delta, reason);
+	async award(event: Omit<PointEvent, "type" | "date">) {
+		this.pointRepo.append(PointType.REWARD, { ...event, date: dayjs().format("YYYY-MM-DD") });
+	}
+
+	async summary(userId: string): Promise<Summary> {
+		return this.memberRepo.summary(userId);
 	}
 }

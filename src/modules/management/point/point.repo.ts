@@ -8,11 +8,11 @@ import { isArray } from "lodash";
 export class PointRepo {
 	constructor(@InjectModel(PointEvent.name) private readonly pointModel: Model<PointEvent>) {}
 
-	async append(category: PointType, data: Omit<PointEvent, "category"> | Omit<PointEvent, "category">[]) {
+	async append(type: PointType, data: Omit<PointEvent, "type"> | Omit<PointEvent, "type">[]) {
 		if (isArray(data)) {
-			await this.pointModel.insertMany(data.map((value) => ({ category, ...value })));
+			await this.pointModel.insertMany(data.map((value) => ({ type, ...value })));
 		} else {
-			await this.pointModel.insertMany({ category, ...data });
+			await this.pointModel.insertMany({ type, ...data });
 		}
 	}
 }

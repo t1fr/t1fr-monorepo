@@ -4,6 +4,9 @@ import { RewardService } from "@/modules/management/point/reward.service";
 import { groupBy } from "lodash";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { AccountType } from "@/modules/management/account/account.schema";
+import { PointRepo } from "@/modules/management/point/point.repo";
+import { PointType } from "@/modules/management/point/point.schema";
+import dayjs from "dayjs";
 
 @Injectable()
 export class AccountService implements OnModuleInit {
@@ -12,6 +15,7 @@ export class AccountService implements OnModuleInit {
 	constructor(
 		private readonly accountRepo: AccountRepo,
 		private readonly rewardPointService: RewardService,
+		private readonly pointRepo: PointRepo,
 	) {}
 
 	@Cron(CronExpression.EVERY_4_HOURS)
@@ -57,7 +61,11 @@ export class AccountService implements OnModuleInit {
 		messages.push(`本賽季結算發放總量：${totalPoints}`);
 
 		if (!isSimulate) {
-			await this.rewardPointService.append(results);
+			const now = dayjs().format("YYYY-MM-DD");
+			await this.pointRepo.append(
+				PointType.REWARD,
+				results.map((result) => ({ member: result.owner, delta: result.point, comment: result.reasons.join("\n"), category: "結算發放", date: now })),
+			);
 			messages.unshift("已記錄完畢");
 		}
 

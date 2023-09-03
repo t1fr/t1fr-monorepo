@@ -84,4 +84,5 @@ export class AccountCommand {
 			interaction.followUp({ content: message.replace("_", "\\_") });
 		}
 	}
+
 }

@@ -6,7 +6,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { PointEventModelDef } from "@/modules/management/point/point.schema";
 
 @Module({
-	exports: [RewardService],
+	exports: [RewardService, PointRepo],
 	imports: [MongooseModule.forFeature([PointEventModelDef])],
 	providers: [RewardService, PointRepo, ...stages, { provide: "stages", useFactory: (...stages: CalculateStage[]) => stages, inject: stages }],
 })

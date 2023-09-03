@@ -1,16 +1,22 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { CalculateStage } from "@/modules/management/point/stages/stage";
-import { CalculateResult } from "@/modules/management/point/calculate-result.model";
-import { PointRepo } from "@/modules/management/point/point.repo";
-import { PointType } from "@/modules/management/point/point.schema";
-import { Account } from "@/modules/management/account/account.schema";
+import { Account, AccountType } from '@/modules/management/account/account.schema';
+
+
+export interface CalculateResult {
+	id: string;
+	type: AccountType;
+	personalRating: number;
+	owner: string;
+	point: number;
+	backup: number;
+	reasons: string[];
+}
+
 
 @Injectable()
 export class RewardService {
-	constructor(
-		@Inject("stages") private readonly stages: CalculateStage[],
-		private readonly pointRepo: PointRepo,
-	) {}
+	constructor(@Inject("stages") private readonly stages: CalculateStage[]) {}
 
 	async calculate(accounts: Account[]): Promise<CalculateResult[]> {
 		const noOwnerAccounts = accounts.filter((account) => !account.owner);
@@ -34,16 +40,5 @@ export class RewardService {
 		}));
 
 		return this.stages.reduce((acc, val) => val.calculate(acc), rewardPointData);
-	}
-
-	async append(results: CalculateResult[]) {
-		this.pointRepo.append(
-			PointType.REWARD,
-			results.map((result) => ({ member: result.owner, delta: result.point, comment: result.reasons.join("\n") })),
-		);
-	}
-
-	async appendRaw(member: string, delta: number, reason: string) {
-		await this.pointRepo.append(PointType.REWARD, { member, delta, comment: reason });
 	}
 }

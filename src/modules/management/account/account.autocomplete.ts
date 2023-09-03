@@ -9,10 +9,7 @@ import { getAccountTypeOptions } from "@/modules/management/account/account.sche
 export class MyAutocompleteInterceptor extends AutocompleteInterceptor {
 	private readonly logger = new Logger(MyAutocompleteInterceptor.name);
 
-	constructor(
-		private accountRepo: AccountRepo,
-		private memberRepo: MemberRepo,
-	) {
+	constructor(private accountRepo: AccountRepo, private memberRepo: MemberRepo,) {
 		super();
 	}
 
