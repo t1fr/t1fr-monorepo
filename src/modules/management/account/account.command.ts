@@ -1,20 +1,20 @@
 import { Injectable, Logger, UseInterceptors } from "@nestjs/common";
 import { BooleanOption, Context, createCommandGroupDecorator, NumberOption, Options, SlashCommandContext, StringOption, Subcommand } from "necord";
 import { MessageFlagsBitField } from "discord.js";
-import { AccountAutocompleteInterceptor } from "@/modules/management/account/account.autocomplete";
+import { MyAutocompleteInterceptor } from "@/modules/management/account/account.autocomplete";
 import { AccountService } from "@/modules/management/account/account.service";
 import { AccountType } from "@/modules/management/account/account.schema";
 
 class SetAccountTypeOption {
-	@NumberOption({ name: "account-id", description: "戰雷 ID", required: true, autocomplete: true })
+	@StringOption({ name: "account-id", description: "戰雷 ID", required: true, autocomplete: true })
 	accountId: string;
 
-	@NumberOption({ name: "account-type", description: "帳號類型", required: true, autocomplete: true })
+	@StringOption({ name: "account-type", description: "帳號類型", required: true, autocomplete: true })
 	accountType: AccountType;
 }
 
 class SetOwnershipOption {
-	@NumberOption({ name: "account-id", description: "戰雷 ID", required: true, autocomplete: true })
+	@StringOption({ name: "account-id", description: "戰雷 ID", required: true, autocomplete: true })
 	accountId: string;
 
 	@StringOption({ name: "member", description: "擁有者 DC 帳號", required: true, autocomplete: true })
@@ -28,10 +28,7 @@ class CalculateRewardPointOption {
 	verbose: boolean = false;
 }
 
-const AccountCommandGroup = createCommandGroupDecorator({
-	name: "account",
-	description: "管理聯隊內的 WT 帳號",
-});
+const AccountCommandGroup = createCommandGroupDecorator({ name: "account", description: "管理聯隊內的 WT 帳號" });
 
 @Injectable()
 @AccountCommandGroup()
@@ -40,15 +37,15 @@ export class AccountCommand {
 
 	constructor(readonly accountService: AccountService) {}
 
-	@Subcommand({ name: "fetch", description: "從網頁上爬帳號資料" })
-	private async onFetch(@Context() [interaction]: SlashCommandContext) {
+	@Subcommand({ name: "sync", description: "從網頁上爬帳號資料" })
+	private async onSync(@Context() [interaction]: SlashCommandContext) {
 		await interaction.deferReply();
-		await this.accountService.fetchAccounts();
+		await this.accountService.sync();
 		interaction.editReply({ content: `成功更新隊員資料` });
 	}
 
 	@Subcommand({ name: "set-owner", description: "指定擁有者" })
-	@UseInterceptors(AccountAutocompleteInterceptor)
+	@UseInterceptors(MyAutocompleteInterceptor)
 	private async onSetOwner(@Context() [interaction]: SlashCommandContext, @Options() { accountId, memberDiscordId }: SetOwnershipOption) {
 		const gameAccount = await this.accountService.setAccountOwner(accountId, memberDiscordId);
 		await interaction.reply({
@@ -57,7 +54,17 @@ export class AccountCommand {
 		});
 	}
 
-	@UseInterceptors(AccountAutocompleteInterceptor)
+	@Subcommand({ name: "autolink", description: "自動根據 DC 暱稱後方的 ID 來連結帳號。如果帳號類型未定義，將由連結成員的身分組推斷" })
+	private async onAutolink(@Context() [interaction]: SlashCommandContext) {
+		await interaction.deferReply();
+		const { linkable, modified, errors } = await this.accountService.autolink();
+		const content = [`可連結 ${linkable} 個帳號`, `已更新 ${modified} 個帳號`];
+		if (errors.length) content.push(...errors);
+
+		interaction.followUp({ content: content.join("\n") });
+	}
+
+	@UseInterceptors(MyAutocompleteInterceptor)
 	@Subcommand({ name: "set-type", description: "設定帳號類型" })
 	private async onSetType(@Context() [interaction]: SlashCommandContext, @Options() { accountId, accountType }: SetAccountTypeOption) {
 		const gameAccount = await this.accountService.setAccountType(accountId, accountType);

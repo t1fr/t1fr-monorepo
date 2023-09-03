@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { AccountRepo } from "@/modules/management/account/account.repo";
 import { RewardService } from "@/modules/management/point/reward.service";
 import { groupBy } from "lodash";
@@ -6,7 +6,7 @@ import { Cron, CronExpression } from "@nestjs/schedule";
 import { AccountType } from "@/modules/management/account/account.schema";
 
 @Injectable()
-export class AccountService {
+export class AccountService implements OnModuleInit {
 	private readonly logger = new Logger(AccountService.name);
 
 	constructor(
@@ -15,12 +15,16 @@ export class AccountService {
 	) {}
 
 	@Cron(CronExpression.EVERY_4_HOURS)
-	fetchAccounts() {
-		return this.accountRepo.fetchFromWeb();
+	sync() {
+		return this.accountRepo.sync();
 	}
 
 	setAccountOwner(accountId: string, discordId: string) {
 		return this.accountRepo.update(accountId, { owner: discordId });
+	}
+
+	async autolink() {
+		return this.accountRepo.joinOnId();
 	}
 
 	setAccountType(accountId: string, accountType: AccountType) {
@@ -28,7 +32,7 @@ export class AccountService {
 	}
 
 	async calculateRewardPoint(isSimulate: boolean, verbose: boolean) {
-		const results = await this.rewardPointService.calculate();
+		const results = await this.rewardPointService.calculate(await this.accountRepo.find({ isExist: true }));
 
 		const groups = groupBy(
 			results.filter((result) => result.point > 0),
@@ -58,5 +62,10 @@ export class AccountService {
 		}
 
 		return messages;
+	}
+
+	async onModuleInit() {
+		await this.accountRepo.sync();
+		this.logger.log("更新聯隊內帳號資料完畢");
 	}
 }

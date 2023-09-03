@@ -3,11 +3,11 @@ import { Injectable, Logger } from "@nestjs/common";
 import { AccountRepo } from "@/modules/management/account/account.repo";
 import { MemberRepo } from "@/modules/management/member/member.repo";
 import { ApplicationCommandOptionChoiceData, AutocompleteInteraction } from "discord.js";
-import { getAccountTypeOptions } from '@/modules/management/account/account.schema';
+import { getAccountTypeOptions } from "@/modules/management/account/account.schema";
 
 @Injectable()
-export class AccountAutocompleteInterceptor extends AutocompleteInterceptor {
-	private readonly logger = new Logger(AccountAutocompleteInterceptor.name);
+export class MyAutocompleteInterceptor extends AutocompleteInterceptor {
+	private readonly logger = new Logger(MyAutocompleteInterceptor.name);
 
 	constructor(
 		private accountRepo: AccountRepo,

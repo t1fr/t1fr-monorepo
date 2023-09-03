@@ -2,6 +2,16 @@ import { ModelDefinition, Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { ApplicationCommandOptionChoiceData } from "discord.js";
 import { Member } from "@/modules/management/member/member.schema";
 
+export enum AccountType {
+	MAIN_CASUAL = "🇸 聯隊戰主帳",
+	MAIN_CORE = "🇸 聯隊戰主帳",
+	ALT_PRIVATE = "🇳 休閒主帳",
+	MAIN_PUBLIC = "🇦 個人小帳",
+	ALT_PUBLIC = "🇨 公用主帳",
+	SPONSOR = "🇧 公用小帳",
+	ALT_SEMIPUBLIC = "🇩 半公用小帳",
+}
+
 @Schema()
 export class Account {
 	@Prop()
@@ -14,26 +24,16 @@ export class Account {
 	activity: number;
 
 	@Prop()
-	joinDate: Date;
+	joinDate: string;
 
-	@Prop({ ref: Member.name, required: false, default: null })
+	@Prop({ type: String, ref: Member.name, required: false, default: null })
 	owner: string | null;
 
-	@Prop({ enum: [null, ...getAccountTypeOptions()] })
+	@Prop({ type: String, enum: [null, ...Object.values(AccountType)] })
 	type: AccountType | null;
 
 	@Prop()
 	isExist: boolean;
-}
-
-export enum AccountType {
-	MAIN_CASUAL = "🇸 聯隊戰主帳",
-	MAIN_CORE = "🇸 聯隊戰主帳",
-	ALT_PRIVATE = "🇳 休閒主帳",
-	MAIN_PUBLIC = "🇦 個人小帳",
-	ALT_PUBLIC = "🇨 公用主帳",
-	SPONSOR = "🇧 公用小帳",
-	ALT_SEMIPUBLIC = "🇩 半公用小帳",
 }
 
 export function getAccountTypeOptions() {

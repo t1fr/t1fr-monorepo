@@ -1,4 +1,4 @@
-import { Prop, Schema } from "@nestjs/mongoose";
+import { ModelDefinition, Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Member } from "@/modules/management/member/member.schema";
 
 export enum PointType {
@@ -21,3 +21,5 @@ export class PointEvent {
 	@Prop()
 	comment: string;
 }
+
+export const PointEventModelDef: ModelDefinition = { name: PointEvent.name, schema: SchemaFactory.createForClass(PointEvent) };

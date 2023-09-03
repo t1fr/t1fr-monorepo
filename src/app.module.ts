@@ -9,6 +9,7 @@ import { join } from "path";
 import { ScheduleModule } from "@nestjs/schedule";
 import LoggerModule from "@/modules/logging/logger.module";
 import { MongooseModule } from "@nestjs/mongoose";
+import * as process from "process";
 
 const intents = [
 	IntentsBitField.Flags.Guilds,
@@ -20,7 +21,7 @@ const intents = [
 ];
 
 function configuration() {
-	return load(readFileSync(join(__dirname, "config/config.yaml"), "utf-8")) as Record<string, any>;
+	return load(readFileSync(join(__dirname, `config/${process.env.NODE_ENV}.yaml`), "utf-8")) as Record<string, any>;
 }
 
 @Module({
@@ -31,11 +32,11 @@ function configuration() {
 			imports: [ConfigModule],
 			inject: [ConfigService],
 			useFactory: (configService: ConfigService) => ({
-				uri: "mongodb://localhost:38422",
-				// uri: "mongodb://220.133.81.52:38422",
-				user: "t1fr",
+				uri: "mongodb://220.133.81.52:38422",
+				user: "t1fr_admin",
 				pass: "t1frOuO",
 				dbName: configService.getOrThrow("mongo.database"),
+				authSource: "admin",
 			}),
 		}),
 		NecordModule.forRootAsync({

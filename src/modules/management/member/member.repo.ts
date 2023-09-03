@@ -11,6 +11,10 @@ export class MemberRepo {
 		return await this.memberModel.bulkWrite(members.map((member) => ({ updateOne: { filter: { _id: member._id }, update: member, upsert: true } })));
 	}
 
+	async delete(memberId: string) {
+		await this.memberModel.deleteMany({ _id: memberId });
+	}
+
 	async selectAllIdAndName() {
 		return this.memberModel.find();
 	}

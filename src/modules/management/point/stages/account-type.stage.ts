@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { CalculateStage } from "@/modules/management/point/stages/calculate.stage.interface";
+import { CalculateStage } from "@/modules/management/point/stages/stage";
 import { CalculateResult } from "@/modules/management/point/calculate-result.model";
 import { AccountType } from "@/modules/management/account/account.schema";
 

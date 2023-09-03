@@ -28,10 +28,4 @@ export class DiscordListenerService {
 		const roleId = roles.findKey((role, key) => memberRoleIdCollection.includes(key));
 		if (roleId) await this.memberRepo.upsert([{ _id: member.id, nickname: newNickname }]);
 	}
-
-	@On("guildMemberRoleAdd")
-	async onGuildMemberRoleAdd(@Context() [member, role]: ContextOf<"guildMemberRoleAdd">) {}
-
-	@On("guildMemberRoleRemove")
-	async onGuildMemberRoleRemove(@Context() [member, role]: ContextOf<"guildMemberRoleRemove">) {}
 }

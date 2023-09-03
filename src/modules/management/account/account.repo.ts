@@ -27,7 +27,7 @@ export class AccountRepo {
 		return data;
 	}
 
-	public async fetchFromWeb() {
+	public async sync() {
 		const html = await this.getHtml(SquadronMemberListUrl);
 		if (!html) return;
 
@@ -38,29 +38,24 @@ export class AccountRepo {
 			.toArray()
 			.map((element, index) => (index % 6 === 1 ? $(element).children("a").attr("href")?.trim() ?? "未知" : $(element).text().trim()));
 
-		const inputs: Account[] = [];
+		const inputs: Partial<Account>[] = [];
 		for (let i = 0; i < cellValues.length; i += columnsCount) {
 			const row = cellValues.slice(i, i + columnsCount);
 			inputs.push({
 				_id: `${row[1]}@`.match(/(?<==)(.*?)(?=@)/)?.[0] ?? "",
 				personalRating: parseInt(row[2]),
 				activity: parseInt(row[3]),
-				joinDate: dayjs(row[5], "DD.MM.YYYY").toDate(),
-				owner: null,
-				type: null,
+				joinDate: dayjs(row[5], "DD.MM.YYYY").format("YYYY-MM-DD"),
 				isExist: true,
 			});
 		}
 
-		await this.upsert(inputs);
-	}
-
-	async upsert(accounts: Account[]) {
-		await this.accountModel.bulkWrite(
-			accounts.map((account) => ({
+		await this.accountModel.bulkWrite([
+			{ updateMany: { filter: {}, update: { isExist: false } } },
+			...inputs.map((account) => ({
 				updateOne: { filter: { _id: account._id }, update: account, upsert: true },
 			})),
-		);
+		]);
 	}
 
 	public async update(id: string, account: Partial<Omit<Account, "_id">>) {
@@ -76,6 +71,25 @@ export class AccountRepo {
 	}
 
 	async joinOnId() {
-		return;
+		const data: { _id: string; owner: string }[] = await this.accountModel.aggregate([
+			{
+				$lookup: {
+					as: "member",
+					from: "members",
+					let: { id: "$_id" },
+					pipeline: [{ $match: { $expr: { $eq: [{ $last: { $split: ["$nickname", "丨"] } }, "$$id"] } } }],
+				},
+			},
+			{ $project: { owner: "$member._id" } },
+			{ $unwind: "$owner" },
+		]);
+
+		const result = await this.accountModel.bulkWrite(data.map((value) => ({ updateOne: { filter: { _id: value._id }, update: { owner: value.owner } } })));
+
+		return {
+			linkable: data.length,
+			modified: result.modifiedCount,
+			errors: result.getWriteErrors().map((value) => value.errmsg ?? value.index.toString()),
+		};
 	}
 }

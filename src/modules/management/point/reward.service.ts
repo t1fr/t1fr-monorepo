@@ -1,22 +1,20 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { CalculateStage } from "@/modules/management/point/stages/calculate.stage.interface";
+import { CalculateStage } from "@/modules/management/point/stages/stage";
 import { CalculateResult } from "@/modules/management/point/calculate-result.model";
-import { AccountRepo } from "@/modules/management/account/account.repo";
 import { PointRepo } from "@/modules/management/point/point.repo";
 import { PointType } from "@/modules/management/point/point.schema";
+import { Account } from "@/modules/management/account/account.schema";
 
 @Injectable()
 export class RewardService {
 	constructor(
 		@Inject("stages") private readonly stages: CalculateStage[],
-		private readonly accountRepo: AccountRepo,
 		private readonly pointRepo: PointRepo,
 	) {}
 
-	async calculate(): Promise<CalculateResult[]> {
-		const inSquadAccounts = await this.accountRepo.find({ isExist: true });
-		const noOwnerAccounts = inSquadAccounts.filter((account) => !account.owner);
-		const noTypedAccounts = inSquadAccounts.filter((account) => !account.type);
+	async calculate(accounts: Account[]): Promise<CalculateResult[]> {
+		const noOwnerAccounts = accounts.filter((account) => !account.owner);
+		const noTypedAccounts = accounts.filter((account) => !account.type);
 
 		const error = [];
 
@@ -25,7 +23,7 @@ export class RewardService {
 
 		if (error.length > 0) throw new Error(error.join("\n"));
 
-		const rewardPointData: CalculateResult[] = inSquadAccounts.map((account) => ({
+		const rewardPointData: CalculateResult[] = accounts.map((account) => ({
 			id: account._id,
 			type: account.type!!,
 			owner: account.owner!!,
@@ -43,5 +41,9 @@ export class RewardService {
 			PointType.REWARD,
 			results.map((result) => ({ member: result.owner, delta: result.point, comment: result.reasons.join("\n") })),
 		);
+	}
+
+	async appendRaw(member: string, delta: number, reason: string) {
+		await this.pointRepo.append(PointType.REWARD, { member, delta, comment: reason });
 	}
 }
