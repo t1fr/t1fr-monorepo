@@ -4,13 +4,11 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
-COPY package*.json ./
+COPY package*.json .
+COPY config .
 
 # Install app dependencies
 RUN npm install
-
-COPY . .
-
 RUN npm run build
 
 EXPOSE 3000
