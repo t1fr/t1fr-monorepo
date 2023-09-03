@@ -1,22 +1,13 @@
 import { Module } from "@nestjs/common";
 import { RewardService } from "@/modules/management/point/reward.service";
-import { AccountTypeStage } from "@/modules/management/point/stages/account-type.stage";
-import { RatingStage } from "@/modules/management/point/stages/rating.stage";
-import { BudgetStage } from "@/modules/management/point/stages/budget.stage";
-import { CalculateStage } from "@/modules/management/point/stages/calculate.stage.interface";
+import { CalculateStage, stages } from "@/modules/management/point/stages/stage";
+import { PointRepo } from "@/modules/management/point/point.repo";
+import { MongooseModule } from "@nestjs/mongoose";
+import { PointEventModelDef } from "@/modules/management/point/point.schema";
 
 @Module({
 	exports: [RewardService],
-	providers: [
-		RewardService,
-		AccountTypeStage,
-		RatingStage,
-		BudgetStage,
-		{
-			provide: "stages",
-			useFactory: (...stages: CalculateStage[]) => stages,
-			inject: [RatingStage, AccountTypeStage, BudgetStage],
-		},
-	],
+	imports: [MongooseModule.forFeature([PointEventModelDef])],
+	providers: [RewardService, PointRepo, ...stages, { provide: "stages", useFactory: (...stages: CalculateStage[]) => stages, inject: stages }],
 })
 export default class PointModule {}

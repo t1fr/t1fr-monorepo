@@ -21,6 +21,10 @@ export class ChannelLogger extends ConsoleLogger implements OnApplicationBootstr
 	}
 
 	async onApplicationBootstrap() {
+		if (this.client.application) {
+			this.client.application.commands.set([]);
+		}
+
 		const channel = await this.client.channels.fetch(this.logChannelId);
 		if (channel && channel.isTextBased()) {
 			this.logChannel = channel;
