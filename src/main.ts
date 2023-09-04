@@ -4,8 +4,10 @@ import { ConfigService } from "@nestjs/config";
 import { ChannelLogger } from "@/modules/logging/channel.logger";
 import dayjs from "dayjs";
 import customParse from "dayjs/plugin/customParseFormat";
+import utc from "dayjs/plugin/utc";
 
 dayjs.extend(customParse);
+dayjs.extend(utc);
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule, { bufferLogs: true });

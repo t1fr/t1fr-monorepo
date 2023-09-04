@@ -6,9 +6,10 @@ import { ManagementModule } from "@/modules/management/management.module";
 import { load } from "js-yaml";
 import { readFileSync } from "fs";
 import { join } from "path";
+import { MongooseModule } from "@nestjs/mongoose";
 import { ScheduleModule } from "@nestjs/schedule";
 import LoggerModule from "@/modules/logging/logger.module";
-import { MongooseModule } from "@nestjs/mongoose";
+import BattleModule from "@/modules/schedule/battle.module";
 import * as process from "process";
 
 const intents = [
@@ -49,7 +50,7 @@ function configuration() {
 			}),
 		}),
 		ManagementModule,
-		ScheduleModule,
+		BattleModule,
 		LoggerModule,
 	],
 })

@@ -4,17 +4,21 @@ import { ChannelType, Client } from "discord.js";
 import { SeasonRepo } from "@/modules/schedule/season.repo";
 
 @Injectable()
-export class ScheduleService {
-	private static readonly logger = new Logger(ScheduleService.name);
+export class BattleService {
+	private static readonly logger = new Logger(BattleService.name);
 
-	constructor(private sectionRepo: SeasonRepo, private readonly client: Client) {}
+	constructor(
+		private sectionRepo: SeasonRepo,
+		private readonly client: Client,
+	) {}
 
 	@Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, { utcOffset: 0 })
 	async updateBulletin() {
-		const section = await this.sectionRepo.getCurrentSection();
+		const battleRating = await this.sectionRepo.getCurrentBattleRating();
+		console.log(battleRating);
 		const messages = { category: "聯隊戰", announcement: "今日分房：新賽季" };
-		if (section) {
-			const brString = section.battleRating.toFixed(1).replace(/\d/g, digitToFullwidth);
+		if (battleRating) {
+			const brString = battleRating.toFixed(1).replace(/\d/g, digitToFullwidth);
 			messages.announcement = `今日分房：${brString}`;
 			messages.category = `聯隊戰：${brString}`;
 		}
@@ -28,9 +32,9 @@ export class ScheduleService {
 			channel.setName(messages.announcement);
 		}
 
-		ScheduleService.logger.log("更新聯隊戰分房");
+		BattleService.logger.log("更新聯隊戰分房");
 
-		return section !== undefined;
+		return battleRating !== undefined;
 	}
 }
 
