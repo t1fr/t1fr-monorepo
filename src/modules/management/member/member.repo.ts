@@ -23,8 +23,8 @@ export class MemberRepo {
 		await this.memberModel.deleteMany({ _id: memberId });
 	}
 
-	async selectAllIdAndName() {
-		return this.memberModel.find();
+	async find(substing: string) {
+		return this.memberModel.find({ nickname: RegExp(substing, "i") }).limit(25);
 	}
 
 	async summary(userId: string): Promise<Summary> {

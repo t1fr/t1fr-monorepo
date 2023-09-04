@@ -9,7 +9,10 @@ import { getAccountTypeOptions } from "@/modules/management/account/account.sche
 export class MyAutocompleteInterceptor extends AutocompleteInterceptor {
 	private readonly logger = new Logger(MyAutocompleteInterceptor.name);
 
-	constructor(private accountRepo: AccountRepo, private memberRepo: MemberRepo,) {
+	constructor(
+		private accountRepo: AccountRepo,
+		private memberRepo: MemberRepo,
+	) {
 		super();
 	}
 
@@ -20,16 +23,10 @@ export class MyAutocompleteInterceptor extends AutocompleteInterceptor {
 		const inputValue = focused.value.toString();
 
 		if (focused.name === "account-id") {
-			options = (await this.accountRepo.find())
-				.filter((choice) => choice.id.includes(inputValue))
-				.slice(0, 25)
-				.map((choice) => ({ name: choice.id, value: choice._id }));
+			options = (await this.accountRepo.find({ _id: { $regex: RegExp(inputValue, "i") } })).map((choice) => ({ name: choice.id, value: choice._id }));
 		}
 		if (focused.name === "member") {
-			options = (await this.memberRepo.selectAllIdAndName())
-				.filter((choice) => choice.nickname.includes(inputValue))
-				.slice(0, 25)
-				.map((choice) => ({ name: choice.nickname, value: choice._id }));
+			options = (await this.memberRepo.find(inputValue)).map((choice) => ({ name: choice.nickname, value: choice._id }));
 		}
 
 		if (focused.name === "account-type") {
