@@ -2,9 +2,12 @@ import { Injectable } from "@nestjs/common";
 import { Model } from "mongoose";
 import { Member } from "@/modules/management/member/member.schema";
 import { InjectModel } from "@nestjs/mongoose";
+import { PointType } from "@/modules/management/point/point.schema";
 
 export interface Summary {
-	accounts: { _id: string; activity: number; personalRating: number, type: string }[];
+	_id: string;
+	nickname: string;
+	accounts: { _id: string; activity: number; personalRating: number; type: string }[];
 	points: { _id: string; sum: number; logs: { category: string; date: string; delta: number; detail: string }[] }[];
 }
 
@@ -56,5 +59,22 @@ export class MemberRepo {
 				},
 			])
 		)[0];
+	}
+
+	async listPoint(type: PointType) {
+		return this.memberModel.aggregate<{ _id: string; nickname: string; sum: number }>([
+			{
+				$lookup: {
+					from: "pointevents",
+					localField: "_id",
+					foreignField: "member",
+					as: "points",
+					pipeline: [{ $group: { _id: "$type", sum: { $sum: "$delta" } } }],
+				},
+			},
+			{ $unwind: "$points" },
+			{ $match: { "points._id": type } },
+			{ $project: { nickname: true, sum: "$points.sum" } },
+		]);
 	}
 }

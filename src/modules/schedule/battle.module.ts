@@ -1,12 +1,12 @@
 import { Module } from "@nestjs/common";
-import { SetScheduleCommand } from "@/modules/schedule/schedule.command";
+import { SetScheduleCommand } from "@/modules/schedule/battle.command";
 import { SeasonRepo } from "@/modules/schedule/season.repo";
-import { ScheduleService } from "@/modules/schedule/schedule.service";
+import { BattleService } from "@/modules/schedule/battle.service";
 import { MongooseModule } from "@nestjs/mongoose";
 import { SeasonModelDef } from "@/modules/schedule/season.schema";
 
 @Module({
 	imports: [MongooseModule.forFeature([SeasonModelDef])],
-	providers: [SetScheduleCommand, SeasonRepo, ScheduleService],
+	providers: [SetScheduleCommand, SeasonRepo, BattleService],
 })
-export default class ScheduleModule {}
+export default class BattleModule {}

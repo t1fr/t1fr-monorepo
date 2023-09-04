@@ -1,7 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { Client, GuildMember } from "discord.js";
 import { DiscordRole } from "@/constant";
-import { MemberRepo, Summary } from '@/modules/management/member/member.repo';
+import { MemberRepo, Summary } from "@/modules/management/member/member.repo";
 import { Member } from "@/modules/management/member/member.schema";
 import { PointRepo } from "@/modules/management/point/point.repo";
 import { PointEvent, PointType } from "@/modules/management/point/point.schema";
@@ -42,5 +42,9 @@ export class MemberService implements OnModuleInit {
 
 	async summary(userId: string): Promise<Summary> {
 		return this.memberRepo.summary(userId);
+	}
+
+	async listPoint(type: PointType) {
+		return this.memberRepo.listPoint(type);
 	}
 }

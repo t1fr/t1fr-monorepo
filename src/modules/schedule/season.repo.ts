@@ -20,9 +20,17 @@ export class SeasonRepo {
 		);
 	}
 
-	public getCurrentSection(): Section {
+	async getCurrentBattleRating(): Promise<number> {
 		const now = new Date();
-		return { from: now, to: now, battleRating: 8.0 };
-		// return this.seasonModel.findOne({ sections: { from: { $gte: now } } });
+		const year = now.getUTCFullYear();
+		const season = now.getUTCMonth() / 2 + 1;
+		return (
+			await this.seasonModel.aggregate<{ battleRating: number }>([
+				{ $match: { year, season } },
+				{ $unwind: "$sections" },
+				{ $match: { "sections.from": { $lte: now }, "sections.to": { $gte: now } } },
+				{ $project: { _id: 0, battleRating: "$sections.battleRating" } },
+			])
+		)[0].battleRating;
 	}
 }
