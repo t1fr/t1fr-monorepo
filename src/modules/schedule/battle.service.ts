@@ -36,6 +36,10 @@ export class BattleService {
 
 		return battleRating !== undefined;
 	}
+
+	getCurrentSeason() {
+		return this.sectionRepo.getCurrentSeason();
+	}
 }
 
 const digitFullwidthMap = {

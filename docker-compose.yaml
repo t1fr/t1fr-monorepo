@@ -1,6 +1,7 @@
 version: "3"
 services:
   backend:
+    restart: always
     build: .
     image: t1fr/smsb
     container_name: squadron-management-backend

@@ -62,8 +62,9 @@ export class AccountRepo {
 		return this.accountModel.findByIdAndUpdate(id, account);
 	}
 
-	public async find(filter: FilterQuery<Account> = {}) {
-		return this.accountModel.find(filter);
+	public async find(filter: FilterQuery<Account> = {}, limit?: number) {
+		const query = this.accountModel.find(filter);
+		return limit ? query.limit(limit) : query;
 	}
 
 	public async listAllExistAccounts() {

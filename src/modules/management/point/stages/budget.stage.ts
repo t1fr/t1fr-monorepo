@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { CalculateStage } from "@/modules/management/point/stages/stage";
 import { groupBy } from "lodash";
-import { CalculateResult } from '@/modules/management/point/reward.service';
+import { CalculateResult } from "@/modules/management/point/reward.service";
 
 @Injectable()
 export class BudgetStage implements CalculateStage {
@@ -38,6 +38,7 @@ export class BudgetStage implements CalculateStage {
 			totalPoints += incretment * recordCount;
 			groups[maxPoint].forEach((result) => {
 				result.point += incretment;
+				result.reasons.push("因預算限制調整");
 			});
 		}
 		BudgetStage.logger.log("根據預算計算完畢");

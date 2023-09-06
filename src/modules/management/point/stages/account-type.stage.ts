@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { CalculateStage } from "@/modules/management/point/stages/stage";
 import { AccountType } from "@/modules/management/account/account.schema";
-import { CalculateResult } from '@/modules/management/point/reward.service';
+import { CalculateResult } from "@/modules/management/point/reward.service";
 
 @Injectable()
 export class AccountTypeStage implements CalculateStage {
@@ -10,30 +10,27 @@ export class AccountTypeStage implements CalculateStage {
 	calculate(results: CalculateResult[]): CalculateResult[] {
 		AccountTypeStage.logger.log("根據帳號類型計算中");
 		const lookupTable = new Map<string, number>();
-		for (const result of results) {
-			if (result.point === 0) continue;
-			const localReason = [];
-			switch (result.type) {
-				case AccountType.SPONSOR:
-				case AccountType.MAIN_CASUAL:
-				case AccountType.ALT_PUBLIC:
-					result.point *= 0;
-					localReason.push(`因為帳號為 ${result.type}`, "無法獲得積分");
+		const noGainTypes: AccountType[] = ["🇳 休閒主帳", "🇽 贊助者", "🇧 公用小帳", "🇩 半公用小帳"];
+		const gainableAccounts = results.filter((value) => !noGainTypes.includes(value.type));
+
+		for (const account of gainableAccounts) {
+			if (account.point === 0) continue;
+			switch (account.type) {
+				case "🇸 聯隊戰主帳":
+					continue;
+				case "🇦 個人小帳":
+					const factor = lookupTable.get(account.owner) ?? 2;
+					lookupTable.set(account.owner, factor + 1);
+					account.point = Math.floor(account.point / factor);
+					account.reasons.push(`**${account.type}** 除 ${factor}`);
 					break;
-				case AccountType.ALT_PRIVATE:
-					const factor = lookupTable.get(result.owner) ?? 2;
-					lookupTable.set(result.owner, factor + 1);
-					result.point = Math.floor(result.point / factor);
-					localReason.push(`因為帳號為 ${result.type}`, `積分需除以 ${factor}`, `變為 ${result.point} 積分`);
-					break;
-				case AccountType.MAIN_PUBLIC:
-					result.point = Math.floor(result.point / 3);
-					localReason.push(`因為帳號為 ${result.type}`, "積分需除以 3", `變為 ${result.point} 積分`);
+				case "🇨 公用主帳":
+					account.point = Math.floor(account.point / 3);
+					account.reasons.push(`**${account.type}** 除 3`);
 					break;
 			}
-			if (localReason.length) result.reasons.push(localReason.join("，"));
 		}
 		AccountTypeStage.logger.log("根據帳號類型計算完畢");
-		return results;
+		return gainableAccounts;
 	}
 }

@@ -33,4 +33,11 @@ export class SeasonRepo {
 			])
 		)[0].battleRating;
 	}
+
+	async getCurrentSeason() {
+		const now = new Date();
+		const year = now.getUTCFullYear();
+		const season = now.getUTCMonth() / 2 + 1;
+		return (await this.seasonModel.find({ year, season }))[0];
+	}
 }

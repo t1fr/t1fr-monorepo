@@ -1,15 +1,15 @@
 import { Injectable, Logger, UseInterceptors } from "@nestjs/common";
-import { BooleanOption, Context, createCommandGroupDecorator, NumberOption, Options, SlashCommandContext, StringOption, Subcommand } from "necord";
+import { BooleanOption, Context, createCommandGroupDecorator, Options, SlashCommandContext, StringOption, Subcommand } from "necord";
 import { MessageFlagsBitField } from "discord.js";
 import { MyAutocompleteInterceptor } from "@/modules/management/account/account.autocomplete";
 import { AccountService } from "@/modules/management/account/account.service";
-import { AccountType } from "@/modules/management/account/account.schema";
+import { AccountType, AccountTypes } from "@/modules/management/account/account.schema";
 
 class SetAccountTypeOption {
 	@StringOption({ name: "account-id", description: "戰雷 ID", required: true, autocomplete: true })
 	accountId: string;
 
-	@StringOption({ name: "account-type", description: "帳號類型", required: true, autocomplete: true })
+	@StringOption({ name: "account-type", description: "帳號類型", required: true, choices: AccountTypes.map((type) => ({ name: type, value: type })) })
 	accountType: AccountType;
 }
 
@@ -84,5 +84,4 @@ export class AccountCommand {
 			interaction.followUp({ content: message.replace("_", "\\_") });
 		}
 	}
-
 }
