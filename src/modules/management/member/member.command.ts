@@ -2,7 +2,7 @@ import { Injectable, UseInterceptors } from "@nestjs/common";
 import { Context, createCommandGroupDecorator, NumberOption, Options, SlashCommand, SlashCommandContext, StringOption, Subcommand } from "necord";
 import { MemberService } from "@/modules/management/member/member.service";
 import { MyAutocompleteInterceptor } from "@/modules/management/account/account.autocomplete";
-import { PointType, RewardPointCategory } from "@/modules/management/point/point.schema";
+import { PointType, RewardPointCategories, RewardPointCategory } from "@/modules/management/point/point.schema";
 import { EmbedBuilder } from "discord.js";
 import { Summary } from "@/modules/management/member/member.repo";
 
@@ -18,7 +18,12 @@ class AwardOption {
 	@NumberOption({ name: "delta", description: "變化量", required: true })
 	delta: number;
 
-	@StringOption({ name: "category", description: "分類", required: true })
+	@StringOption({
+		name: "category",
+		description: "分類",
+		required: true,
+		choices: RewardPointCategories.map((category) => ({ name: category, value: category })),
+	})
 	category: RewardPointCategory;
 
 	@StringOption({ name: "reason", description: "原因" })

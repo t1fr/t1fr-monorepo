@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { CalculateStage } from "@/modules/management/point/stages/stage";
-import { CalculateResult } from '@/modules/management/point/reward.service';
+import { CalculateResult } from "@/modules/management/point/reward.service";
 
 @Injectable()
 export class RatingStage implements CalculateStage {
@@ -17,20 +17,17 @@ export class RatingStage implements CalculateStage {
 
 	calculate(results: CalculateResult[]): CalculateResult[] {
 		RatingStage.logger.log("根據賽季評分計算中");
-		results.sort((a, b) => b.personalRating - a.personalRating);
+		const gainableAccounts = results.filter((result) => result.personalRating >= this.thresholds[this.thresholds.length - 1].rating);
+		gainableAccounts.sort((a, b) => b.personalRating - a.personalRating);
 		let index = 0;
-		for (let i = 0; i < results.length; i++) {
-			const result = results[i];
-			while (index < this.thresholds.length && this.thresholds[index].rating > result.personalRating) index++;
-			if (index === this.thresholds.length) {
-				result.reasons.push(`本季個人評分為 ${result.personalRating}，無法獲得積分`);
-			} else {
-				const { rating, point } = this.thresholds[index];
-				result.point = point;
-				result.reasons.push(`本季個人評分為 ${result.personalRating}，大於門檻 ${rating}，因此獲得 ${point} 積分`);
-			}
+		for (let i = 0; i < gainableAccounts.length; i++) {
+			const account = gainableAccounts[i];
+			while (this.thresholds[index].rating > account.personalRating) index++;
+			const { rating, point } = this.thresholds[index];
+			account.point = point;
+			account.reasons.push(`${rating} ≤ 個人評分${index > 0 ? ` < ${this.thresholds[index - 1].rating}` : ""}`);
 		}
 		RatingStage.logger.log("根據賽季評分計算完畢");
-		return results;
+		return gainableAccounts;
 	}
 }

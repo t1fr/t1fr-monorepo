@@ -1,15 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import {
-	Context,
-	createCommandGroupDecorator,
-	Ctx,
-	Modal,
-	ModalContext,
-	ModalParam,
-	Options,
-	SlashCommandContext, Subcommand,
-	SubcommandGroup,
-} from 'necord';
+import { Context, createCommandGroupDecorator, Ctx, Modal, ModalContext, ModalParam, Options, SlashCommandContext, Subcommand, SubcommandGroup } from "necord";
 import { ActionRowBuilder, ChannelType, ModalActionRowComponentBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 import { SeasonRepo } from "@/modules/schedule/season.repo";
 import { BattleOption } from "@/modules/schedule/battle.option";
@@ -64,6 +54,13 @@ export class SetScheduleCommand {
 		interaction.reply(updated ? "已更新成功" : "賽程表未更新，沒有當前時間的 BR 資料");
 	}
 
+	@Subcommand({ name: "display", description: "顯示日程表" })
+	async display(@Context() [interaction]: SlashCommandContext) {
+		const { sections } = await this.scheduleService.getCurrentSeason();
+		const scheduleMessage = this.sectionsToTable(sections, false);
+		await interaction.reply({ content: scheduleMessage });
+	}
+
 	@Modal("set-sechedule/:isNotify")
 	async onModal(@Ctx() [interaction]: ModalContext, @ModalParam("isNotify") isNotify: string) {
 		await interaction.deferReply();
@@ -80,9 +77,9 @@ export class SetScheduleCommand {
 		const scheduleMessage = [
 			`**${startMonth} ~ ${startMonth + 1} 月**聯隊戰行程`,
 			"```",
-			"╭─────────┬─────────┬──────────╮",
-			"│  Start  │   End   │  Max BR  │",
-			"├─────────┼─────────┼──────────┤",
+			"╭───────┬───────┬──────────╮",
+			"│ Start │  End  │  Max BR  │",
+			"├───────┼───────┼──────────┤",
 		];
 
 		if (isNotify) scheduleMessage.unshift(`<@&1145364425658867754>`);
@@ -91,14 +88,14 @@ export class SetScheduleCommand {
 			const startString = dayjs(section.from).format("MM/DD");
 			const endString = dayjs(section.to).format("MM/DD");
 			const battleRatingString = section.battleRating.toFixed(1).padStart(6);
-			return `│  ${startString}  │  ${endString}  │  ${battleRatingString}  │`;
+			return `│ ${startString} │ ${endString} │  ${battleRatingString}  │`;
 		});
 
 		sectionRows.forEach((sectionRow) => {
-			scheduleMessage.push(sectionRow, "├─────────┼─────────┼──────────┤");
+			scheduleMessage.push(sectionRow, "├───────┼───────┼──────────┤");
 		});
 
-		scheduleMessage[scheduleMessage.length - 1] = "╰─────────┴─────────┴──────────╯";
+		scheduleMessage[scheduleMessage.length - 1] = "╰───────┴───────┴──────────╯";
 		scheduleMessage.push("```");
 
 		return scheduleMessage.join("\n");
@@ -111,14 +108,12 @@ export class SetScheduleCommand {
 		return lines
 			.map((line) => line.match(/(\d*\.\d*)\s*\((\d*\.\d*).*?(\d*\.\d*)\)/))
 			.map((matches) => {
-				if (matches) {
-					return {
-						from: dayjs.utc(`${year}.${matches[2]}`, "YYYY.DD.MM").toDate(),
-						to: dayjs.utc(`${year}.${matches[3]}`, "YYYY.DD.MM").toDate(),
-						battleRating: parseFloat(matches[1]),
-					};
-				}
-				return defaultSection;
+				if (!matches) return defaultSection;
+				return {
+					from: dayjs.utc(`${year}.${matches[2]}`, "YYYY.DD.MM").toDate(),
+					to: dayjs.utc(`${year}.${matches[3]}`, "YYYY.DD.MM").toDate(),
+					battleRating: parseFloat(matches[1]),
+				};
 			});
 	}
 }
