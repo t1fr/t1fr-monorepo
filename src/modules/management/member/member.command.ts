@@ -1,10 +1,33 @@
 import { Injectable, UseInterceptors } from "@nestjs/common";
-import { Context, createCommandGroupDecorator, NumberOption, Options, SlashCommand, SlashCommandContext, StringOption, Subcommand } from "necord";
+import {
+	Context,
+	createCommandGroupDecorator,
+	Ctx,
+	Modal,
+	ModalContext,
+	NumberOption,
+	Options,
+	SlashCommand,
+	SlashCommandContext,
+	StringOption,
+	Subcommand,
+} from "necord";
 import { MemberService } from "@/modules/management/member/member.service";
 import { MyAutocompleteInterceptor } from "@/modules/management/account/account.autocomplete";
 import { PointType, RewardPointCategories, RewardPointCategory } from "@/modules/management/point/point.schema";
-import { EmbedBuilder } from "discord.js";
+import {
+	ActionRowBuilder,
+	Client,
+	EmbedBuilder,
+	GuildMember,
+	ModalActionRowComponentBuilder,
+	ModalBuilder,
+	TextChannel,
+	TextInputBuilder,
+	TextInputStyle,
+} from "discord.js";
 import { Summary } from "@/modules/management/member/member.repo";
+import { configLayout } from "@/utility";
 
 const MemberCommandDecorator = createCommandGroupDecorator({
 	name: "member",
@@ -48,7 +71,10 @@ class MemberInfoOption {
 @MemberCommandDecorator()
 @Injectable()
 export class MemberCommand {
-	constructor(private memberService: MemberService) {}
+	constructor(
+		private memberService: MemberService,
+		private readonly client: Client,
+	) {}
 
 	@SlashCommand({ name: "me", description: "顯示個人資訊、擁有帳號、各項點數" })
 	async summary(@Context() [interaction]: SlashCommandContext) {
@@ -56,6 +82,57 @@ export class MemberCommand {
 		const summary = await this.memberService.summary(interaction.user.id);
 		const embeds = MemberCommand.summaryToEmbeds(summary);
 		interaction.followUp({ embeds, ephemeral: true });
+	}
+
+	static ChangeNicknameModal = new ModalBuilder({
+		components: configLayout([
+			new TextInputBuilder({ customId: "name", label: "暱稱", style: TextInputStyle.Short }),
+			new TextInputBuilder({ customId: "game-id", label: "遊戲 ID", style: TextInputStyle.Short, required: true }),
+		]),
+		customId: "nickname",
+		title: "更改伺服器個人暱稱",
+	});
+
+	@SlashCommand({ name: "nickname", description: "更改為符合格式的 DC 伺服器暱稱" })
+	async changeNickname(@Context() [interaction]: SlashCommandContext) {
+		await interaction.showModal(MemberCommand.ChangeNicknameModal);
+	}
+
+	@Modal("nickname")
+	async onChangeNicknameModalSubmit(@Ctx() [interaction]: ModalContext) {
+		const name = interaction.fields.getTextInputValue("name") ?? interaction.user.displayName;
+		const gameId = interaction.fields.getTextInputValue("game-id");
+		if (interaction.member instanceof GuildMember) await interaction.member.setNickname(`T1FR丨${name}丨${gameId}`, "更改為符合格式的 DC 伺服器暱稱");
+		await interaction.reply({ content: "已更改暱稱", ephemeral: true });
+	}
+
+	static JoinModal = new ModalBuilder({
+		components: configLayout([
+			new TextInputBuilder({ customId: "game-id", label: "遊戲 ID", style: TextInputStyle.Short, required: true }),
+			new TextInputBuilder({ customId: "level", label: "遊戲等級", style: TextInputStyle.Short, required: true }),
+			new TextInputBuilder({ customId: "accept", label: "已閱讀並同意入隊須知", placeholder: "是 / 否", style: TextInputStyle.Short, required: true }),
+		]),
+		customId: "join",
+		title: "申請加入 T1FR",
+	});
+
+	@SlashCommand({ name: "join", description: "提交加入 T1FR 的申請" })
+	async join(@Context() [interaction]: SlashCommandContext) {
+		await interaction.showModal(MemberCommand.JoinModal);
+	}
+
+	@Modal("join")
+	async onJoinSubmit(@Ctx() [interaction]: ModalContext) {
+		const accept = interaction.fields.getTextInputValue("accept");
+		if (accept !== "是") return await interaction.reply({ content: "請閱讀 <#1145362065813405776> 後再申請", ephemeral: true });
+		const gameId = interaction.fields.getTextInputValue("game-id");
+		const level = interaction.fields.getTextInputValue("level");
+		const applyChannel = this.client.channels.resolve("1046829250101117038") as TextChannel;
+		const message = await applyChannel.send({
+			content: [`ID: ${gameId}`, `等級： ${level}`, "申請隊員類型： 休閒隊員", "已閱讀並同意入隊須知： 是"].join("\n"),
+		});
+
+		await interaction.reply({ content: `已[申請](${message.url})成功，請等候軍官確認`, ephemeral: true });
 	}
 
 	@Subcommand({ name: "award", description: "更改成員獎勵積分" })
