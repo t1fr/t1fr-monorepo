@@ -6,6 +6,7 @@ import { BattleOption } from "@/modules/schedule/battle.option";
 import { BattleService } from "@/modules/schedule/battle.service";
 import dayjs from "dayjs";
 import { Section } from "@/modules/schedule/season.schema";
+import { configLayout } from "@/utility";
 
 const ScheduleCommandDecorator = createCommandGroupDecorator({ name: "schedule", description: "管理聯隊戰行程" });
 
@@ -17,30 +18,22 @@ export class SetScheduleCommand {
 		private sectionRepo: SeasonRepo,
 	) {}
 
-	private scheduleTextInput = new TextInputBuilder()
-		.setCustomId("schedule-text")
-		.setLabel("聯隊戰行程")
-		.setPlaceholder("請至戰雷論壇複製最新的聯隊戰行程")
-		.setStyle(TextInputStyle.Paragraph)
-		.setRequired();
-
-	private yearTextInput = new TextInputBuilder()
-		.setCustomId("year")
-		.setLabel("年份")
-		.setPlaceholder("該賽季的年份")
-		.setStyle(TextInputStyle.Short)
-		.setRequired()
-		.setValue(dayjs().year().toString());
-
-	private secondRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().setComponents(this.scheduleTextInput);
-
-	private firstRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().setComponents(this.yearTextInput);
+	private static components = configLayout([
+		new TextInputBuilder({ customId: "year", label: "年份", placeholder: "該賽季的年份", style: TextInputStyle.Short, required: true }),
+		new TextInputBuilder({
+			customId: "schedule-text",
+			label: "聯隊戰行程",
+			placeholder: "請至論壇複製最新的聯隊戰行程",
+			style: TextInputStyle.Paragraph,
+			required: true,
+		}),
+	]);
 
 	private createModal(isNotify: boolean) {
 		return new ModalBuilder()
 			.setTitle("聯隊戰行程設置表單")
 			.setCustomId(`set-sechedule/${isNotify ? "1" : "0"}`)
-			.setComponents([this.firstRow, this.secondRow]);
+			.setComponents(SetScheduleCommand.components);
 	}
 
 	@Subcommand({ name: "set", description: "輸入論壇聯隊戰日程，發布日程表" })
