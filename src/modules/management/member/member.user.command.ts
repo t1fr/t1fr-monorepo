@@ -45,14 +45,14 @@ export class MemberUserCommand {
 			[],
 			[DiscordRole.休閒隊員, DiscordRole.聯隊戰身分群, DiscordRole.聯隊戰隊員],
 		);
-		await this.memberRepo.delete(member.id);
 		return interaction.reply({ content: success ? `已成功移除 <@${member?.id}> 隊員身分組` : message });
 	}
 
 	private async updateRoles(member: GuildMember, reason: string, add: string[], remove: string[]) {
 		try {
 			const rolesManager = member.roles;
-			await Promise.all([rolesManager.add(add, reason), rolesManager.remove(remove, reason)]);
+			await rolesManager.add(add, reason);
+			await rolesManager.remove(remove, reason);
 		} catch (e: any) {
 			return { success: false, message: `${e.name}: ${e.message}` };
 		}
