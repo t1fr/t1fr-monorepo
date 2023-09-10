@@ -6,9 +6,10 @@ import { Member } from "@/modules/management/member/member.schema";
 import { PointRepo } from "@/modules/management/point/point.repo";
 import { PointEvent, PointType } from "@/modules/management/point/point.schema";
 import dayjs from "dayjs";
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
-export class MemberService implements OnModuleInit {
+export class MemberService {
 	private readonly logger = new Logger(MemberService.name);
 
 	constructor(
@@ -17,8 +18,9 @@ export class MemberService implements OnModuleInit {
 		private readonly pointRepo: PointRepo,
 	) {}
 
-	async onModuleInit() {
-		const guild = await this.client.guilds.resolve("1046623840710705152");
+	@Cron(CronExpression.EVERY_DAY_AT_8AM)
+	async sync() {
+		const guild = await this.client.guilds.fetch({ guild: "1046623840710705152", force: true });
 		if (!guild) return;
 		const members = await guild.members.fetch();
 		if (!members) return;

@@ -197,6 +197,13 @@ export class MemberCommand {
 		interaction.followUp({ embeds });
 	}
 
+	@Subcommand({ name: "sync", description: "同步 DC 帳號到資料庫" })
+	private async onSync(@Context() [interaction]: SlashCommandContext) {
+		await interaction.deferReply();
+		await this.memberService.sync();
+		interaction.followUp({ content: `成功更新 DC 隊員資料` });
+	}
+
 	@Subcommand({ name: "point-summary", description: "顯示各成員的點數和" })
 	async listPoint(@Context() [interaction]: SlashCommandContext, @Options() { type }: PointListOption) {
 		await interaction.deferReply();

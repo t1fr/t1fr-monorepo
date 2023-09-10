@@ -23,9 +23,6 @@ export class DiscordListenerService {
 
 	@On("guildMemberNicknameUpdate")
 	async onGuildMemberNicknameUpdate(@Context() [member, oldNickname, newNickname]: ContextOf<"guildMemberNicknameUpdate">) {
-		const memberRoleIdCollection = [DiscordRole.聯隊戰隊員, DiscordRole.休閒隊員];
-		const roles = member.roles.cache;
-		const roleId = roles.findKey((role, key) => memberRoleIdCollection.includes(key));
-		if (roleId) await this.memberRepo.upsert([{ _id: member.id, nickname: newNickname }]);
+		await this.memberRepo.update(member.id, { nickname: newNickname });
 	}
 }

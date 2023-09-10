@@ -41,7 +41,7 @@ export class AccountCommand {
 	private async onSync(@Context() [interaction]: SlashCommandContext) {
 		await interaction.deferReply();
 		await this.accountService.sync();
-		interaction.editReply({ content: `成功更新隊員資料` });
+		interaction.followUp({ content: `成功更新隊員資料` });
 	}
 
 	@Subcommand({ name: "set-owner", description: "指定擁有者" })

@@ -1,11 +1,11 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { HttpService } from "@nestjs/axios";
-import * as Cheerio from "cheerio";
-import { SquadronMemberListUrl } from "@/constant";
-import { InjectModel } from "@nestjs/mongoose";
-import { Account } from "@/modules/management/account/account.schema";
-import { FilterQuery, Model } from "mongoose";
-import dayjs from "dayjs";
+import { Injectable, Logger } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import * as Cheerio from 'cheerio';
+import { SquadronMemberListUrl } from '@/constant';
+import { InjectModel } from '@nestjs/mongoose';
+import { Account } from '@/modules/management/account/account.schema';
+import { FilterQuery, Model, UpdateQuery } from 'mongoose';
+import dayjs from 'dayjs';
 
 @Injectable()
 export class AccountRepo {
@@ -33,19 +33,19 @@ export class AccountRepo {
 
 		const $ = Cheerio.load(html);
 		const columnsCount = 6;
-		const cellValues = $(".squadrons-members__grid-item")
+		const cellValues = $('.squadrons-members__grid-item')
 			.slice(columnsCount)
 			.toArray()
-			.map((element, index) => (index % 6 === 1 ? $(element).children("a").attr("href")?.trim() ?? "未知" : $(element).text().trim()));
+			.map((element, index) => (index % 6 === 1 ? $(element).children('a').attr('href')?.trim() ?? '未知' : $(element).text().trim()));
 
 		const inputs: Partial<Account>[] = [];
 		for (let i = 0; i < cellValues.length; i += columnsCount) {
 			const row = cellValues.slice(i, i + columnsCount);
 			inputs.push({
-				_id: `${row[1]}@`.match(/(?<==)(.*?)(?=@)/)?.[0] ?? "",
+				_id: `${row[1]}@`.match(/(?<==)(.*?)(?=@)/)?.[0] ?? '',
 				personalRating: parseInt(row[2]),
 				activity: parseInt(row[3]),
-				joinDate: dayjs(row[5], "DD.MM.YYYY").format("YYYY-MM-DD"),
+				joinDate: dayjs(row[5], 'DD.MM.YYYY').format('YYYY-MM-DD'),
 				isExist: true,
 			});
 		}
@@ -58,7 +58,7 @@ export class AccountRepo {
 		]);
 	}
 
-	public async update(id: string, account: Partial<Omit<Account, "_id">>) {
+	public async update(id: string, account: UpdateQuery<Account>) {
 		return this.accountModel.findByIdAndUpdate(id, account);
 	}
 
@@ -68,21 +68,21 @@ export class AccountRepo {
 	}
 
 	public async listAllExistAccounts() {
-		return this.accountModel.find({ isExist: true }).populate("owner");
+		return this.accountModel.find({ isExist: true }).populate('owner');
 	}
 
 	async joinOnId() {
 		const data: { _id: string; owner: string }[] = await this.accountModel.aggregate([
 			{
 				$lookup: {
-					as: "member",
-					from: "members",
-					let: { id: "$_id" },
-					pipeline: [{ $match: { $expr: { $eq: [{ $last: { $split: ["$nickname", "丨"] } }, "$$id"] } } }],
+					as: 'member',
+					from: 'members',
+					let: { id: '$_id' },
+					pipeline: [{ $match: { $expr: { $eq: [{ $last: { $split: ['$nickname', '丨'] } }, '$$id'] } } }],
 				},
 			},
-			{ $project: { owner: "$member._id" } },
-			{ $unwind: "$owner" },
+			{ $project: { owner: '$member._id' } },
+			{ $unwind: '$owner' },
 		]);
 
 		const result = await this.accountModel.bulkWrite(data.map((value) => ({ updateOne: { filter: { _id: value._id }, update: { owner: value.owner } } })));
