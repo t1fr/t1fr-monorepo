@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Model } from "mongoose";
+import { Model, UpdateQuery } from "mongoose";
 import { Member } from "@/modules/management/member/member.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { PointType } from "@/modules/management/point/point.schema";
@@ -17,6 +17,10 @@ export class MemberRepo {
 
 	async upsert(members: Member[]) {
 		return await this.memberModel.bulkWrite(members.map((member) => ({ updateOne: { filter: { _id: member._id }, update: member, upsert: true } })));
+	}
+
+	async update(discordId: string, data: UpdateQuery<Member>) {
+		await this.memberModel.findByIdAndUpdate(discordId, data);
 	}
 
 	async delete(memberId: string) {
