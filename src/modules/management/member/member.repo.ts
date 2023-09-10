@@ -79,6 +79,7 @@ export class MemberRepo {
 			{ $unwind: "$points" },
 			{ $match: { "points._id": type } },
 			{ $project: { nickname: true, sum: "$points.sum" } },
+			{$sort: { sum: -1 }}
 		]);
 	}
 }
