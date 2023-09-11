@@ -5,6 +5,7 @@ import {
 	Ctx,
 	Modal,
 	ModalContext,
+	ModalParam,
 	NumberOption,
 	Options,
 	SlashCommand,
@@ -19,6 +20,7 @@ import {
 	ActionRowBuilder,
 	Client,
 	EmbedBuilder,
+	escapeMarkdown,
 	GuildMember,
 	ModalActionRowComponentBuilder,
 	ModalBuilder,
@@ -28,6 +30,7 @@ import {
 } from "discord.js";
 import { Summary } from "@/modules/management/member/member.repo";
 import { configLayout } from "@/utility";
+import { Channel } from "@/constant";
 
 const MemberCommandDecorator = createCommandGroupDecorator({
 	name: "member",
@@ -66,6 +69,16 @@ class PointListOption {
 class MemberInfoOption {
 	@StringOption({ name: "member", description: "成員", required: true, autocomplete: true })
 	member: string;
+}
+
+class JoinOption {
+	@StringOption({
+		name: "type",
+		description: "申請項目",
+		required: true,
+		choices: ["休閒隊員", "轉聯隊戰隊員", "轉休閒隊員"].map((value) => ({ name: value, value })),
+	})
+	type: string;
 }
 
 @MemberCommandDecorator()
@@ -112,27 +125,35 @@ export class MemberCommand {
 			new TextInputBuilder({ customId: "level", label: "遊戲等級", style: TextInputStyle.Short, required: true }),
 			new TextInputBuilder({ customId: "accept", label: "已閱讀並同意入隊須知", placeholder: "是 / 否", style: TextInputStyle.Short, required: true }),
 		]),
-		customId: "join",
 		title: "申請加入 T1FR",
 	});
 
 	@SlashCommand({ name: "join", description: "提交加入 T1FR 的申請" })
-	async join(@Context() [interaction]: SlashCommandContext) {
-		await interaction.showModal(MemberCommand.JoinModal);
+	async join(@Context() [interaction]: SlashCommandContext, @Options() { type }: JoinOption) {
+		await interaction.showModal(MemberCommand.JoinModal.setCustomId(`join/${type}`));
 	}
 
-	@Modal("join")
-	async onJoinSubmit(@Ctx() [interaction]: ModalContext) {
+	@Modal("join/:type")
+	async onJoinSubmit(@Ctx() [interaction]: ModalContext, @ModalParam("type") type: string) {
 		const accept = interaction.fields.getTextInputValue("accept");
-		if (accept !== "是") return await interaction.reply({ content: "請閱讀 <#1145362065813405776> 後再申請", ephemeral: true });
+		if (accept !== "是") return await interaction.reply({ content: `請閱讀 <#${Channel.入隊須知}> 後再申請`, ephemeral: true });
 		const gameId = interaction.fields.getTextInputValue("game-id");
 		const level = interaction.fields.getTextInputValue("level");
-		const applyChannel = this.client.channels.resolve("1046829250101117038") as TextChannel;
+		const applyChannel = this.client.channels.resolve(Channel.入隊申請窗口) as TextChannel;
 		const message = await applyChannel.send({
-			content: [`ID: ${gameId}`, `等級： ${level}`, "申請隊員類型： 休閒隊員", "已閱讀並同意入隊須知： 是"].join("\n"),
+			content: [
+				`申請人： <@${interaction.user.id}>`,
+				`ID： ${escapeMarkdown(gameId)}`,
+				`等級： ${level}`,
+				`申請隊員類型： ${type}`,
+				"已閱讀並同意入隊須知： 是",
+			].join("\n"),
 		});
 
-		await interaction.reply({ content: `已[申請](${message.url})成功，請等候軍官確認`, ephemeral: true });
+		await interaction.reply({
+			content: `已[申請](<${message.url}>)成功，請等候軍官確認`,
+			ephemeral: true,
+		});
 	}
 
 	@Subcommand({ name: "award", description: "更改成員獎勵積分" })
