@@ -13,18 +13,19 @@ plugins:
   - '@typescript-eslint'
 rules:
   no-case-declarations: off
-  no-irregular-whitespace: off
-  indent: off
+  indent:
+    - error
+    - tab
+    - SwitchCase: 1
+      ignoredNodes:
+        - PropertyDefinition
   linebreak-style:
     - error
-    - unix
+    - windows
   quotes:
     - error
     - double
   semi:
     - error
     - always
-  no-restricted-syntax:
-    - error
-    - selector: TSEnumDeclaration,
-      message: "不要用 Enum"
+

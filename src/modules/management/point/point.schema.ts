@@ -1,5 +1,6 @@
 import { ModelDefinition, Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Member } from "@/modules/management/member/member.schema";
+import { Types } from "mongoose";
 
 export enum PointType {
 	REWARD = "獎勵",
@@ -22,7 +23,7 @@ export class PointEvent {
 	@Prop({ enum: RewardPointCategories })
 	category: RewardPointCategory;
 
-	@Prop()
+	@Prop({ type: Types.Decimal128 })
 	delta: number;
 
 	@Prop()
