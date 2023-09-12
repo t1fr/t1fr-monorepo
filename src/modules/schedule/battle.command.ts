@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { Context, createCommandGroupDecorator, Ctx, Modal, ModalContext, ModalParam, Options, SlashCommandContext, Subcommand, SubcommandGroup } from "necord";
-import { ActionRowBuilder, ChannelType, ModalActionRowComponentBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+import { Context, createCommandGroupDecorator, Ctx, Modal, ModalContext, ModalParam, Options, SlashCommandContext, Subcommand } from "necord";
+import { ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 import { SeasonRepo } from "@/modules/schedule/season.repo";
 import { BattleOption } from "@/modules/schedule/battle.option";
 import { BattleService } from "@/modules/schedule/battle.service";
@@ -14,8 +14,8 @@ const ScheduleCommandDecorator = createCommandGroupDecorator({ name: "schedule",
 @Injectable()
 export class SetScheduleCommand {
 	constructor(
-		private readonly scheduleService: BattleService,
-		private sectionRepo: SeasonRepo,
+		private readonly battleService: BattleService,
+		private readonly sectionRepo: SeasonRepo,
 	) {}
 
 	private static components = configLayout([
@@ -32,7 +32,7 @@ export class SetScheduleCommand {
 	private createModal(isNotify: boolean) {
 		return new ModalBuilder()
 			.setTitle("聯隊戰行程設置表單")
-			.setCustomId(`set-sechedule/${isNotify ? "1" : "0"}`)
+			.setCustomId(`set-schedule/${isNotify ? "1" : "0"}`)
 			.setComponents(SetScheduleCommand.components);
 	}
 
@@ -43,23 +43,23 @@ export class SetScheduleCommand {
 
 	@Subcommand({ name: "publish", description: "更新顯示用頻道名稱" })
 	async onUpdateBulletin(@Context() [interaction]: SlashCommandContext) {
-		const updated = await this.scheduleService.updateBulletin();
-		interaction.reply(updated ? "已更新成功" : "賽程表未更新，沒有當前時間的 BR 資料");
+		const updated = await this.battleService.updateBulletin();
+		await interaction.reply(updated ? "已更新成功" : "賽程表未更新，沒有當前時間的 BR 資料");
 	}
 
 	@Subcommand({ name: "display", description: "顯示日程表" })
 	async display(@Context() [interaction]: SlashCommandContext) {
-		const { sections } = await this.scheduleService.getCurrentSeason();
+		const { sections } = await this.battleService.getCurrentSeason();
 		const scheduleMessage = this.sectionsToTable(sections, false);
 		await interaction.reply({ content: scheduleMessage });
 	}
 
-	@Modal("set-sechedule/:isNotify")
+	@Modal("set-schedule//:isNotify")
 	async onModal(@Ctx() [interaction]: ModalContext, @ModalParam("isNotify") isNotify: string) {
 		await interaction.deferReply();
 		const year = interaction.fields.getTextInputValue("year");
-		const schduleText = interaction.fields.getTextInputValue("schedule-text");
-		const sections = this.parseTextToSections(year, schduleText);
+		const scheduleText = interaction.fields.getTextInputValue("schedule-text");
+		const sections = this.parseTextToSections(year, scheduleText);
 		await this.sectionRepo.upsert(sections);
 		const scheduleMessage = this.sectionsToTable(sections, isNotify === "1");
 		await interaction.followUp({ content: scheduleMessage });
@@ -75,16 +75,16 @@ export class SetScheduleCommand {
 			"├───────┼───────┼──────────┤",
 		];
 
-		if (isNotify) scheduleMessage.unshift(`<@&1145364425658867754>`);
+		if (isNotify) scheduleMessage.unshift("<@&1145364425658867754>");
 
-		const sectionRows = sections.map((section) => {
+		const sectionRows = sections.map(section => {
 			const startString = dayjs(section.from).format("MM/DD");
 			const endString = dayjs(section.to).format("MM/DD");
 			const battleRatingString = section.battleRating.toFixed(1).padStart(6);
 			return `│ ${startString} │ ${endString} │  ${battleRatingString}  │`;
 		});
 
-		sectionRows.forEach((sectionRow) => {
+		sectionRows.forEach(sectionRow => {
 			scheduleMessage.push(sectionRow, "├───────┼───────┼──────────┤");
 		});
 
@@ -99,8 +99,8 @@ export class SetScheduleCommand {
 		const defaultSection: Section = { from: defaultDate, to: defaultDate, battleRating: 1.0 };
 		const lines = scheduleText.split("\n");
 		return lines
-			.map((line) => line.match(/(\d*\.\d*)\s*\((\d*\.\d*).*?(\d*\.\d*)\)/))
-			.map((matches) => {
+			.map(line => line.match(/(\d*\.\d*)\s*\((\d*\.\d*).*?(\d*\.\d*)\)/))
+			.map(matches => {
 				if (!matches) return defaultSection;
 				return {
 					from: dayjs.utc(`${year}.${matches[2]}`, "YYYY.DD.MM").toDate(),
