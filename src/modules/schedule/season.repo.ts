@@ -28,7 +28,7 @@ export class SeasonRepo {
 			await this.seasonModel.aggregate<{ battleRating: number }>([
 				{ $match: { year, season } },
 				{ $unwind: "$sections" },
-				{ $match: { "sections.from": { $lte: now }, "sections.to": { $gte: now } } },
+				{ $match: { "sections.from": { $lte: now }, "sections.to": { $gt: now } } },
 				{ $project: { _id: 0, battleRating: "$sections.battleRating" } },
 			])
 		)[0].battleRating;

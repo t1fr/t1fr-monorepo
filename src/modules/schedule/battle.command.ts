@@ -54,7 +54,7 @@ export class SetScheduleCommand {
 		await interaction.reply({ content: scheduleMessage });
 	}
 
-	@Modal("set-schedule//:isNotify")
+	@Modal("set-schedule/:isNotify")
 	async onModal(@Ctx() [interaction]: ModalContext, @ModalParam("isNotify") isNotify: string) {
 		await interaction.deferReply();
 		const year = interaction.fields.getTextInputValue("year");
@@ -79,7 +79,7 @@ export class SetScheduleCommand {
 
 		const sectionRows = sections.map(section => {
 			const startString = dayjs(section.from).format("MM/DD");
-			const endString = dayjs(section.to).format("MM/DD");
+			const endString = dayjs(section.to).subtract(1, "day").format("MM/DD");
 			const battleRatingString = section.battleRating.toFixed(1).padStart(6);
 			return `│ ${startString} │ ${endString} │  ${battleRatingString}  │`;
 		});
@@ -104,7 +104,7 @@ export class SetScheduleCommand {
 				if (!matches) return defaultSection;
 				return {
 					from: dayjs.utc(`${year}.${matches[2]}`, "YYYY.DD.MM").toDate(),
-					to: dayjs.utc(`${year}.${matches[3]}`, "YYYY.DD.MM").toDate(),
+					to: dayjs.utc(`${year}.${matches[3]}`, "YYYY.DD.MM").add(1, "day").toDate(),
 					battleRating: parseFloat(matches[1]),
 				};
 			});
