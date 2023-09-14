@@ -1,8 +1,7 @@
 import { ModelDefinition, Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { ApplicationCommandOptionChoiceData } from "discord.js";
 import { Member } from "@/modules/management/member/member.schema";
 
-export const AccountTypes = ["🇸 聯隊戰主帳", "🇳 休閒主帳", "🇦 個人小帳", "🇨 公用主帳", "🇧 公用小帳", "🇽 贊助者", "🇩 半公用小帳"] as const;
+export const AccountTypes = ["🇸 聯隊戰主帳", "🇳 休閒主帳", "🇦 個人小帳", "🇨 公用主帳", "🇧 公用小帳", "🇽 贊助者", "🇩 半公用主帳"] as const;
 export type AccountType = (typeof AccountTypes)[number];
 
 @Schema()
@@ -28,6 +27,5 @@ export class Account {
 	@Prop()
 	isExist: boolean;
 }
-
 
 export const AccountModelDef: ModelDefinition = { name: Account.name, schema: SchemaFactory.createForClass(Account) };

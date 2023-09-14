@@ -44,8 +44,8 @@ export class AccountService implements OnModuleInit {
 		}
 
 		const groups = groupBy(
-			results.filter((result) => result.point > 0),
-			(result) => result.owner,
+			results.filter(result => result.point > 0),
+			result => result.owner,
 		);
 
 		const messages = [];
@@ -54,7 +54,7 @@ export class AccountService implements OnModuleInit {
 		for (const groupsKey in groups) {
 			totalPoints += groups[groupsKey].reduce((acc, cur) => acc + cur.point, 0);
 			const accounts = groups[groupsKey];
-			const accountDetails = accounts.map((calculateResult) => [
+			const accountDetails = accounts.map(calculateResult => [
 				`* ${calculateResult.id}：${calculateResult.point} 積分${verbose ? ` 原因：${calculateResult.reasons.join("|")}` : ""}`,
 			]);
 
@@ -67,7 +67,7 @@ export class AccountService implements OnModuleInit {
 			const now = dayjs().format("YYYY-MM-DD");
 			await this.pointRepo.append(
 				PointType.REWARD,
-				results.map((result) => ({ member: result.owner, delta: result.point, comment: result.reasons.join("\n"), category: "結算發放", date: now })),
+				results.map(result => ({ member: result.owner, delta: result.point, comment: result.reasons.join("\n"), category: "結算發放", date: now })),
 			);
 			messages.unshift("已記錄完畢");
 		}

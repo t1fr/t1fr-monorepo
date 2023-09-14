@@ -16,18 +16,7 @@ import {
 import { MemberService } from "@/modules/management/member/member.service";
 import { MyAutocompleteInterceptor } from "@/modules/management/account/account.autocomplete";
 import { PointType, RewardPointCategories, RewardPointCategory } from "@/modules/management/point/point.schema";
-import {
-	ActionRowBuilder,
-	Client,
-	EmbedBuilder,
-	escapeMarkdown,
-	GuildMember,
-	ModalActionRowComponentBuilder,
-	ModalBuilder,
-	TextChannel,
-	TextInputBuilder,
-	TextInputStyle,
-} from "discord.js";
+import { Client, EmbedBuilder, escapeMarkdown, GuildMember, ModalBuilder, TextChannel, TextInputBuilder, TextInputStyle } from "discord.js";
 import { Summary } from "@/modules/management/member/member.repo";
 import { configLayout } from "@/utility";
 import { Channel } from "@/constant";
@@ -48,7 +37,7 @@ class AwardOption {
 		name: "category",
 		description: "分類",
 		required: true,
-		choices: RewardPointCategories.map((category) => ({ name: category, value: category })),
+		choices: RewardPointCategories.map(category => ({ name: category, value: category })),
 	})
 	category: RewardPointCategory;
 
@@ -61,7 +50,7 @@ class PointListOption {
 		name: "type",
 		description: "積分類型",
 		required: true,
-		choices: Object.values(PointType).map((type) => ({ name: type, value: type })),
+		choices: Object.values(PointType).map(type => ({ name: type, value: type })),
 	})
 	type: PointType;
 }
@@ -76,7 +65,7 @@ class JoinOption {
 		name: "type",
 		description: "申請項目",
 		required: true,
-		choices: ["休閒隊員", "轉聯隊戰隊員", "轉休閒隊員"].map((value) => ({ name: value, value })),
+		choices: ["休閒隊員", "轉聯隊戰隊員", "轉休閒隊員"].map(value => ({ name: value, value })),
 	})
 	type: string;
 }
@@ -84,14 +73,17 @@ class JoinOption {
 @MemberCommandDecorator()
 @Injectable()
 export class MemberCommand {
-	constructor(private memberService: MemberService, private readonly client: Client,) {}
+	constructor(
+		private memberService: MemberService,
+		private readonly client: Client,
+	) {}
 
 	@SlashCommand({ name: "me", description: "顯示個人資訊、擁有帳號、各項點數" })
 	async summary(@Context() [interaction]: SlashCommandContext) {
 		await interaction.deferReply({ ephemeral: true });
 		const summary = await this.memberService.summary(interaction.user.id);
 		const embeds = MemberCommand.summaryToEmbeds(summary);
-		interaction.followUp({ embeds, ephemeral: true });
+		await interaction.followUp({ embeds, ephemeral: true });
 	}
 
 	static ChangeNicknameModal = new ModalBuilder({
@@ -164,25 +156,29 @@ export class MemberCommand {
 	}
 
 	static summaryToEmbeds({ accounts, points, nickname }: Summary) {
-		const accountReduce = accounts.reduce(
-			(acc, cur) => {
-				acc.id.push(`\`${cur._id}\``);
-				acc.type.push(`\`${cur.type}\``);
-				acc.activity.push(`\`${cur.activity}\``);
-				acc.personalRating.push(`\`${cur.personalRating}\``);
-				return acc;
-			},
-			{ id: [] as string[], activity: [] as string[], personalRating: [] as string[], type: [] as string[] },
-		);
-		const accountFields = [
-			{ name: "遊戲 ID", value: accountReduce.id.join("\n"), inline: true },
-			{ name: "類型", value: accountReduce.type.join("\n"), inline: true },
-			{ name: "個人評分", value: accountReduce.personalRating.join("\n"), inline: true },
-			{ name: "活躍度", value: accountReduce.activity.join("\n"), inline: true },
-		];
+		const embeds = [];
 
-		const embeds = [new EmbedBuilder().setTitle("帳號列表").setFields(accountFields).setColor("#0071f3").setAuthor({ name: nickname })];
-		points.forEach((point) => {
+		if (accounts.length) {
+			const accountReduce = accounts.reduce(
+				(acc, cur) => {
+					acc.id.push(`\`${cur._id}\``);
+					acc.type.push(`\`${cur.type}\``);
+					acc.activity.push(`\`${cur.activity}\``);
+					acc.personalRating.push(`\`${cur.personalRating}\``);
+					return acc;
+				},
+				{ id: [] as string[], activity: [] as string[], personalRating: [] as string[], type: [] as string[] },
+			);
+			const accountFields = [
+				{ name: "遊戲 ID", value: accountReduce.id.join("\n"), inline: true },
+				{ name: "類型", value: accountReduce.type.join("\n"), inline: true },
+				{ name: "個人評分", value: accountReduce.personalRating.join("\n"), inline: true },
+				{ name: "活躍度", value: accountReduce.activity.join("\n"), inline: true },
+			];
+			embeds.push(new EmbedBuilder().setTitle("帳號列表").setFields(accountFields).setColor("#0071f3").setAuthor({ name: nickname }));
+		}
+
+		points.forEach(point => {
 			const logReduce = point.logs.reduce(
 				(acc, cur) => {
 					acc.date.push(`\`${cur.date}\``);
@@ -212,14 +208,14 @@ export class MemberCommand {
 		await interaction.deferReply();
 		const summary = await this.memberService.summary(member);
 		const embeds = MemberCommand.summaryToEmbeds(summary);
-		interaction.followUp({ embeds });
+		await interaction.followUp({ embeds });
 	}
 
 	@Subcommand({ name: "sync", description: "同步 DC 帳號到資料庫" })
 	private async onSync(@Context() [interaction]: SlashCommandContext) {
 		await interaction.deferReply();
 		await this.memberService.sync();
-		interaction.followUp({ content: `成功更新 DC 隊員資料` });
+		await interaction.followUp({ content: "成功更新 DC 隊員資料" });
 	}
 
 	@Subcommand({ name: "point-summary", description: "顯示各成員的點數和" })
@@ -240,6 +236,6 @@ export class MemberCommand {
 		];
 
 		const embeds = [new EmbedBuilder().setTitle(`${type}積分總和`).setFields(fields).setColor("#0071f3")];
-		interaction.followUp({ embeds });
+		await interaction.followUp({ embeds });
 	}
 }
