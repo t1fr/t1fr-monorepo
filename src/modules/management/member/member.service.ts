@@ -6,7 +6,7 @@ import { Member } from "@/modules/management/member/member.schema";
 import { PointRepo } from "@/modules/management/point/point.repo";
 import { PointEvent, PointType } from "@/modules/management/point/point.schema";
 import dayjs from "dayjs";
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron, CronExpression } from "@nestjs/schedule";
 
 @Injectable()
 export class MemberService {
@@ -26,9 +26,7 @@ export class MemberService {
 		if (!members) return;
 
 		const result = await this.memberRepo.upsert(
-			members
-				.filter((member) => member.roles.cache.hasAny(DiscordRole.聯隊戰隊員, DiscordRole.休閒隊員))
-				.map(MemberService.TransformDiscordMemberToMember),
+			members.filter(member => member.roles.cache.hasAny(DiscordRole.聯隊戰隊員, DiscordRole.休閒隊員)).map(MemberService.TransformDiscordMemberToMember),
 		);
 
 		this.logger.log(`已成功將現有 ${result.upsertedCount} 隊員存入資料庫`);

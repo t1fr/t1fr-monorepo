@@ -16,7 +16,7 @@ export class MemberRepo {
 	constructor(@InjectModel(Member.name) private readonly memberModel: Model<Member>) {}
 
 	async upsert(members: Member[]) {
-		return await this.memberModel.bulkWrite(members.map((member) => ({ updateOne: { filter: { _id: member._id }, update: member, upsert: true } })));
+		return await this.memberModel.bulkWrite(members.map(member => ({ updateOne: { filter: { _id: member._id }, update: member, upsert: true } })));
 	}
 
 	async update(discordId: string, data: UpdateQuery<Member>) {
@@ -79,7 +79,7 @@ export class MemberRepo {
 			{ $unwind: "$points" },
 			{ $match: { "points._id": type } },
 			{ $project: { nickname: true, sum: "$points.sum" } },
-			{$sort: { sum: -1 }}
+			{ $sort: { sum: -1 } },
 		]);
 	}
 }

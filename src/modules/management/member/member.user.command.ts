@@ -13,8 +13,8 @@ export class MemberUserCommand {
 	createWelcomeMessage(discordId: string, type: "聯隊戰" | "休閒") {
 		return [
 			`您好，<@${discordId}>`,
-			`您已成功以${type}隊員加入 T1FR`,
-			"請將伺服器個人暱稱以 `/nickname` 或手動改為：",
+			`您已成為 T1FR ${type}隊員`,
+			"請將伺服器個人暱稱用 `/nickname` 指令或手動改為：",
 			"```",
 			"T1FR丨您的暱稱丨您的戰雷ID",
 			"```",
