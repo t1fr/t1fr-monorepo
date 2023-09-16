@@ -2,6 +2,11 @@ import * as process from "process";
 
 export const SquadronMemberListUrl = "https://warthunder.com/en/community/claninfo/The%20First%20Frontline%20Rangers";
 
+export enum ConnectionName {
+	Management = "management",
+	Common = "common",
+}
+
 export const DiscordRole = {
 	聯隊戰隊員: "1046629026355228762",
 	聯隊戰身分群: "1054766361991204864",

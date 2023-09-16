@@ -1,37 +1,27 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import * as Cheerio from "cheerio";
-import { SquadronMemberListUrl } from "@/constant";
+import { ConnectionName, SquadronMemberListUrl } from "@/constant";
 import { InjectModel } from "@nestjs/mongoose";
 import { Account } from "@/modules/management/account/account.schema";
 import { FilterQuery, Model, UpdateQuery } from "mongoose";
 import dayjs from "dayjs";
+import { lastValueFrom } from "rxjs";
 
 @Injectable()
 export class AccountRepo {
 	private readonly logger: Logger = new Logger(AccountRepo.name);
 
 	constructor(
-		@InjectModel(Account.name) private readonly accountModel: Model<Account>,
+		@InjectModel(Account.name, ConnectionName.Management) private readonly accountModel: Model<Account>,
 		private httpService: HttpService,
 	) {}
 
-	private async getHtml(url: string): Promise<string | null> {
-		let data: string | null = null;
-		try {
-			const response = await this.httpService.axiosRef.get(url);
-			data = response.data;
-		} catch (e) {
-			this.logger.error(e);
-		}
-		return data;
-	}
-
 	public async sync() {
-		const html = await this.getHtml(SquadronMemberListUrl);
-		if (!html) return;
+		const response = await lastValueFrom(this.httpService.get(SquadronMemberListUrl)).catch(this.logger.error);
 
-		const $ = Cheerio.load(html);
+		if (!response || !response.data) return;
+		const $ = Cheerio.load(response.data);
 		const columnsCount = 6;
 		const cellValues = $(".squadrons-members__grid-item")
 			.slice(columnsCount)

@@ -73,10 +73,7 @@ class JoinOption {
 @MemberCommandDecorator()
 @Injectable()
 export class MemberCommand {
-	constructor(
-		private memberService: MemberService,
-		private readonly client: Client,
-	) {}
+	constructor(private memberService: MemberService, private readonly client: Client,) {}
 
 	@SlashCommand({ name: "me", description: "顯示個人資訊、擁有帳號、各項點數" })
 	async summary(@Context() [interaction]: SlashCommandContext) {

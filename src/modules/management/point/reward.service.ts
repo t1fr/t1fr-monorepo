@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { CalculateStage } from "@/modules/management/point/stages/stage";
-import { Account, AccountType } from '@/modules/management/account/account.schema';
+import { Account, AccountType } from "@/modules/management/account/account.schema";
 
 
 export interface CalculateResult {
@@ -31,8 +31,8 @@ export class RewardService {
 
 		const rewardPointData: CalculateResult[] = accounts.map((account) => ({
 			id: account._id,
-			type: account.type!!,
-			owner: account.owner!!,
+			type: account.type!,
+			owner: account.owner!,
 			personalRating: account.personalRating,
 			point: 0,
 			backup: 0,

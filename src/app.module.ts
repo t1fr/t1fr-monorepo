@@ -11,6 +11,9 @@ import { ScheduleModule } from "@nestjs/schedule";
 import LoggerModule from "@/modules/logging/logger.module";
 import BattleModule from "@/modules/schedule/battle.module";
 import * as process from "process";
+import { ConnectionName } from "@/constant";
+import { HttpModule } from "@nestjs/axios";
+import { WikiModule } from "@/modules/wiki/wiki.module";
 
 const intents = [
 	IntentsBitField.Flags.Guilds,
@@ -22,12 +25,13 @@ const intents = [
 ];
 
 function configuration() {
-	return load(readFileSync(join(__dirname, `config/${process.env.NODE_ENV}.yaml`), "utf-8")) as Record<string, any>;
+	return load(readFileSync(join(__dirname, `config/${process.env.NODE_ENV}.yaml`), "utf-8")) as Record<string, unknown>;
 }
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
+		{ ...HttpModule.register({}), global: true },
 		ScheduleModule.forRoot(),
 		MongooseModule.forRootAsync({
 			imports: [ConfigModule],
@@ -39,7 +43,17 @@ function configuration() {
 				dbName: configService.getOrThrow("mongo.database"),
 				authSource: "admin",
 			}),
+			connectionName: ConnectionName.Management,
 		}),
+
+		MongooseModule.forRoot("mongodb://220.133.81.52:38422", {
+			user: "***REMOVED***",
+			pass: "***REMOVED***",
+			dbName: "common",
+			authSource: "admin",
+			connectionName: ConnectionName.Common,
+		}),
+
 		NecordModule.forRootAsync({
 			imports: [ConfigModule],
 			inject: [ConfigService],
@@ -52,6 +66,7 @@ function configuration() {
 		ManagementModule,
 		BattleModule,
 		LoggerModule,
+		WikiModule
 	],
 })
 export class AppModule {}
