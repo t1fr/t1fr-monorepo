@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { Client, GuildMember } from "discord.js";
 import { DiscordRole } from "@/constant";
 import { MemberRepo, Summary } from "@/modules/management/member/member.repo";
@@ -37,7 +37,7 @@ export class MemberService {
 	}
 
 	async award(event: Omit<PointEvent, "type" | "date">) {
-		this.pointRepo.append(PointType.REWARD, { ...event, date: dayjs().format("YYYY-MM-DD") });
+		await this.pointRepo.append(PointType.REWARD, { ...event, date: dayjs().format("YYYY-MM-DD") });
 	}
 
 	async summary(userId: string): Promise<Summary> {

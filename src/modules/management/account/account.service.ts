@@ -37,18 +37,13 @@ export class AccountService implements OnModuleInit {
 
 	async calculateRewardPoint(isSimulate: boolean, verbose: boolean) {
 		let results = [] as CalculateResult[];
-		try {
-			results = await this.rewardPointService.calculate(await this.accountRepo.find({ isExist: true }));
-		} catch (e) {
-			return [e];
-		}
-
+		results = await this.rewardPointService.calculate(await this.accountRepo.find({ isExist: true }));
 		const groups = groupBy(
 			results.filter(result => result.point > 0),
 			result => result.owner,
 		);
 
-		const messages = [];
+		const messages: string[] = [];
 
 		let totalPoints = 0;
 		for (const groupsKey in groups) {

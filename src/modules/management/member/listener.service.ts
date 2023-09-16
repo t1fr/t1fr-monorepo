@@ -1,7 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Context, ContextOf, On, Once } from "necord";
 import { MemberRepo } from "@/modules/management/member/member.repo";
-import { DiscordRole } from "@/constant";
 
 @Injectable()
 export class DiscordListenerService {
@@ -22,7 +21,7 @@ export class DiscordListenerService {
 	}
 
 	@On("guildMemberNicknameUpdate")
-	async onGuildMemberNicknameUpdate(@Context() [member, oldNickname, newNickname]: ContextOf<"guildMemberNicknameUpdate">) {
+	async onGuildMemberNicknameUpdate(@Context() [member, , newNickname]: ContextOf<"guildMemberNicknameUpdate">) {
 		await this.memberRepo.update(member.id, { nickname: newNickname });
 	}
 }

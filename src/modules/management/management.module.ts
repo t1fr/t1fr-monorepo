@@ -1,9 +1,9 @@
 import { Module } from "@nestjs/common";
 import { DiscordListenerService } from "./member/listener.service";
-import { HttpModule } from "@nestjs/axios";
 import { MongooseModule } from "@nestjs/mongoose";
 import { AccountModelDef } from "@/modules/management/account/account.schema";
 import { MemberModelDef } from "@/modules/management/member/member.schema";
+import { PointEventModelDef } from "@/modules/management/point/point.schema";
 import { AccountRepo } from "@/modules/management/account/account.repo";
 import { AccountCommand } from "@/modules/management/account/account.command";
 import { MyAutocompleteInterceptor } from "@/modules/management/account/account.autocomplete";
@@ -13,10 +13,13 @@ import { MemberRepo } from "@/modules/management/member/member.repo";
 import { MemberCommand } from "@/modules/management/member/member.command";
 import { MemberUserCommand } from "@/modules/management/member/member.user.command";
 import { MemberService } from "@/modules/management/member/member.service";
-import PointModule from "@/modules/management/point/point.module";
+import { ConnectionName } from "@/constant";
+import { RewardService } from "@/modules/management/point/reward.service";
+import { PointRepo } from "@/modules/management/point/point.repo";
+import { CalculateStage, stages } from "@/modules/management/point/stages/stage";
 
 @Module({
-	imports: [HttpModule, MongooseModule.forFeature([AccountModelDef, MemberModelDef]), PointModule],
+	imports: [MongooseModule.forFeature([AccountModelDef, MemberModelDef, PointEventModelDef], ConnectionName.Management)],
 	providers: [
 		DiscordListenerService,
 		MyAutocompleteInterceptor,
@@ -29,6 +32,11 @@ import PointModule from "@/modules/management/point/point.module";
 		AccountRepo,
 		AccountCommand,
 		AccountService,
+
+		RewardService,
+		PointRepo,
+		...stages,
+		{ provide: "stages", useFactory: (...stages: CalculateStage[]) => stages, inject: stages },
 	],
 	controllers: [AccountController],
 })

@@ -3,6 +3,7 @@ import { Model, UpdateQuery } from "mongoose";
 import { Member } from "@/modules/management/member/member.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { PointType } from "@/modules/management/point/point.schema";
+import { ConnectionName } from "@/constant";
 
 export interface Summary {
 	_id: string;
@@ -13,7 +14,7 @@ export interface Summary {
 
 @Injectable()
 export class MemberRepo {
-	constructor(@InjectModel(Member.name) private readonly memberModel: Model<Member>) {}
+	constructor(@InjectModel(Member.name, ConnectionName.Management) private readonly memberModel: Model<Member>) {}
 
 	async upsert(members: Member[]) {
 		return await this.memberModel.bulkWrite(members.map(member => ({ updateOne: { filter: { _id: member._id }, update: member, upsert: true } })));

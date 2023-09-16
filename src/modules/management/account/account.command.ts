@@ -9,7 +9,7 @@ class SetAccountTypeOption {
 	@StringOption({ name: "account-id", description: "戰雷 ID", required: true, autocomplete: true })
 	accountId: string;
 
-	@StringOption({ name: "account-type", description: "帳號類型", required: true, choices: AccountTypes.map((type) => ({ name: type, value: type })) })
+	@StringOption({ name: "account-type", description: "帳號類型", required: true, choices: AccountTypes.map(type => ({ name: type, value: type })) })
 	accountType: AccountType;
 }
 
@@ -41,7 +41,7 @@ export class AccountCommand {
 	private async onSync(@Context() [interaction]: SlashCommandContext) {
 		await interaction.deferReply();
 		await this.accountService.sync();
-		interaction.followUp({ content: `成功更新隊員資料` });
+		interaction.followUp({ content: "成功更新隊員資料" });
 	}
 
 	@Subcommand({ name: "set-owner", description: "指定擁有者" })
@@ -77,7 +77,12 @@ export class AccountCommand {
 	@Subcommand({ name: "reward-point", description: "計算當前隊員的積分點" })
 	async onCalculateRewardPoint(@Context() [interaction]: SlashCommandContext, @Options() { isSimulate, verbose }: CalculateRewardPointOption) {
 		await interaction.deferReply();
-		const messages = await this.accountService.calculateRewardPoint(isSimulate, verbose);
+		let messages: string[] = [];
+		try {
+			messages = await this.accountService.calculateRewardPoint(isSimulate, verbose);
+		} catch (e) {
+			return interaction.followUp({ content: e });
+		}
 
 		for (let i = 0; i < messages.length; i += 10) {
 			const message = messages.slice(i, i + 10).join("\n");
