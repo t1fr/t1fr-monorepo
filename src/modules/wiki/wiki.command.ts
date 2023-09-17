@@ -25,7 +25,10 @@ export class WikiCommand {
 		else if (vehicle.obtainFrom === "marketplace")
 			description.push(`你可以在**[市場](https://trade.gaijin.net/?n=${vehicle.marketplace}&viewitem=&a=1067)**上交易獲得`);
 		else if (vehicle.obtainFrom === "gold") description.push(`你可以在遊戲內支付 **${vehicle.cost_gold}** <:WtItemGoldenEagle:1047708655165911070> 購買`);
-		else if (vehicle.squad) description.push(`你可以在遊戲內加入聯隊，累積聯隊經驗研發或透過 <:WtItemGoldenEagle:1047708655165911070> 購買`);
+		else if (vehicle.squad)
+			description.push(
+				`你可以在遊戲內加入[聯隊](https://discord.com/channels/1046623840710705152/1145362065813405776)，累積聯隊經驗研發或透過 <:WtItemGoldenEagle:1047708655165911070> 購買`,
+			);
 
 		return description.join("\n");
 	}
@@ -43,7 +46,7 @@ export class WikiCommand {
 			title: vehicle.name,
 			url: `https://wiki.warthunder.com/${encodeURI(vehicle.name)}`,
 			description: WikiCommand.generateDescription(vehicle),
-			image: { url: `https://encyclopedia.warthunder.com/images/${vehicle.key.toLowerCase()}.png`},
+			image: { url: `https://encyclopedia.warthunder.com/images/${vehicle.key.toLowerCase()}.png` },
 			fields: [
 				{ name: "街機娛樂", value: vehicle.br.arcade.toFixed(1), inline: true },
 				{ name: "歷史性能", value: vehicle.br.realistic.toFixed(1), inline: true },
