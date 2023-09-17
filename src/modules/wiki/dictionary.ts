@@ -159,8 +159,33 @@ export const TypeDictionary = {
 	type_naval_aa_ferry: "防空駁船",
 };
 
-export const WarThunderSpecialChar =
-	/[£¤€↮⇤⇥⊦⊧⋄⋆⋇⋈⋉⋊⋒⋓⋔⋕⋖⋗⋘⋙⋚⋛⋜⋝⋞⋟⋠⋡⋢⋣⋤⋥⋦⋧⋨⋩⋪⋬⋭⋮⋰⋱⌂⌈⌉⌊⌋⌡␉␊␋␌␎␏␐␑␒␗␙␝␠␡␢┉┋┌┍┎┐┑┒┓└┕┖┗┘┙┚┞┠┢┤┦┨┪┬┮┰┴┺┻┼┽┾┿╀╁╂╃╄╅╆╇╈╉╊╋╌╍╎╏═║╒╓╔╕╖╗╘╙╚╛╜╝╟╠╢╣╥╦╧╨╪╫╲╳╴╵╶╷╸╹╺╼╽╾▀▂▃▄▅▆▉▊▋▌▍▎▏▐░▓▔▕■▢▣▤▥▦▨▩▪▫▭▮▯▰▱▲△▴▵▶▷▸▹►▻▼◄◊○◌●◐◑◒◓]/g;
+export function translateEvent(event?: string) {
+	if (!event) return event;
+	let match = null;
+	// noinspection JSAssignmentUsedAsCondition
+	if ((match = event.match(/battlepass_season(?<season>\d+)/))) return `戰鬥通行證第 ${match.groups!.season} 賽季`;
+	// noinspection JSAssignmentUsedAsCondition
+	if ((match = event.match(/chronicles_(?<year>\d+)/))) return `${match.groups!.year} 年二戰編年史活動`;
+	// noinspection JSAssignmentUsedAsCondition
+	if ((match = event.match(/craft_(?<year>\d+)_autumn/))) return `${match.groups!.year} 年秋季組裝活動`;
+	// noinspection JSAssignmentUsedAsCondition
+	if ((match = event.match(/craft_(?<year>\d+)_spring/))) return `${match.groups!.year} 年春季組裝活動`;
+	// noinspection JSAssignmentUsedAsCondition
+	if ((match = event.match(/may_(?<year>\d+)/))) return `${match.groups!.year} 年勝利日活動`;
+	// noinspection JSAssignmentUsedAsCondition
+	if ((match = event.match(/summer_(?<year>\d+)$/))) return `${match.groups!.year} 年夏季馬拉松`;
+	// noinspection JSAssignmentUsedAsCondition
+	if ((match = event.match(/winter_(?<year>\d+)$/))) return `${match.groups!.year} 年冬季馬拉松`;
+
+	if (event === "worldwar_attack_from_the_sea") return "世界大戰：滄海侵襲";
+	if (event === "worldwar_recon_fire") return "世界大戰：火力偵查";
+	if (event === "worldwar_road_to_the_west") return "世界大戰：西方之路";
+	if (event === "summer_2018_craft") return "2018 年夏季組裝活動";
+	if (event === "summer_2018_good_old") return "2018 年夏季馬拉松";
+	if (event === "winter_2019_ship") return "2019 年冬季揚帆出航活動";
+
+	return event;
+}
 
 export type CountryKey = keyof typeof CountryDictionary;
 export type CountryImageKey = keyof typeof CountryImageDictionary;

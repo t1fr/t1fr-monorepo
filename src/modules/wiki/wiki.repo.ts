@@ -5,8 +5,8 @@ import { InjectModel } from "@nestjs/mongoose";
 import { ConnectionName } from "@/constant";
 import { HttpService } from "@nestjs/axios";
 import { lastValueFrom } from "rxjs";
-import { CountryDictionary, CountryImageDictionary, CountryKey, TypeDictionary, TypeKey, WarThunderSpecialChar } from "@/modules/wiki/dictionary";
-import cyrillicToTranslit from "cyrillic-to-translit-js";
+import { CountryDictionary, CountryImageDictionary, CountryKey, translateEvent, TypeDictionary, TypeKey } from "@/modules/wiki/dictionary";
+import { Cron, CronExpression } from '@nestjs/schedule'
 
 export interface DataResponse {
 	version: string;
@@ -49,13 +49,26 @@ export class WikiRepo implements OnModuleInit {
 	private static VehicleListUrl = "https://raw.githubusercontent.com/natgo/wt-data/main/data/final.json";
 	private static version = "";
 
-	private static cyrillicTransformer = cyrillicToTranslit();
+	private static generateKeywords(name: string, country: CountryKey, type: TypeKey): string[] {
+		const keywords = [name];
+		if (country === "country_usa") {
+			if (type === "army") {
+				const split = name
+					.split(" ")
+					.map(value => value.replaceAll(/[()]/g, ""))
+					.filter(value => value.length > 2);
 
-	// static processVehicleName(name?: string) {
-	// 	if (!name) return name;
-	// 	return WikiRepo.cyrillicTransformer.transform(name).replaceAll(" ", " ").replace("№", "No.");
-	// }
+				const match = split[0].match(/([a-z]+-?(?:\d+|[a-z]))|(LVT)/);
+				if (match) keywords.push(...Array.from(match));
+				else keywords.push(split[0]);
+				keywords.push(...split.slice(1));
+			}
+		}
 
+		return keywords;
+	}
+
+	@Cron(CronExpression.EVERY_WEEK)
 	async sync() {
 		const response = await lastValueFrom(this.httpService.get<DataResponse>(WikiRepo.VehicleListUrl)).catch(WikiRepo.logger.error);
 		if (!response || !response.data) return;
@@ -69,7 +82,7 @@ export class WikiRepo implements OnModuleInit {
 		await this.vehicleModel.bulkWrite(
 			vehicles.map(vehicle => {
 				// noinspection SpellCheckingInspection
-				const { intname, br, country, displayname, wikiname, operator_country, type, normal_type, extended_type, ...other } = vehicle;
+				const { intname, br, event, country, displayname, wikiname, operator_country, type, normal_type, extended_type, ...other } = vehicle;
 				const [arcade, realistic, simulator] = br.map(parseFloat);
 				const operator = operator_country ? CountryDictionary[operator_country] : undefined;
 				return {
@@ -81,6 +94,7 @@ export class WikiRepo implements OnModuleInit {
 							br: { arcade, realistic, simulator },
 							country: CountryDictionary[country],
 							operator,
+							event: translateEvent(event),
 							type: TypeDictionary[type],
 							normal_type: TypeDictionary[normal_type],
 							extended_type: extended_type?.map(value => TypeDictionary[value]),
