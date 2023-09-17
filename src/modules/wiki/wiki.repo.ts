@@ -6,7 +6,7 @@ import { ConnectionName } from "@/constant";
 import { HttpService } from "@nestjs/axios";
 import { lastValueFrom } from "rxjs";
 import { CountryDictionary, CountryImageDictionary, CountryKey, translateEvent, TypeDictionary, TypeKey } from "@/modules/wiki/dictionary";
-import { Cron, CronExpression } from '@nestjs/schedule'
+import { Cron, CronExpression } from "@nestjs/schedule";
 
 export interface DataResponse {
 	version: string;
@@ -48,25 +48,6 @@ export class WikiRepo implements OnModuleInit {
 
 	private static VehicleListUrl = "https://raw.githubusercontent.com/natgo/wt-data/main/data/final.json";
 	private static version = "";
-
-	private static generateKeywords(name: string, country: CountryKey, type: TypeKey): string[] {
-		const keywords = [name];
-		if (country === "country_usa") {
-			if (type === "army") {
-				const split = name
-					.split(" ")
-					.map(value => value.replaceAll(/[()]/g, ""))
-					.filter(value => value.length > 2);
-
-				const match = split[0].match(/([a-z]+-?(?:\d+|[a-z]))|(LVT)/);
-				if (match) keywords.push(...Array.from(match));
-				else keywords.push(split[0]);
-				keywords.push(...split.slice(1));
-			}
-		}
-
-		return keywords;
-	}
 
 	@Cron(CronExpression.EVERY_WEEK)
 	async sync() {
