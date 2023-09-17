@@ -90,7 +90,8 @@ export class WikiRepo implements OnModuleInit {
 	}
 
 	async search(query: string) {
-		return this.vehicleModel.find({ $text: { $search: query, $caseSensitive: false } }).limit(25);
+		if (query) return this.vehicleModel.find({ $text: { $search: query, $caseSensitive: false } }).limit(25);
+		else return this.vehicleModel.aggregate([{ $sample: { size: 25 } }]);
 	}
 
 	async getByKey(key: string) {
