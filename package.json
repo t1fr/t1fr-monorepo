@@ -30,7 +30,6 @@
     "ascii-table3": "^0.8.2",
     "axios": "^1.5.0",
     "cheerio": "^1.0.0-rc.12",
-    "cyrillic-to-translit-js": "^3.2.1",
     "dayjs": "^1.11.9",
     "discord.js": "^14.13.0",
     "flatten-anything": "^3.0.5",
