@@ -66,6 +66,7 @@ export class Vehicle {
 
 	@Prop()
 	event: string;
+
 }
 
 export const VehicleModelDef: ModelDefinition = { name: Vehicle.name, schema: SchemaFactory.createForClass(Vehicle) };
