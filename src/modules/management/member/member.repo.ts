@@ -83,4 +83,8 @@ export class MemberRepo {
 			{ $sort: { sum: -1 } },
 		]);
 	}
+
+	async list() {
+		return this.memberModel.find();
+	}
 }
