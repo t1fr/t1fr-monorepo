@@ -17,6 +17,7 @@ import { ConnectionName } from "@/constant";
 import { RewardService } from "@/modules/management/point/reward.service";
 import { PointRepo } from "@/modules/management/point/point.repo";
 import { CalculateStage, stages } from "@/modules/management/point/stages/stage";
+import { MemberController } from "@/modules/management/member/member.controller";
 
 @Module({
 	imports: [MongooseModule.forFeature([AccountModelDef, MemberModelDef, PointEventModelDef], ConnectionName.Management)],
@@ -38,6 +39,6 @@ import { CalculateStage, stages } from "@/modules/management/point/stages/stage"
 		...stages,
 		{ provide: "stages", useFactory: (...stages: CalculateStage[]) => stages, inject: stages },
 	],
-	controllers: [AccountController],
+	controllers: [AccountController, MemberController],
 })
 export class ManagementModule {}
