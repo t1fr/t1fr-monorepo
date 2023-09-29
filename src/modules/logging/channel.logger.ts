@@ -12,18 +12,15 @@ export class ChannelLogger extends ConsoleLogger implements OnApplicationBootstr
 
 	async log(message: unknown, context?: string) {
 		super.log(message, context);
-		await this.logChannel.send([":pencil:", "`", message, "`"].join(""));
+		// await this.logChannel.send([":pencil:", "`", message, "`"].join(""));
 	}
 
 	async error(message: unknown, stack?: string, context?: string) {
 		super.error(message, stack, context);
-		await this.logChannel.send([":exclamation:", "`", message, "`"].join(""));
+		// await this.logChannel.send([":exclamation:", "`", message, "`"].join(""));
 	}
 
 	async onApplicationBootstrap() {
-		if (this.client.application) {
-			this.client.application.commands.set([]);
-		}
 
 		const channel = await this.client.channels.fetch(this.logChannelId);
 		if (channel && channel.isTextBased()) {
