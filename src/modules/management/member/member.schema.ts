@@ -8,7 +8,7 @@ export class Member {
 	@Prop({ index: true })
 	nickname: string;
 
-	@Prop({ default: true })
+	@Prop({ default: true, select: false })
 	isExist?: boolean;
 }
 
