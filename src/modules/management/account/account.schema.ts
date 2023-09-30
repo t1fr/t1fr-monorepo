@@ -17,7 +17,7 @@ export class AccountListData implements Omit<Account, "owner" | "isExist"> {
 	@ApiProperty({ example: "HI_OuO" })
 	_id: string;
 
-	@ApiProperty({ example: { nickname: "T1FR丨表情丨HI_OuO", isExist: true, _id: "456451265474" } as Member, required: false })
+	@ApiProperty({ example: { nickname: "T1FR丨表情丨HI_OuO", _id: "456451265474" } as Member, required: false })
 	owner: Member;
 
 	@ApiProperty({ example: 3411 })
