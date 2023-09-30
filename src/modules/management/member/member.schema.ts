@@ -7,6 +7,9 @@ export class Member {
 
 	@Prop({ index: true })
 	nickname: string;
+
+	@Prop({ default: true })
+	isExist?: boolean;
 }
 
 export const MemberModelDef: ModelDefinition = { name: Member.name, schema: SchemaFactory.createForClass(Member) };

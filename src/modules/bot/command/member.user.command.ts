@@ -1,6 +1,6 @@
 import { Context, TargetUser, UserCommand, UserCommandContext } from "necord";
 import { GuildMember, User } from "discord.js";
-import { MemberRepo } from "@/modules/management/member/member.repo";
+import { MemberService } from "@/modules/management/member/member.service";
 import { Injectable, Logger } from "@nestjs/common";
 import { DiscordRole } from "@/constant";
 
@@ -8,17 +8,15 @@ import { DiscordRole } from "@/constant";
 export class MemberUserCommand {
 	private readonly logger = new Logger(MemberUserCommand.name);
 
-	constructor(private readonly memberRepo: MemberRepo) {}
+	constructor(private readonly memberRepo: MemberService) {}
 
-	createWelcomeMessage(discordId: string, type: "聯隊戰" | "休閒") {
-		return [
-			`您好，<@${discordId}>`,
-			`您已成為 T1FR ${type}隊員`,
-			"請將伺服器個人暱稱用 `/nickname` 指令或手動改為：",
-			"```",
-			"T1FR丨您的暱稱丨您的戰雷ID",
-			"```",
-		].join("\n");
+	createWelcomeMessage(member: GuildMember, type: "聯隊戰" | "休閒") {
+		const message = [`您好，<@${member.id}>`, `您已成為 T1FR ${type}隊員`];
+
+		if (!(member.nickname ?? member.displayName).match(/^[^丨].*(丨.*)?丨.*[^丨]$/))
+			message.push("請將伺服器個人暱稱用 `/nickname` 指令或手動改為：", "```", "T1FR丨您的暱稱丨您的戰雷ID", "```");
+
+		return message.join("\n");
 	}
 
 	@UserCommand({ name: "任命為聯隊戰隊員" })
@@ -32,7 +30,7 @@ export class MemberUserCommand {
 			[DiscordRole.休閒隊員],
 		);
 		await this.memberRepo.upsert([{ _id: member.id, nickname: member.nickname ?? member.displayName }]);
-		return interaction.reply({ content: success ? this.createWelcomeMessage(member?.id, "聯隊戰") : message });
+		return interaction.reply({ content: success ? this.createWelcomeMessage(member, "聯隊戰") : message });
 	}
 
 	@UserCommand({ name: "任命為休閒隊員" })
@@ -41,7 +39,7 @@ export class MemberUserCommand {
 		if (!member) return interaction.reply({ content: "成員不存在" });
 		const { success, message } = await this.updateRoles(member, "給予休閒隊員身分", [DiscordRole.休閒隊員], [DiscordRole.聯隊戰隊員]);
 		await this.memberRepo.upsert([{ _id: member.id, nickname: member.nickname ?? member.displayName }]);
-		return interaction.reply({ content: success ? this.createWelcomeMessage(member?.id, "休閒") : message });
+		return interaction.reply({ content: success ? this.createWelcomeMessage(member, "休閒") : message });
 	}
 
 	@UserCommand({ name: "切換隊員身分" })

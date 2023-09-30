@@ -1,9 +1,9 @@
 import { Injectable, UseInterceptors } from "@nestjs/common";
 import { Context, createCommandGroupDecorator, Options, SlashCommandContext, StringOption, Subcommand } from "necord";
-import { WikiRepo } from "@/modules/wiki/wiki.repo";
+import { WikiService } from "@/modules/wiki/wiki.service";
 import { EmbedBuilder } from "discord.js";
 import { Vehicle } from "@/modules/wiki/vehicle.schema";
-import { WikiAutocompleteInterceptor } from "@/modules/wiki/wiki.autocomplete";
+import { WikiAutocompleteInterceptor } from "@/modules/bot/autocomplete/wiki.autocomplete";
 
 const WikiCommandGroup = createCommandGroupDecorator({ name: "wiki", description: "查詢戰雷維基" });
 
@@ -15,7 +15,7 @@ export class SearchVehicleOption {
 @WikiCommandGroup()
 @Injectable()
 export class WikiCommand {
-	constructor(private readonly wikiRepo: WikiRepo) {}
+	constructor(private readonly wikiRepo: WikiService) {}
 
 	static generateDescription(vehicle: Vehicle) {
 		const description = [`${vehicle.name} 是位於${vehicle.country}科技樹 ${vehicle.rank} 階的${vehicle.operator ?? ""}${vehicle.normal_type}`];

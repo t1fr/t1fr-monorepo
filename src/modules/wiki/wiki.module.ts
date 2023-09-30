@@ -2,12 +2,11 @@ import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { VehicleModelDef } from "@/modules/wiki/vehicle.schema";
 import { ConnectionName } from "@/constant";
-import { WikiRepo } from "@/modules/wiki/wiki.repo";
-import { WikiCommand } from "@/modules/wiki/wiki.command";
-import { WikiAutocompleteInterceptor } from '@/modules/wiki/wiki.autocomplete'
+import { WikiService } from "@/modules/wiki/wiki.service";
 
 @Module({
 	imports: [MongooseModule.forFeature([VehicleModelDef], ConnectionName.Common)],
-	providers: [WikiRepo, WikiCommand, WikiAutocompleteInterceptor],
+	providers: [WikiService],
+	exports: [WikiService],
 })
 export class WikiModule {}

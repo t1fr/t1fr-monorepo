@@ -1,50 +1,113 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { Client, GuildMember } from "discord.js";
-import { DiscordRole } from "@/constant";
-import { MemberRepo, Summary } from "@/modules/management/member/member.repo";
+import { Decimal128, Model, PipelineStage, UpdateQuery } from "mongoose";
 import { Member } from "@/modules/management/member/member.schema";
-import { PointRepo } from "@/modules/management/point/point.repo";
-import { PointEvent, PointType } from "@/modules/management/point/point.schema";
-import dayjs from "dayjs";
+import { InjectModel } from "@nestjs/mongoose";
+import { PointType } from "@/modules/management/point/point.schema";
+import { ConnectionName, DiscordRole } from "@/constant";
 import { Cron, CronExpression } from "@nestjs/schedule";
+import { Client, GuildMember } from "discord.js";
+
+export interface Summary {
+	_id: string;
+	nickname: string;
+	accounts: { _id: string; activity: number; personalRating: number; type: string }[];
+	points: { _id: string; sum: number; logs: { category: string; date: string; delta: number; detail: string }[] }[];
+}
+
+export type PointStatistic = Omit<Member, "isExist"> & { [key in PointType]: number };
 
 @Injectable()
 export class MemberService {
+	constructor(
+		@InjectModel(Member.name, ConnectionName.Management) private readonly memberModel: Model<Member>,
+		private readonly client: Client,
+	) {}
+
 	private readonly logger = new Logger(MemberService.name);
 
-	constructor(
-		private readonly client: Client,
-		private readonly memberRepo: MemberRepo,
-		private readonly pointRepo: PointRepo,
-	) {}
+	static TransformDiscordMemberToMember(member: GuildMember): Member {
+		return { _id: member.id, nickname: member.nickname ?? member.displayName, isExist: true };
+	}
 
 	@Cron(CronExpression.EVERY_DAY_AT_8AM)
 	async sync() {
 		const guild = await this.client.guilds.fetch({ guild: "1046623840710705152", force: true });
 		if (!guild) return;
-		const members = await guild.members.fetch();
+		const members = await guild.members.fetch({});
 		if (!members) return;
 
-		const result = await this.memberRepo.upsert(
-			members.filter(member => member.roles.cache.hasAny(DiscordRole.聯隊戰隊員, DiscordRole.休閒隊員)).map(MemberService.TransformDiscordMemberToMember),
-		);
-
-		this.logger.log(`已成功將現有 ${result.upsertedCount} 隊員存入資料庫`);
+		await this.memberModel.updateMany({}, { isExist: false });
+		const memberWithSquadronRole = members
+			.filter(member => member.roles.cache.hasAny(DiscordRole.聯隊戰隊員, DiscordRole.休閒隊員))
+			.map(MemberService.TransformDiscordMemberToMember);
+		await this.upsert(memberWithSquadronRole);
 	}
 
-	static TransformDiscordMemberToMember(member: GuildMember): Member {
-		return { _id: member.id, nickname: member.nickname ?? member.displayName };
+	async upsert(members: Member[]) {
+		await this.memberModel.bulkWrite(members.map(member => ({ updateOne: { filter: { _id: member._id }, update: member, upsert: true } })));
 	}
 
-	async award(event: Omit<PointEvent, "type" | "date">) {
-		await this.pointRepo.append(PointType.REWARD, { ...event, date: dayjs().format("YYYY-MM-DD") });
+	async update(discordId: string, data: UpdateQuery<Member>) {
+		await this.memberModel.findByIdAndUpdate(discordId, data);
 	}
 
-	async summary(userId: string): Promise<Summary> {
-		return this.memberRepo.summary(userId);
+	async find(substring: string) {
+		return this.memberModel.find({ isExist: true, nickname: RegExp(substring, "i") }).limit(25);
 	}
 
-	async listPoint(type: PointType) {
-		return this.memberRepo.listPoint(type);
+	async summary(userId: string) {
+		const results = await this.memberModel.aggregate<Summary>([
+			{ $match: { _id: userId } },
+			{
+				$lookup: {
+					from: "accounts",
+					localField: "_id",
+					foreignField: "owner",
+					as: "accounts",
+					pipeline: [{ $project: { type: true, personalRating: true, activity: true } }],
+				},
+			},
+			{
+				$lookup: {
+					from: "pointevents",
+					localField: "_id",
+					foreignField: "member",
+					as: "points",
+					pipeline: [
+						{
+							$group: {
+								_id: "$type",
+								sum: { $sum: "$delta" },
+								logs: { $push: { category: "$category", date: "$date", delta: "$delta", detail: "$comment" } },
+							},
+						},
+					],
+				},
+			},
+		]);
+
+		return results.length ? Promise.resolve(results[0]) : Promise.reject("查無成員");
+	}
+
+	async listMemberWithStatistic() {
+		const results = await this.memberModel.aggregate<Member & { points: { [key in PointType]: number } }>([
+			{ $match: { isExist: true } },
+			{ $unset: "isExist" },
+			{
+				$lookup: {
+					from: "pointevents",
+					localField: "_id",
+					foreignField: "member",
+					as: "points",
+					pipeline: [{ $group: { _id: "$type", sum: { $sum: "$delta" } } }],
+				},
+			},
+			{ $set: { points: { $arrayToObject: { $map: { input: "$points", in: { k: "$$this._id", v: { $toDouble: "$$this.sum" } } } } } } },
+		]);
+
+		return results.map<PointStatistic>(value => {
+			const { points, nickname, _id } = value;
+			return { _id, nickname, 獎勵: points["獎勵"] ?? 0, 請假: points["請假"] ?? 0, 懲罰: points["懲罰"] ?? 0 };
+		});
 	}
 }
