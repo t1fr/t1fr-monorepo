@@ -1,20 +1,22 @@
 import { Body, Controller, Get, Param, Patch } from "@nestjs/common";
 import { AccountService } from "@/modules/management/account/account.service";
-import { AccountUpdateData } from "@/modules/management/account/account.schema";
+import { AccountListData, AccountUpdateData } from "@/modules/management/account/account.schema";
+import { ApiResponse } from "@nestjs/swagger";
 
 @Controller("accounts")
 export class AccountController {
 	constructor(private readonly accountService: AccountService) {}
 
 	@Get()
+	@ApiResponse({ description: "聯隊內的帳號資訊，延遲最長 4 小時", type: AccountListData, isArray: true })
 	async getAccounts() {
 		return await this.accountService.findExistingAccount();
 	}
 
 	@Patch(":id")
 	async updateAccount(@Param("id") id: string, @Body() data: AccountUpdateData) {
-		const { type, ownerId } = data;
-		this.accountService.updateAccount(id, { type, ownerId });
+		const { type, owner } = data;
+		this.accountService.updateAccount(id, { type, owner });
 	}
 }
 
