@@ -45,7 +45,7 @@ export class AccountCommand {
 	@UseInterceptors(UserAutocompleteInterceptor)
 	private async setOwner(@Context() [interaction]: SlashCommandContext, @Options() { accountId, memberDiscordId }: SetOwnershipOption) {
 		try {
-			const account = await this.accountService.updateAccount(accountId, { ownerId: memberDiscordId });
+			const account = await this.accountService.updateAccount(accountId, { owner: memberDiscordId });
 			interaction.reply({
 				content: `已成功設置帳號 ${account.id} 的擁有者為 <@${account.owner}>`,
 				options: { flags: [MessageFlagsBitField.Flags.SuppressNotifications] },

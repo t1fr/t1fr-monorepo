@@ -55,13 +55,14 @@ export class AccountService implements OnModuleInit {
 
 		this.logger.log(["同步聯隊內帳號資料完畢", `新增 ${result.insertedCount} 個帳號`, `刪除 ${result.deletedCount} 個帳號`].join("\n"));
 	}
+
 	async updateAccount(accountId: string, data: AccountUpdateData) {
-		const account = await this.accountModel.findByIdAndUpdate(accountId, { $set: data });
+		const account = await this.accountModel.findByIdAndUpdate(accountId, { $set: data }, { runValidators: true });
 		return account ? Promise.resolve(account) : Promise.reject("查無帳號");
 	}
 
 	async findExistingAccount() {
-		return this.accountModel.find({ isExist: true }, {}, { populate: "owner" });
+		return this.accountModel.find({ isExist: true }, { isExist: false }, { populate: "owner" });
 	}
 
 	async searchByIdContain(query: string) {
