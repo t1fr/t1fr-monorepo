@@ -38,24 +38,24 @@ interface VehicleJsonSchema {
 }
 
 @Injectable()
-export class WikiRepo implements OnModuleInit {
+export class WikiService implements OnModuleInit {
 	constructor(
 		@InjectModel(Vehicle.name, ConnectionName.Common) private readonly vehicleModel: Model<Vehicle>,
 		private httpService: HttpService,
 	) {}
 
-	private static logger = new Logger(WikiRepo.name);
+	private static logger = new Logger(WikiService.name);
 
 	private static VehicleListUrl = "https://raw.githubusercontent.com/natgo/wt-data/main/data/final.json";
 	private static version = "";
 
 	@Cron(CronExpression.EVERY_WEEK)
 	async sync() {
-		const response = await lastValueFrom(this.httpService.get<DataResponse>(WikiRepo.VehicleListUrl)).catch(WikiRepo.logger.error);
+		const response = await lastValueFrom(this.httpService.get<DataResponse>(WikiService.VehicleListUrl)).catch(WikiService.logger.error);
 		if (!response || !response.data) return;
 		const data = response.data;
-		if (WikiRepo.version === data.version) return;
-		WikiRepo.version = data.version;
+		if (WikiService.version === data.version) return;
+		WikiService.version = data.version;
 		data.ship.forEach(value => (value.wikiname = value.displayname));
 		data.boat.forEach(value => (value.wikiname = value.displayname));
 		const vehicles = [...data.army, ...data.aviation, ...data.boat, ...data.ship, ...data.helicopters];

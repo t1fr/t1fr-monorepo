@@ -1,11 +1,11 @@
 import { AutocompleteInterceptor } from "necord";
 import { Injectable } from "@nestjs/common";
 import { ApplicationCommandOptionChoiceData, AutocompleteInteraction } from "discord.js";
-import { WikiRepo } from "@/modules/wiki/wiki.repo";
+import { WikiService } from "@/modules/wiki/wiki.service";
 
 @Injectable()
 export class WikiAutocompleteInterceptor extends AutocompleteInterceptor {
-	constructor(private readonly wikiRepo: WikiRepo) {
+	constructor(private readonly wikiRepo: WikiService) {
 		super();
 	}
 

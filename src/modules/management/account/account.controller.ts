@@ -1,13 +1,20 @@
-import { Controller, Get } from "@nestjs/common";
-import { AccountRepo } from "@/modules/management/account/account.repo";
+import { Body, Controller, Get, Param, Patch } from "@nestjs/common";
+import { AccountService } from "@/modules/management/account/account.service";
+import { AccountUpdateData } from "@/modules/management/account/account.schema";
 
-@Controller()
+@Controller("accounts")
 export class AccountController {
-	constructor(private readonly accountRepo: AccountRepo) {}
+	constructor(private readonly accountService: AccountService) {}
 
-	@Get("accounts")
+	@Get()
 	async getAccounts() {
-		return await this.accountRepo.listAllExistAccounts();
+		return await this.accountService.findExistingAccount();
+	}
+
+	@Patch(":id")
+	async updateAccount(@Param("id") id: string, @Body() data: AccountUpdateData) {
+		const { type, ownerId } = data;
+		this.accountService.updateAccount(id, { type, ownerId });
 	}
 }
 

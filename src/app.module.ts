@@ -7,13 +7,13 @@ import { load } from "js-yaml";
 import { readFileSync } from "fs";
 import { join } from "path";
 import { MongooseModule } from "@nestjs/mongoose";
-import { ScheduleModule } from "@nestjs/schedule";
 import LoggerModule from "@/modules/logging/logger.module";
-import BattleModule from "@/modules/schedule/battle.module";
 import * as process from "process";
 import { ConnectionName } from "@/constant";
 import { HttpModule } from "@nestjs/axios";
-import { WikiModule } from "@/modules/wiki/wiki.module";
+import { ScheduleModule } from "@nestjs/schedule";
+import DiscordBotModule from "@/modules/bot/bot.module";
+import { BattleScheduleModule } from "@/modules/schedule/schedule.module";
 
 const intents = [
 	IntentsBitField.Flags.Guilds,
@@ -63,10 +63,10 @@ function configuration() {
 				development: ["1046623840710705152"],
 			}),
 		}),
+		BattleScheduleModule,
+		DiscordBotModule,
 		ManagementModule,
-		BattleModule,
 		LoggerModule,
-		WikiModule
 	],
 })
 export class AppModule {}

@@ -1,77 +1,93 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { AccountRepo } from "@/modules/management/account/account.repo";
-import { CalculateResult, RewardService } from "@/modules/management/point/reward.service";
-import { groupBy } from "lodash";
-import { Cron, CronExpression } from "@nestjs/schedule";
-import { AccountType } from "@/modules/management/account/account.schema";
-import { PointRepo } from "@/modules/management/point/point.repo";
-import { PointType } from "@/modules/management/point/point.schema";
+import { HttpService } from "@nestjs/axios";
+import { ConnectionName, SquadronMemberListUrl } from "@/constant";
+import { InjectModel } from "@nestjs/mongoose";
+import { Account, AccountUpdateData } from "@/modules/management/account/account.schema";
+import { Model } from "mongoose";
 import dayjs from "dayjs";
+import { lastValueFrom } from "rxjs";
+import { Cron, CronExpression } from "@nestjs/schedule";
+import * as Cheerio from "cheerio";
+import { parseInt } from "lodash";
 
 @Injectable()
 export class AccountService implements OnModuleInit {
-	private readonly logger = new Logger(AccountService.name);
+	private readonly logger: Logger = new Logger(AccountService.name);
 
 	constructor(
-		private readonly accountRepo: AccountRepo,
-		private readonly rewardPointService: RewardService,
-		private readonly pointRepo: PointRepo,
+		@InjectModel(Account.name, ConnectionName.Management) private readonly accountModel: Model<Account>,
+		private httpService: HttpService,
 	) {}
 
-	@Cron(CronExpression.EVERY_4_HOURS)
-	sync() {
-		return this.accountRepo.sync();
-	}
-
-	setAccountOwner(accountId: string, discordId: string) {
-		return this.accountRepo.update(accountId, { owner: discordId });
-	}
-
-	async autolink() {
-		return this.accountRepo.joinOnId();
-	}
-
-	setAccountType(accountId: string, accountType: AccountType) {
-		return this.accountRepo.update(accountId, { type: accountType });
-	}
-
-	async calculateRewardPoint(isSimulate: boolean, verbose: boolean) {
-		let results = [] as CalculateResult[];
-		results = await this.rewardPointService.calculate(await this.accountRepo.find({ isExist: true }));
-		const groups = groupBy(
-			results.filter(result => result.point > 0),
-			result => result.owner,
-		);
-
-		const messages: string[] = [];
-
-		let totalPoints = 0;
-		for (const groupsKey in groups) {
-			totalPoints += groups[groupsKey].reduce((acc, cur) => acc + cur.point, 0);
-			const accounts = groups[groupsKey];
-			const accountDetails = accounts.map(calculateResult => [
-				`* ${calculateResult.id}：${calculateResult.point} 積分${verbose ? ` 原因：${calculateResult.reasons.join("|")}` : ""}`,
-			]);
-
-			messages.push([`<@${groupsKey}>`, ...accountDetails].join("\n"));
-		}
-
-		messages.push(`本賽季結算發放總量：${totalPoints}`);
-
-		if (!isSimulate) {
-			const now = dayjs().format("YYYY-MM-DD");
-			await this.pointRepo.append(
-				PointType.REWARD,
-				results.map(result => ({ member: result.owner, delta: result.point, comment: result.reasons.join("\n"), category: "結算發放", date: now })),
-			);
-			messages.unshift("已記錄完畢");
-		}
-
-		return messages;
-	}
-
 	async onModuleInit() {
-		await this.accountRepo.sync();
-		this.logger.log("更新聯隊內帳號資料完畢");
+		await this.sync();
+	}
+
+	@Cron(CronExpression.EVERY_4_HOURS)
+	public async sync() {
+		const response = await lastValueFrom(this.httpService.get(SquadronMemberListUrl)).catch(this.logger.error);
+
+		if (!response || !response.data) return;
+		const $ = Cheerio.load(response.data);
+		const columnsCount = 6;
+		const cellValues = $(".squadrons-members__grid-item")
+			.slice(columnsCount)
+			.toArray()
+			.map((element, index) => (index % 6 === 1 ? $(element).children("a").attr("href")?.trim() ?? "未知" : $(element).text().trim()));
+
+		const inputs: Partial<Account>[] = [];
+		for (let i = 0; i < cellValues.length; i += columnsCount) {
+			const row = cellValues.slice(i, i + columnsCount);
+			inputs.push({
+				_id: `${row[1]}@`.match(/(?<==)(.*?)(?=@)/)?.[0] ?? "",
+				personalRating: parseInt(row[2]),
+				activity: parseInt(row[3]),
+				joinDate: dayjs(row[5], "DD.MM.YYYY").format("YYYY-MM-DD"),
+				isExist: true,
+			});
+		}
+
+		const result = await this.accountModel.bulkWrite([
+			{ updateMany: { filter: {}, update: { isExist: false } } },
+			...inputs.map(account => ({ updateOne: { filter: { _id: account._id }, update: account, upsert: true } })),
+			{ deleteMany: { filter: { isExist: false } } },
+		]);
+
+		this.logger.log(["同步聯隊內帳號資料完畢", `新增 ${result.insertedCount} 個帳號`, `刪除 ${result.deletedCount} 個帳號`].join("\n"));
+	}
+	async updateAccount(accountId: string, data: AccountUpdateData) {
+		const account = await this.accountModel.findByIdAndUpdate(accountId, { $set: data });
+		return account ? Promise.resolve(account) : Promise.reject("查無帳號");
+	}
+
+	async findExistingAccount() {
+		return this.accountModel.find({ isExist: true }, {}, { populate: "owner" });
+	}
+
+	async searchByIdContain(query: string) {
+		return this.accountModel.find({ _id: { $regex: RegExp(query, "i") } }, { _id: true }, { limit: 25 }).exec();
+	}
+
+	async joinOnId() {
+		const data: { _id: string; owner: string }[] = await this.accountModel.aggregate([
+			{
+				$lookup: {
+					as: "member",
+					from: "members",
+					let: { id: "$_id" },
+					pipeline: [{ $match: { $expr: { $eq: [{ $last: { $split: ["$nickname", "丨"] } }, "$$id"] } } }],
+				},
+			},
+			{ $project: { owner: "$member._id" } },
+			{ $unwind: "$owner" },
+		]);
+
+		const result = await this.accountModel.bulkWrite(data.map(value => ({ updateOne: { filter: { _id: value._id }, update: { owner: value.owner } } })));
+
+		return {
+			linkable: data.length,
+			modified: result.modifiedCount,
+			errors: result.getWriteErrors().map(value => value.errmsg ?? value.index.toString()),
+		};
 	}
 }
