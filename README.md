@@ -1,41 +1,29 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# 設置開發環境
+## 啟用 pnpm
+本專案使用 pnpm 作為包管理器，請先安裝可用的 Node 18+
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-## Description
-
-[Nest](https://github.com/nestjs/nest) Framework.
-
-## Installation
-
-```bash
-$ npm install
+```shell
+corepack enable
+corepack prepare pnpm@latest --activate
 ```
 
-## Running the app
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+使用此命令驗證
+```shell
+pnpm --version
 ```
 
-## Test
+## 安裝依賴
+```shell
+pnpm install
+```
 
-```bash
-# unit tests
-$ npm run test
+# 啟動 Server
 
-# e2e tests
-$ npm run test:e2e
+```shell
+pnpm start
+```
 
-# test coverage
-$ npm run test:cov
+或者在檔案變更時重編譯
+```shell
+pnpm start:dev
 ```
