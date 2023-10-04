@@ -8,4 +8,4 @@ services:
     environment:
       NODE_ENV: production
     ports:
-      - "6518:3000"
+      - "6518:6518"

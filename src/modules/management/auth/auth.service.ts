@@ -4,14 +4,20 @@ import { HttpService } from "@nestjs/axios";
 import { lastValueFrom } from "rxjs";
 import { Snowflake } from "discord.js";
 import { JwtService } from "@nestjs/jwt";
+import { address } from "ip";
+import * as process from "process";
 
 @Injectable()
 export class AuthService {
+	private address: string;
+
 	constructor(
 		private readonly memberService: MemberService,
 		private readonly httpService: HttpService,
 		private readonly jwtService: JwtService,
-	) {}
+	) {
+		this.address = address();
+	}
 
 	async login(code: string) {
 		const token = await this.getToken(code);
@@ -19,24 +25,21 @@ export class AuthService {
 		const id = await this.getUserId(token);
 		const member = await this.memberService.findMemberById(id);
 		if (!member) throw new UnauthorizedException("非聯隊成員");
-		return { token: this.jwtService.sign(member.toObject()), data: member };
+		return this.jwtService.sign(member.toObject());
 	}
 
 	private async getToken(code: string) {
-		const data = {
-			client_id: "1013280626000003132",
-			client_secret: "l6l-mpiqLQjhIbukQjiW7zitAq3Xxbme",
-			grant_type: "authorization_code",
-			code,
-			redirect_uri: "http://localhost:5173/redirect",
-		};
-
-		const observable = this.httpService.post<{ access_token?: string }>("https://discord.com/api/oauth2/token", data, {
-			headers: { "Content-Type": "application/x-www-form-urlencoded" },
-		});
-
-		const response = await lastValueFrom(observable);
-		return response.data.access_token;
+		const host = process.env["NODE_ENV"] === "test" ? "localhost" : this.address;
+		const data = { grant_type: "authorization_code", code, redirect_uri: `http://${host}:6518/api/auth/redirect` };
+		try {
+			const response = await this.httpService.axiosRef.post<{ access_token?: string }>("https://discord.com/api/v10/oauth2/token", data, {
+				auth: { username: "1013280626000003132", password: "l6l-mpiqLQjhIbukQjiW7zitAq3Xxbme" },
+				headers: { "Content-Type": "application/x-www-form-urlencoded" },
+			});
+			return response.data.access_token;
+		} catch (e) {
+			console.error(e);
+		}
 	}
 
 	private async getUserId(token: string) {
