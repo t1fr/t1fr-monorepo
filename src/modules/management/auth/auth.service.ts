@@ -4,19 +4,16 @@ import { HttpService } from "@nestjs/axios";
 import { lastValueFrom } from "rxjs";
 import { Snowflake } from "discord.js";
 import { JwtService } from "@nestjs/jwt";
-import { address } from "ip";
 import * as process from "process";
 
 @Injectable()
 export class AuthService {
-	private address: string;
 
 	constructor(
 		private readonly memberService: MemberService,
 		private readonly httpService: HttpService,
 		private readonly jwtService: JwtService,
 	) {
-		this.address = address();
 	}
 
 	async login(code: string) {
@@ -29,7 +26,7 @@ export class AuthService {
 	}
 
 	private async getToken(code: string) {
-		const host = process.env["NODE_ENV"] === "test" ? "localhost" : this.address;
+		const host = process.env["NODE_ENV"] === "test" ? "localhost" : "220.133.81.52";
 		const data = { grant_type: "authorization_code", code, redirect_uri: `http://${host}:6518/api/auth/redirect` };
 		try {
 			const response = await this.httpService.axiosRef.post<{ access_token?: string }>("https://discord.com/api/v10/oauth2/token", data, {
