@@ -8,6 +8,7 @@ import utc from "dayjs/plugin/utc";
 import { CustomOrigin } from "@nestjs/common/interfaces/external/cors-options.interface";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import cookieParser from "cookie-parser";
 
 dayjs.extend(customParse);
 dayjs.extend(utc);
@@ -20,10 +21,11 @@ const allowedOrigin: CustomOrigin = (origin: string, callback) => {
 };
 
 async function bootstrap() {
-	const app = await NestFactory.create<NestExpressApplication>(AppModule, { bufferLogs: true, cors: { origin: allowedOrigin } });
+	const app = await NestFactory.create<NestExpressApplication>(AppModule, { bufferLogs: true, cors: { origin: allowedOrigin, credentials: true } });
 	app.useLogger(app.get(ChannelLogger));
 	app.disable("x-powered-by");
-
+	app.use(cookieParser());
+	app.setGlobalPrefix("api");
 	const swaggerConfig = new DocumentBuilder().setTitle("聯隊管理系統 API").build();
 	const document = SwaggerModule.createDocument(app, swaggerConfig);
 	SwaggerModule.setup("api", app, document);

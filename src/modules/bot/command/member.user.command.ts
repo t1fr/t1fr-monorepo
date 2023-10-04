@@ -13,7 +13,7 @@ export class MemberUserCommand {
 	createWelcomeMessage(member: GuildMember, type: "聯隊戰" | "休閒") {
 		const message = [`您好，<@${member.id}>`, `您已成為 T1FR ${type}隊員`];
 
-		if (!(member.nickname ?? member.displayName).match(/^[^丨].*(丨.*)?丨.*[^丨]$/))
+		if (!member.displayName.match(/^[^丨].*(丨.*)?丨.*[^丨]$/))
 			message.push("請將伺服器個人暱稱用 `/nickname` 指令或手動改為：", "```", "T1FR丨您的暱稱丨您的戰雷ID", "```");
 
 		return message.join("\n");
@@ -29,7 +29,7 @@ export class MemberUserCommand {
 			[DiscordRole.聯隊戰身分群, DiscordRole.聯隊戰隊員],
 			[DiscordRole.休閒隊員],
 		);
-		await this.memberRepo.upsert([{ _id: member.id, nickname: member.nickname ?? member.displayName }]);
+		await this.memberRepo.upsert([{ _id: member.id, nickname: member.displayName }]);
 		return interaction.reply({ content: success ? this.createWelcomeMessage(member, "聯隊戰") : message });
 	}
 
@@ -38,7 +38,7 @@ export class MemberUserCommand {
 		const member = interaction.guild?.members.resolve(user.id);
 		if (!member) return interaction.reply({ content: "成員不存在" });
 		const { success, message } = await this.updateRoles(member, "給予休閒隊員身分", [DiscordRole.休閒隊員], [DiscordRole.聯隊戰隊員]);
-		await this.memberRepo.upsert([{ _id: member.id, nickname: member.nickname ?? member.displayName }]);
+		await this.memberRepo.upsert([{ _id: member.id, nickname: member.displayName }]);
 		return interaction.reply({ content: success ? this.createWelcomeMessage(member, "休閒") : message });
 	}
 
