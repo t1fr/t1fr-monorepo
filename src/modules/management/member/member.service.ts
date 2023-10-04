@@ -1,11 +1,13 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { Decimal128, Model, PipelineStage, UpdateQuery } from "mongoose";
+import { Injectable, Logger, OnApplicationBootstrap } from "@nestjs/common";
+import { Model, Promise, UpdateQuery } from "mongoose";
 import { Member } from "@/modules/management/member/member.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { PointType } from "@/modules/management/point/point.schema";
 import { ConnectionName, DiscordRole } from "@/constant";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { Client, GuildMember } from "discord.js";
+import { BulkWriteResult } from "mongodb";
+import { result } from "lodash";
 
 export interface Summary {
 	_id: string;
@@ -26,7 +28,13 @@ export class MemberService {
 	private readonly logger = new Logger(MemberService.name);
 
 	static TransformDiscordMemberToMember(member: GuildMember): Member {
-		return { _id: member.id, nickname: member.nickname ?? member.displayName, isExist: true };
+		return {
+			_id: member.id,
+			nickname: member.displayName,
+			isExist: true,
+			isOfficer: member.roles.cache.has(DiscordRole.軍官),
+			avatarHash: member.avatar ?? member.user.avatar ?? undefined,
+		};
 	}
 
 	@Cron(CronExpression.EVERY_DAY_AT_8AM)
@@ -40,11 +48,13 @@ export class MemberService {
 		const memberWithSquadronRole = members
 			.filter(member => member.roles.cache.hasAny(DiscordRole.聯隊戰隊員, DiscordRole.休閒隊員))
 			.map(MemberService.TransformDiscordMemberToMember);
-		await this.upsert(memberWithSquadronRole);
+
+		const result = await this.upsert(memberWithSquadronRole);
+		this.logger.log(["同步聯隊 DC 帳號完畢", `新增 ${result.insertedCount} 個帳號`, `更新 ${result.modifiedCount} 個帳號`].join("\n"));
 	}
 
-	async upsert(members: Member[]) {
-		await this.memberModel.bulkWrite(members.map(member => ({ updateOne: { filter: { _id: member._id }, update: member, upsert: true } })));
+	async upsert(members: Member[]): Promise<BulkWriteResult> {
+		return this.memberModel.bulkWrite(members.map(member => ({ updateOne: { filter: { _id: member._id }, update: member, upsert: true } })));
 	}
 
 	async update(discordId: string, data: UpdateQuery<Member>) {
@@ -109,5 +119,9 @@ export class MemberService {
 			const { points, nickname, _id } = value;
 			return { _id, nickname, 獎勵: points["獎勵"] ?? 0, 請假: points["請假"] ?? 0, 懲罰: points["懲罰"] ?? 0 };
 		});
+	}
+
+	async findMemberById(_id: string) {
+		return this.memberModel.findOne({ _id, isExist: true });
 	}
 }

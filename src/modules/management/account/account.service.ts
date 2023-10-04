@@ -53,7 +53,7 @@ export class AccountService implements OnModuleInit {
 			{ deleteMany: { filter: { isExist: false } } },
 		]);
 
-		this.logger.log(["同步聯隊內帳號資料完畢", `新增 ${result.insertedCount} 個帳號`, `刪除 ${result.deletedCount} 個帳號`].join("\n"));
+		this.logger.log(["同步聯隊遊戲帳號完畢", `新增 ${result.insertedCount} 個帳號`, `刪除 ${result.deletedCount} 個帳號`].join("\n"));
 	}
 
 	async updateAccount(accountId: string, data: AccountUpdateData) {

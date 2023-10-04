@@ -10,6 +10,12 @@ export class Member {
 
 	@Prop({ default: true, select: false })
 	isExist?: boolean;
+
+	@Prop({ default: false })
+	isOfficer?: boolean;
+
+	@Prop()
+	avatarHash?: string;
 }
 
 export const MemberModelDef: ModelDefinition = { name: Member.name, schema: SchemaFactory.createForClass(Member) };
