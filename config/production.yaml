@@ -1,6 +1,8 @@
-port: 3000
+port: 6518
 bot:
   token: ***REMOVED***
 
 mongo:
   database: production
+
+frontend_redirect_url: "http://localhost:5173/redirect"

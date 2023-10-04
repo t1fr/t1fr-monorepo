@@ -53,6 +53,9 @@ dependencies:
   flatten-anything:
     specifier: ^3.0.5
     version: 3.0.5
+  ip:
+    specifier: ^1.1.8
+    version: 1.1.8
   joi:
     specifier: ^17.10.2
     version: 17.10.2
@@ -103,6 +106,9 @@ devDependencies:
   '@types/express':
     specifier: ^4.17.18
     version: 4.17.18
+  '@types/ip':
+    specifier: ^1.1.1
+    version: 1.1.1
   '@types/jest':
     specifier: 29.5.5
     version: 29.5.5
@@ -1669,6 +1675,12 @@ packages:
 
   /@types/http-cache-semantics@4.0.2:
     resolution: {integrity: sha512-FD+nQWA2zJjh4L9+pFXqWOi0Hs1ryBCfI+985NjluQ1p8EYtoLvjLOKidXBtZ4/IcxDX4o8/E8qDS3540tNliw==}
+    dev: true
+
+  /@types/ip@1.1.1:
+    resolution: {integrity: sha512-/v+XZuKNBQHJi3dKeFt9LySLzWNkgmaYRtnFfg27Ag0MO9tQLzHUuAA8zOhPtbDvDGkcnZGr4pVZQPGNft/WYA==}
+    dependencies:
+      '@types/node': 20.7.1
     dev: true
 
   /@types/istanbul-lib-coverage@2.0.4:
@@ -3971,6 +3983,10 @@ packages:
     resolution: {integrity: sha512-agE4QfB2Lkp9uICn7BAqoscw4SZP9kTE2hxiFI3jBPmXJfdqiahTbUuKGsMoN2GtqL9AxhYioAcVvgsb1HvRbA==}
     engines: {node: '>= 0.10'}
     dev: true
+
+  /ip@1.1.8:
+    resolution: {integrity: sha512-PuExPYUiu6qMBQb4l06ecm6T6ujzhmh+MeJcW9wa89PoAz5pvd4zPgN5WJV104mb6S2T1AwNIAaB70JNrLQWhg==}
+    dev: false
 
   /ip@2.0.0:
     resolution: {integrity: sha512-WKa+XuLG1A1R0UWhl2+1XQSi+fZWMsYKffMZTTYsiZaUD8k2yDAj5atimTUD2TZkyCkNEeYE5NhFZmupOGtjYQ==}
