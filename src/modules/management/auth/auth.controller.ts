@@ -17,7 +17,6 @@ export class AuthController {
 	static cookieOptions: CookieOptions = {
 		httpOnly: true,
 		secure: true,
-		domain: process.env["NODE_ENV"] === "test" ? "localhost" : ".web.app",
 		path: "/",
 		sameSite: "none",
 		maxAge: 1800 * 1000,
@@ -25,11 +24,12 @@ export class AuthController {
 
 	@Get("redirect")
 	async redirect(@Query("code") code: string, @Query("state") state: string, @Res({ passthrough: true }) response: Response) {
+		const redirect = decodeURIComponent(state);
 		if (code) {
 			const token = await this.authService.login(code);
-			response.cookie("token", token, AuthController.cookieOptions);
+			response.cookie("token", token, {...AuthController.cookieOptions, domain: new URL(redirect).hostname});
 		}
-		response.redirect(decodeURIComponent(state));
+		response.redirect(redirect);
 	}
 
 	@UseGuards(JwtGuard)
