@@ -24,10 +24,12 @@ export class AuthController {
 	};
 
 	@Get("redirect")
-	async redirect(@Query("code") code: string, @Res({ passthrough: true }) response: Response, @Req() request: Request) {
-		const token = await this.authService.login(code);
-		response.cookie("token", token, AuthController.cookieOptions);
-		response.redirect(this.configService.getOrThrow("frontend_redirect_url"));
+	async redirect(@Query("code") code: string, @Query("state") state: string, @Res({ passthrough: true }) response: Response) {
+		if (code) {
+			const token = await this.authService.login(code);
+			response.cookie("token", token, AuthController.cookieOptions);
+		}
+		response.redirect(decodeURIComponent(state));
 	}
 
 	@UseGuards(JwtGuard)
