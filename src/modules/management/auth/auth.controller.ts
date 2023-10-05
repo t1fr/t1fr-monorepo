@@ -1,18 +1,14 @@
 import { Controller, Delete, Get, Post, Query, Req, Res, UseGuards } from "@nestjs/common";
 import { AuthService } from "@/modules/management/auth/auth.service";
-import { CookieOptions, Request, Response } from "express";
+import { CookieOptions, Response } from "express";
 import { JwtGuard } from "@/guards/jwt.guard";
 import { User } from "@/decorators/user.decorator";
 import { Member } from "@/modules/management/member/member.schema";
-import * as process from "process";
 import { ConfigService } from "@nestjs/config";
 
 @Controller("auth")
 export class AuthController {
-	constructor(
-		private readonly authService: AuthService,
-		private readonly configService: ConfigService,
-	) {}
+	constructor(private readonly authService: AuthService) {}
 
 	static cookieOptions: CookieOptions = {
 		httpOnly: true,
@@ -27,7 +23,7 @@ export class AuthController {
 		const redirect = decodeURIComponent(state);
 		if (code) {
 			const token = await this.authService.login(code);
-			response.cookie("token", token, {...AuthController.cookieOptions, domain: new URL(redirect).hostname});
+			response.cookie("token", token, { ...AuthController.cookieOptions, domain: new URL(redirect).hostname });
 		}
 		response.redirect(redirect);
 	}

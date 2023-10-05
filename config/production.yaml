@@ -4,5 +4,3 @@ bot:
 
 mongo:
   database: production
-
-frontend_redirect_url: "http://localhost:5173/redirect"
