@@ -17,6 +17,7 @@ const allowedOrigin: CustomOrigin = (origin: string, callback) => {
 	if (!origin) return callback(null, false);
 	if (origin.match(/http:\/\/localhost.*/)) return callback(null, true);
 	if (origin.match(/http:\/\/192\.168\.0\.104.*/)) return callback(null, true);
+	if (origin.match(/http:\/\/220\.133\.81\.52.*/)) return callback(null, true);
 	if (origin.match(/https:\/\/squadron-manager.*/)) return callback(null, true);
 	return callback(new Error(`請求的來源: ${origin} 不在白名單中`), false);
 };
