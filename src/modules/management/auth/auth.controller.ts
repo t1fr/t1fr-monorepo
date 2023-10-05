@@ -9,7 +9,7 @@ import { Member } from "@/modules/management/member/member.schema";
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 
-	static cookieOptions: CookieOptions = { httpOnly: true, path: "/", sameSite: true, maxAge: 1800 * 1000, domain: AuthService.Host };
+	static cookieOptions: CookieOptions = { httpOnly: true, secure: true, path: "/", sameSite: "none", maxAge: 1800 * 1000, domain: AuthService.Host };
 
 	@Get("redirect")
 	async redirect(@Query("code") code: string, @Query("state") state: string, @Res({ passthrough: true }) response: Response) {
