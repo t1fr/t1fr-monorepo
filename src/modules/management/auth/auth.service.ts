@@ -8,13 +8,13 @@ import * as process from "process";
 
 @Injectable()
 export class AuthService {
+	static Host = process.env["NODE_ENV"] === "test" ? "localhost" : "220.133.81.52";
 
 	constructor(
 		private readonly memberService: MemberService,
 		private readonly httpService: HttpService,
 		private readonly jwtService: JwtService,
-	) {
-	}
+	) {}
 
 	async login(code: string) {
 		const token = await this.getToken(code);
@@ -26,8 +26,7 @@ export class AuthService {
 	}
 
 	private async getToken(code: string) {
-		const host = process.env["NODE_ENV"] === "test" ? "localhost" : "220.133.81.52";
-		const data = { grant_type: "authorization_code", code, redirect_uri: `http://${host}:6518/api/auth/redirect` };
+		const data = { grant_type: "authorization_code", code, redirect_uri: `http://${AuthService.Host}:6518/api/auth/redirect` };
 		try {
 			const response = await this.httpService.axiosRef.post<{ access_token?: string }>("https://discord.com/api/v10/oauth2/token", data, {
 				auth: { username: "1013280626000003132", password: "l6l-mpiqLQjhIbukQjiW7zitAq3Xxbme" },
