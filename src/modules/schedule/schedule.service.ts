@@ -27,10 +27,10 @@ export class ScheduleService {
 	}
 
 	async getCurrentBattleRating() {
-		return new Promise<number>(async (resolve, reject) => {
+		return new Promise<number | null>(async (resolve, reject) => {
 			const now = new Date();
 			const year = now.getUTCFullYear();
-			const season = now.getUTCMonth() / 2 + 1;
+			const season = Math.floor(now.getUTCMonth() / 2) + 1;
 			const sections = await this.seasonModel.aggregate<{ battleRating: number }>([
 				{ $match: { year, season } },
 				{ $unwind: "$sections" },
@@ -39,14 +39,14 @@ export class ScheduleService {
 			]);
 
 			if (sections.length) resolve(sections[0].battleRating);
-			else reject("查無當前的分房，請確認資料");
+			resolve(null);
 		});
 	}
 
 	async getCurrentSeasonTable() {
 		const now = new Date();
 		const year = now.getUTCFullYear();
-		const season = now.getUTCMonth() / 2 + 1;
+		const season = Math.floor(now.getUTCMonth() / 2) + 1;
 		const found = await this.seasonModel.findOne({ year, season });
 
 		if (!found) return Promise.reject("查無當前賽季資料");
