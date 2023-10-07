@@ -12,8 +12,8 @@ export class AuthController {
 	static cookieOptions: CookieOptions = { httpOnly: true, path: "/", sameSite: "strict", maxAge: 1800 * 1000, domain: AuthService.Host };
 
 	@Get("redirect")
-	async redirect(@Query("code") code: string, @Query("state") state: string, @Res({ passthrough: true }) response: Response) {
-		const redirect = decodeURIComponent(state);
+	async redirect(@Res({ passthrough: true }) response: Response, @Query("code") code?: string, @Query("state") state?: string) {
+		const redirect = decodeURIComponent(state ?? "/");
 		try {
 			const token = await this.authService.login(code);
 			response.cookie("token", token, AuthController.cookieOptions);
