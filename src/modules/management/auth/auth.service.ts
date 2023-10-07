@@ -17,12 +17,13 @@ export class AuthService {
 	) {}
 
 	async login(code: string) {
-		const token = await this.getToken(code);
-		if (!token) throw new UnauthorizedException("無效的授權");
-		const id = await this.getUserId(token);
-		const member = await this.memberService.findMemberById(id);
-		if (!member) throw new UnauthorizedException("非聯隊成員");
-		return this.jwtService.sign(member.toObject());
+		throw new UnauthorizedException("無效的授權");
+		// const token = await this.getToken(code);
+		// if (!token) throw new UnauthorizedException("無效的授權");
+		// const id = await this.getUserId(token);
+		// const member = await this.memberService.findMemberById(id);
+		// if (!member) throw new UnauthorizedException("非聯隊成員");
+		// return this.jwtService.sign(member.toObject());
 	}
 
 	private async getToken(code: string) {
