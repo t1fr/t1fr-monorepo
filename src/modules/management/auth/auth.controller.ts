@@ -14,8 +14,13 @@ export class AuthController {
 	@Get("redirect")
 	async redirect(@Query("code") code: string, @Query("state") state: string, @Res({ passthrough: true }) response: Response) {
 		const redirect = decodeURIComponent(state);
-		if (code) response.cookie("token", await this.authService.login(code), AuthController.cookieOptions);
-		response.redirect(redirect);
+		try {
+			const token = await this.authService.login(code);
+			response.cookie("token", token, AuthController.cookieOptions);
+			response.redirect(redirect);
+		} catch (error) {
+			response.redirect(`${redirect}?error=${error.message}`);
+		}
 	}
 
 	@UseGuards(JwtGuard)
