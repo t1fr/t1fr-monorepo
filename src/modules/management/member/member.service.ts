@@ -88,15 +88,19 @@ export class MemberService {
 							$group: {
 								_id: "$type",
 								sum: { $sum: "$delta" },
-								logs: { $push: { category: "$category", date: "$date", delta: "$delta", detail: "$comment" } },
+								logs: { $push: { category: "$category", date: "$date", delta: {$toDouble: "$delta"}, detail: "$comment" } },
 							},
+						},
+						{
+							$set: { sum: { $toDouble: "$sum" } },
 						},
 					],
 				},
 			},
 		]);
 
-		return results.length ? Promise.resolve(results[0]) : Promise.reject("查無成員");
+		if (results.length) return results[0];
+		throw "查無成員";
 	}
 
 	async listMemberWithStatistic() {

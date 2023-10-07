@@ -18,4 +18,6 @@ export class Member {
 	avatarHash?: string;
 }
 
+export type MemberInfo = Omit<Member, "isExist">;
+
 export const MemberModelDef: ModelDefinition = { name: Member.name, schema: SchemaFactory.createForClass(Member) };
