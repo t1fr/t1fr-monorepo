@@ -61,7 +61,7 @@ class JoinOption {
 		name: "type",
 		description: "申請項目",
 		required: true,
-		choices: ["休閒隊員", "轉聯隊戰隊員", "轉休閒隊員"].map(value => ({ name: value, value })),
+		choices: ["休閒隊員", "聯隊戰隊員", "轉聯隊戰隊員", "轉休閒隊員"].map(value => ({ name: value, value })),
 	})
 	type: string;
 }
