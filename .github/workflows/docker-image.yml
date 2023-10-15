@@ -28,21 +28,12 @@ jobs:
     needs: build-and-push
     runs-on: self-hosted
     steps:
-      - run: git init
-      - name: Checkout docker compose file
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: docker-compose.yaml
-          sparse-checkout-cone-mode: false
       - name: Login Github container registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Pull Image
-        run: docker-compose pull
-        shell: powershell
-      - name: Start up Container
-        run: docker-compose up --force-recreate -d
-        shell: powershell
+      - run: docker pull ghcr.io/t1fr/squadron-manager:latest
+      - run: docker stop squadron-management-backend && docker rm squadron-management-backend
+      - run: docker run -itd --name squadron-management-backend -p 6518:6518 --restart unless-stopped -e NODE_ENV=production ghcr.io/t1fr/squadron-manager:latest
