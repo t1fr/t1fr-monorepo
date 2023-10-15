@@ -1,9 +1,8 @@
-version: "3"
+version: "3.7"
 services:
   backend:
-    restart: always
-    build: .
-    image: t1fr/smsb
+    restart: unless-stopped
+    image: ghcr.io/t1fr/squadron-manager
     container_name: squadron-management-backend
     environment:
       NODE_ENV: production
