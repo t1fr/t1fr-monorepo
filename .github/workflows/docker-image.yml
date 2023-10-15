@@ -28,8 +28,9 @@ jobs:
     needs: build-and-push
     runs-on: self-hosted
     steps:
+      - run: git init
       - name: Checkout docker compose file
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           sparse-checkout: docker-compose.yaml
           sparse-checkout-cone-mode: false
