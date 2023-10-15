@@ -28,6 +28,8 @@ jobs:
     needs: build-and-push
     runs-on: self-hosted
     steps:
+      - name: Make working directory safe
+        run: git config --global --add safe.directory $GITHUB_WORKSPACE
       - name: Checkout docker compose file
         uses: actions/checkout@v4
         with:
