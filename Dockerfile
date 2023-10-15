@@ -18,5 +18,5 @@ ENV NODE_ENV production
 
 COPY --from=prod-deps /app/node_modules /app/node_modules
 COPY --from=build /app/dist /app/dist
-EXPOSE 3000
+EXPOSE 6518
 CMD [ "node", "/app/dist/main.js" ]
