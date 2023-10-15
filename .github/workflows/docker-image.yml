@@ -35,5 +35,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - run: docker pull ghcr.io/t1fr/squadron-manager:latest
-      - run: docker stop squadron-management-backend && docker rm squadron-management-backend
+      - run: docker stop squadron-management-backend
+      - run: docker rm squadron-management-backend
       - run: docker run -itd --name squadron-management-backend -p 6518:6518 --restart unless-stopped -e NODE_ENV=production ghcr.io/t1fr/squadron-manager:latest
