@@ -36,7 +36,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - run: docker pull ghcr.io/t1fr/squadron-manager:latest
       - run: docker stop squadron-management-backend
+        continue-on-error: true
       - run: docker rm squadron-management-backend
+        continue-on-error: true
       - name: Start Container
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
