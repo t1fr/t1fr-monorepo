@@ -8,6 +8,11 @@ import { JwtGuard, OfficerGuard } from "@/guards";
 export class AccountController {
 	constructor(private readonly accountService: AccountService) {}
 
+	@Get("test")
+	async test() {
+		await this.accountService.backup();
+	}
+
 	@Get()
 	@UseGuards(JwtGuard, OfficerGuard)
 	@ApiResponse({ description: "聯隊內的帳號資訊，延遲最長 4 小時", type: AccountListData, isArray: true })

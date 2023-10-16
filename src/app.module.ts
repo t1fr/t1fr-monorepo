@@ -24,13 +24,9 @@ const intents = [
 	IntentsBitField.Flags.MessageContent,
 ];
 
-function configuration() {
-	return load(readFileSync(join(__dirname, `config/${process.env.NODE_ENV}.yaml`), "utf-8")) as Record<string, unknown>;
-}
-
 @Module({
 	imports: [
-		ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
+		ConfigModule.forRoot({ isGlobal: true }),
 		{ ...HttpModule.register({}), global: true },
 		ScheduleModule.forRoot(),
 		MongooseModule.forRootAsync({
@@ -40,7 +36,7 @@ function configuration() {
 				uri: "mongodb://220.133.81.52:38422",
 				user: "t1fr_admin",
 				pass: "t1frOuO",
-				dbName: configService.getOrThrow("mongo.database"),
+				dbName: configService.getOrThrow("DATABASE"),
 				authSource: "admin",
 			}),
 			connectionName: ConnectionName.Management,
@@ -58,7 +54,7 @@ function configuration() {
 			imports: [ConfigModule],
 			inject: [ConfigService],
 			useFactory: (configService: ConfigService) => ({
-				token: configService.getOrThrow("bot.token"),
+				token: configService.getOrThrow("BOT_TOKEN"),
 				intents: intents,
 				development: ["1046623840710705152"],
 			}),

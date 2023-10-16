@@ -1,6 +1,0 @@
-port: 6518
-bot:
-  token: MTAxMzI4MDYyNjAwMDAwMzEzMg.GCAXoc.aM5oG0E4ip573C3W1LI9Epkm8_xWZx8FxgScNg
-
-mongo:
-  database: production
