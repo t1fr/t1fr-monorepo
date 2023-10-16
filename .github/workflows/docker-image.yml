@@ -37,4 +37,17 @@ jobs:
       - run: docker pull ghcr.io/t1fr/squadron-manager:latest
       - run: docker stop squadron-management-backend
       - run: docker rm squadron-management-backend
-      - run: docker run -itd --name squadron-management-backend -p 6518:6518 --restart unless-stopped -e NODE_ENV=production ghcr.io/t1fr/squadron-manager:latest
+      - name: Start Container
+        shell: pwsh
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        run: >
+          docker run -itd --name squadron-management-backend
+          -p 6518:6518 --restart unless-stopped
+          -e PORT=6515
+          -e NODE_ENV=production
+          -e DATABASE=production
+          -e BOT_TOKEN=$env:BOT_TOKEN
+          -e ACCESS_TOKEN=$env:ACCESS_TOKEN
+          ghcr.io/t1fr/squadron-manager:latest

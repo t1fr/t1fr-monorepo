@@ -1,6 +1,0 @@
-port: 6518
-bot:
-  token: ***REMOVED***
-
-mongo:
-  database: production
