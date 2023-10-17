@@ -94,7 +94,7 @@ export class AccountService implements OnModuleInit {
 		};
 	}
 
-	@Cron("* 08,20 * * *", { utcOffset: 8 })
+	@Cron("00 08,20 * * *", { utcOffset: 8 })
 	async backup() {
 		const accounts = await this.accountModel.find({}, { isExist: false });
 		const keys: (keyof Account)[] = ["_id", "personalRating", "activity", "joinDate", "owner", "type"];
