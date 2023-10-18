@@ -46,7 +46,7 @@ jobs:
         run: >
           docker run -itd --name squadron-management-backend
           -p 6518:6518 --restart unless-stopped
-          -e PORT=6515
+          -e PORT=6518
           -e NODE_ENV=production
           -e DATABASE=production
           -e BOT_TOKEN=$env:BOT_TOKEN
