@@ -15,7 +15,7 @@ export class Member {
 	isOfficer?: boolean;
 
 	@Prop()
-	avatarHash?: string;
+	avatarUrl?: string;
 }
 
 export type MemberInfo = Omit<Member, "isExist">;
