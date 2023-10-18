@@ -88,7 +88,7 @@ export class MemberService {
 							$group: {
 								_id: "$type",
 								sum: { $sum: "$delta" },
-								logs: { $push: { category: "$category", date: "$date", delta: {$toDouble: "$delta"}, detail: "$comment" } },
+								logs: { $push: { category: "$category", date: "$date", delta: { $toDouble: "$delta" }, detail: "$comment" } },
 							},
 						},
 						{
@@ -120,8 +120,8 @@ export class MemberService {
 		]);
 
 		return results.map<PointStatistic>(value => {
-			const { points, nickname, _id } = value;
-			return { _id, nickname, 獎勵: points["獎勵"] ?? 0, 請假: points["請假"] ?? 0, 懲罰: points["懲罰"] ?? 0 };
+			const { points, isExist, ...other } = value;
+			return { ...other, 獎勵: points["獎勵"] ?? 0, 請假: points["請假"] ?? 0, 懲罰: points["懲罰"] ?? 0 };
 		});
 	}
 
