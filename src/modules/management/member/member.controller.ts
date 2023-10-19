@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from "@nestjs/common";
+import { Controller, Get, Param, UseGuards } from "@nestjs/common";
 import { MemberService } from "@/modules/management/member/member.service";
 import { ApiResponse } from "@nestjs/swagger";
 import { JwtGuard, OfficerGuard } from "@/guards";
@@ -18,6 +18,12 @@ export class MemberController {
 	@UseGuards(JwtGuard)
 	@Get("me/summary")
 	async getSelfSummary(@User("_id") id: string) {
+		return await this.memberService.summary(id);
+	}
+
+	@UseGuards(JwtGuard, OfficerGuard)
+	@Get(":memberId/summary")
+	async getMemberSummary(@Param("memberId") id: string) {
 		return await this.memberService.summary(id);
 	}
 }
