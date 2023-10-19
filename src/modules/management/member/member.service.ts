@@ -33,7 +33,7 @@ export class MemberService {
 			nickname: member.displayName,
 			isExist: true,
 			isOfficer: member.roles.cache.has(DiscordRole.軍官),
-			avatarUrl: member.displayAvatarURL({ size: 128, forceStatic: true }),
+			avatarUrl: member.displayAvatarURL({ size: 32, forceStatic: true }),
 		};
 	}
 
