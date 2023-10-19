@@ -64,7 +64,7 @@ export class AccountService implements OnModuleInit {
 	}
 
 	async findExistingAccount() {
-		return this.accountModel.find({ isExist: true }, { isExist: false }, { populate: { path: "owner", select: ["_id", "nickname"] } });
+		return this.accountModel.find({ isExist: true }, { isExist: false }, { populate: { path: "owner", select: ["_id", "nickname", "avatarUrl"] } });
 	}
 
 	async searchByIdContain(query: string) {
