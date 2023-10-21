@@ -16,9 +16,9 @@ export class AuthService {
 		private readonly jwtService: JwtService,
 	) {}
 
-	async login(code?: string) {
-		if(!code) throw new UnauthorizedException("無效的授權");
-		const token = await this.getToken(code);
+	async login(isLocalhost: boolean, code?: string) {
+		if (!code) throw new UnauthorizedException("無效的授權");
+		const token = await this.getToken(code, isLocalhost);
 		if (!token) throw new UnauthorizedException("無效的授權");
 		const id = await this.getUserId(token);
 		const member = await this.memberService.findMemberById(id);
@@ -26,8 +26,8 @@ export class AuthService {
 		return this.jwtService.sign(member.toObject());
 	}
 
-	private async getToken(code: string) {
-		const data = { grant_type: "authorization_code", code, redirect_uri: `http://${AuthService.Host}:6518/api/auth/redirect` };
+	private async getToken(code: string, isLocalhost: boolean) {
+		const data = { grant_type: "authorization_code", code, redirect_uri: `http://${isLocalhost ? "localhost" : "220.133.81.52"}:6518/api/auth/redirect` };
 		try {
 			const response = await this.httpService.axiosRef.post<{ access_token?: string }>("https://discord.com/api/v10/oauth2/token", data, {
 				auth: { username: "1013280626000003132", password: "l6l-mpiqLQjhIbukQjiW7zitAq3Xxbme" },
