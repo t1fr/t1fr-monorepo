@@ -17,10 +17,9 @@ import { MemberService } from "@/modules/management/member/member.service";
 import { UserAutocompleteInterceptor } from "@/modules/bot/autocomplete/user.autocomplete";
 import { PointType, PointTypes, RewardPointCategories, RewardPointCategory } from "@/modules/management/point/point.schema";
 import { Client, EmbedBuilder, escapeMarkdown, GuildMember, ModalBuilder, TextChannel, TextInputBuilder, TextInputStyle } from "discord.js";
-import { Summary } from "@/modules/management/member/member.service";
 import { configLayout, select } from "@/modules/bot/utility";
 import { Channel } from "@/constant";
-import * as util from "util";
+import { Summary } from "@/modules/management/member/summary.schema";
 
 const MemberCommandDecorator = createCommandGroupDecorator({
 	name: "member",
@@ -211,8 +210,8 @@ export class MemberCommand {
 		const typeSelection = type ? [type] : PointTypes;
 		const title = `${type ?? ""}點數總和`;
 		const embeds = [];
-
 		for (let i = 0; i < results.length; i += 25) {
+			console.log(results.slice(i, i + 25));
 			const selection = select(results.slice(i, i + 25), ["nickname", ...typeSelection]);
 			const fields = [
 				{ name: "暱稱", value: selection.nickname.join("\n"), inline: true },
