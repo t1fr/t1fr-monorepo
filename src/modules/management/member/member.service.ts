@@ -1,5 +1,5 @@
-import { Injectable, Logger, OnApplicationBootstrap } from "@nestjs/common";
-import { Model, Promise, UpdateQuery } from "mongoose";
+import { Injectable, Logger } from "@nestjs/common";
+import { Model, UpdateQuery } from "mongoose";
 import { Member } from "@/modules/management/member/member.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { PointType } from "@/modules/management/point/point.schema";
@@ -7,14 +7,8 @@ import { ConnectionName, DiscordRole } from "@/constant";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { Client, GuildMember } from "discord.js";
 import { BulkWriteResult } from "mongodb";
-import { result } from "lodash";
-
-export interface Summary {
-	_id: string;
-	nickname: string;
-	accounts: { _id: string; activity: number; personalRating: number; type: string }[];
-	points: { _id: string; sum: number; logs: { category: string; date: string; delta: number; detail: string }[] }[];
-}
+import { Summary } from "@/modules/management/member/summary.schema";
+import { Statistic } from "@/modules/management/member/statistic.schema";
 
 export type PointStatistic = Omit<Member, "isExist"> & { [key in PointType]: number };
 
@@ -22,6 +16,8 @@ export type PointStatistic = Omit<Member, "isExist"> & { [key in PointType]: num
 export class MemberService {
 	constructor(
 		@InjectModel(Member.name, ConnectionName.Management) private readonly memberModel: Model<Member>,
+		@InjectModel(Summary.name, ConnectionName.Management) private readonly summaryModel: Model<Summary>,
+		@InjectModel(Statistic.name, ConnectionName.Management) private readonly statisticModel: Model<Statistic>,
 		private readonly client: Client,
 	) {}
 
@@ -66,62 +62,16 @@ export class MemberService {
 	}
 
 	async summary(userId: string) {
-		const results = await this.memberModel.aggregate<Summary>([
-			{ $match: { _id: userId } },
-			{
-				$lookup: {
-					from: "accounts",
-					localField: "_id",
-					foreignField: "owner",
-					as: "accounts",
-					pipeline: [{ $project: { type: true, personalRating: true, activity: true } }],
-				},
-			},
-			{
-				$lookup: {
-					from: "pointevents",
-					localField: "_id",
-					foreignField: "member",
-					as: "points",
-					pipeline: [
-						{
-							$group: {
-								_id: "$type",
-								sum: { $sum: "$delta" },
-								logs: { $push: { category: "$category", date: "$date", delta: { $toDouble: "$delta" }, detail: "$comment" } },
-							},
-						},
-						{
-							$set: { sum: { $toDouble: "$sum" } },
-						},
-					],
-				},
-			},
-		]);
-
-		if (results.length) return results[0];
+		const results = await this.summaryModel.findById(userId);
+		if (results) return results;
 		throw "查無成員";
 	}
 
 	async listMemberWithStatistic() {
-		const results = await this.memberModel.aggregate<Member & { points: { [key in PointType]: number } }>([
-			{ $match: { isExist: true } },
-			{ $unset: "isExist" },
-			{
-				$lookup: {
-					from: "pointevents",
-					localField: "_id",
-					foreignField: "member",
-					as: "points",
-					pipeline: [{ $group: { _id: "$type", sum: { $sum: "$delta" } } }],
-				},
-			},
-			{ $set: { points: { $arrayToObject: { $map: { input: "$points", in: { k: "$$this._id", v: { $toDouble: "$$this.sum" } } } } } } },
-		]);
-
+		const results = await this.statisticModel.find();
 		return results.map<PointStatistic>(value => {
-			const { points, isExist, ...other } = value;
-			return { ...other, 獎勵: points["獎勵"] ?? 0, 請假: points["請假"] ?? 0, 懲罰: points["懲罰"] ?? 0 };
+			const { points, ...other } = value.toObject();
+			return { ...other, 獎勵: points?.["獎勵"] ?? 0, 請假: points?.["請假"] ?? 0, 懲罰: points?.["懲罰"] ?? 0 };
 		});
 	}
 
