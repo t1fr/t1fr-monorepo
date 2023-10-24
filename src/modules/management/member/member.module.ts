@@ -7,9 +7,10 @@ import { MemberController } from "@/modules/management/member/member.controller"
 import { MemberModelDef } from "@/modules/management/member/member.schema";
 import { SummaryModelDef } from "@/modules/management/member/summary.schema";
 import { StatisticModelDef } from "@/modules/management/member/statistic.schema";
+import { GithubModule } from "@/modules/github/github.module";
 
 @Module({
-	imports: [MongooseModule.forFeature([MemberModelDef, SummaryModelDef, StatisticModelDef], ConnectionName.Management), PointModule],
+	imports: [GithubModule, MongooseModule.forFeature([MemberModelDef, SummaryModelDef, StatisticModelDef], ConnectionName.Management), PointModule],
 	providers: [MemberService],
 	exports: [MemberService],
 	controllers: [MemberController],

@@ -9,16 +9,21 @@ import { Client, GuildMember } from "discord.js";
 import { BulkWriteResult } from "mongodb";
 import { Summary } from "@/modules/management/member/summary.schema";
 import { Statistic } from "@/modules/management/member/statistic.schema";
+import { Backup } from "@/modules/management/backup.interface";
+import { result } from "lodash";
+import { Account } from "@/modules/management/account/account.schema";
+import { GithubService } from "@/modules/github/github.service";
 
 export type PointStatistic = Omit<Member, "isExist"> & { [key in PointType]: number };
 
 @Injectable()
-export class MemberService {
+export class MemberService implements Backup {
 	constructor(
 		@InjectModel(Member.name, ConnectionName.Management) private readonly memberModel: Model<Member>,
 		@InjectModel(Summary.name, ConnectionName.Management) private readonly summaryModel: Model<Summary>,
 		@InjectModel(Statistic.name, ConnectionName.Management) private readonly statisticModel: Model<Statistic>,
 		private readonly client: Client,
+		private readonly githubService: GithubService,
 	) {}
 
 	private readonly logger = new Logger(MemberService.name);
@@ -77,5 +82,13 @@ export class MemberService {
 
 	async findMemberById(_id: string) {
 		return this.memberModel.findOne({ _id, isExist: true });
+	}
+
+	@Cron("00 08,20 * * *", { utcOffset: 8 })
+	async backup() {
+		const members = await this.memberModel.find();
+		const keys: (keyof Member)[] = ["_id", "nickname", "isOfficer", "isExist"];
+		const content = [keys.join(","), ...members.map(account => [account._id, account.nickname, account.isOfficer, account.isExist].join(","))].join("\n");
+		await this.githubService.upsertFile("member.csv", content);
 	}
 }

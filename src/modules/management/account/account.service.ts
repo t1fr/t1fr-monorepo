@@ -10,15 +10,17 @@ import { Cron, CronExpression } from "@nestjs/schedule";
 import * as Cheerio from "cheerio";
 import { parseInt } from "lodash";
 import { ConfigService } from "@nestjs/config";
+import { GithubService } from "@/modules/github/github.service";
+import { Backup } from "@/modules/management/backup.interface";
 
 @Injectable()
-export class AccountService implements OnModuleInit {
+export class AccountService implements OnModuleInit, Backup {
 	private readonly logger: Logger = new Logger(AccountService.name);
 
 	constructor(
 		@InjectModel(Account.name, ConnectionName.Management) private readonly accountModel: Model<Account>,
 		private httpService: HttpService,
-		private configService: ConfigService,
+		private githubService: GithubService,
 	) {}
 
 	async onModuleInit() {
@@ -98,18 +100,11 @@ export class AccountService implements OnModuleInit {
 	async backup() {
 		const accounts = await this.accountModel.find({}, { isExist: false });
 		const keys: (keyof Account)[] = ["_id", "personalRating", "activity", "joinDate", "owner", "type"];
-		const content = Buffer.from(
-			`${keys.join(",")}\n${accounts
-				.map(account => [account._id, account.personalRating, account.activity, account.joinDate, account.owner, account.type].join(","))
-				.join("\n")}`,
-		).toString("base64");
-		const message = dayjs().format("YYYY-MM-DD HH:mm");
-		const url = "https://api.github.com/repos/t1fr/data-backup/contents/account.csv";
-		const token = this.configService.get("ACCESS_TOKEN");
-		const headers = { Accept: "application/vnd.github+json", Authorization: `Bearer ${token}` };
-		let sha = undefined;
-		const getResult = await this.httpService.axiosRef.get<{ sha: string }>(url, { headers }).catch(console.error);
-		if (getResult) sha = getResult.data.sha;
-		await this.httpService.axiosRef.put(url, { message, content, sha }, { headers }).catch(console.error);
+		const content = [
+			keys.join(","),
+			...accounts.map(account => [account._id, account.personalRating, account.activity, account.joinDate, account.owner, account.type].join(",")),
+		].join("\n");
+
+		await this.githubService.upsertFile("account.csv", content);
 	}
 }

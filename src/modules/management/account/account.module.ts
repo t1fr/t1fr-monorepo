@@ -4,9 +4,10 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { ConnectionName } from "@/constant";
 import { AccountModelDef } from "@/modules/management/account/account.schema";
 import { AccountController } from "@/modules/management/account/account.controller";
+import { GithubModule } from "@/modules/github/github.module";
 
 @Module({
-	imports: [MongooseModule.forFeature([AccountModelDef], ConnectionName.Management)],
+	imports: [GithubModule, MongooseModule.forFeature([AccountModelDef], ConnectionName.Management)],
 	providers: [AccountService],
 	exports: [AccountService],
 	controllers: [AccountController],
