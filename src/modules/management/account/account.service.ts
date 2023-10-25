@@ -9,7 +9,6 @@ import { lastValueFrom } from "rxjs";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import * as Cheerio from "cheerio";
 import { parseInt } from "lodash";
-import { ConfigService } from "@nestjs/config";
 import { GithubService } from "@/modules/github/github.service";
 import { Backup } from "@/modules/management/backup.interface";
 
