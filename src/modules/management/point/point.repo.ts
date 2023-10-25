@@ -23,7 +23,7 @@ export class PointRepo implements Backup {
 		}
 	}
 
-	@Cron("00 08,20 * * *", { utcOffset: 8 })
+	@Cron("02 08,20 * * *", { utcOffset: 8 })
 	async backup() {
 		const events = await this.pointModel.find();
 		const keys: (keyof PointEvent)[] = ["date", "type", "member", "delta", "category", "comment"];

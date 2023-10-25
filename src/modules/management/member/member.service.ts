@@ -84,7 +84,7 @@ export class MemberService implements Backup {
 		return this.memberModel.findOne({ _id, isExist: true });
 	}
 
-	@Cron("00 08,20 * * *", { utcOffset: 8 })
+	@Cron("04 08,20 * * *", { utcOffset: 8 })
 	async backup() {
 		const members = await this.memberModel.find();
 		const keys: (keyof Member)[] = ["_id", "nickname", "isOfficer", "isExist"];
