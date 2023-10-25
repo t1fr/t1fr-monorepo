@@ -5,9 +5,10 @@ import { RewardService } from '@/modules/management/point/reward.service'
 import { MongooseModule } from '@nestjs/mongoose'
 import { ConnectionName } from '@/constant'
 import { PointEventModelDef } from '@/modules/management/point/point.schema'
+import { GithubModule } from '@/modules/github/github.module'
 
 @Module({
-	imports: [MongooseModule.forFeature([PointEventModelDef], ConnectionName.Management)],
+	imports: [GithubModule, MongooseModule.forFeature([PointEventModelDef], ConnectionName.Management)],
 	providers: [RewardService, PointRepo, ...stages, { provide: "stages", useFactory: (...stages: CalculateStage[]) => stages, inject: stages }],
 })
 export default class PointModule {}

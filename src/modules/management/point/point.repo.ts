@@ -5,7 +5,6 @@ import { Model } from "mongoose";
 import { isArray } from "lodash";
 import { ConnectionName } from "@/constant";
 import { Backup } from "@/modules/management/backup.interface";
-import { Account } from "@/modules/management/account/account.schema";
 import { GithubService } from "@/modules/github/github.service";
 import { Cron } from "@nestjs/schedule";
 
