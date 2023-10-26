@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { BooleanOption, Context, createCommandGroupDecorator, Ctx, Modal, ModalContext, Options, SlashCommandContext, Subcommand } from "necord";
+import { Context, createCommandGroupDecorator, Ctx, Modal, ModalContext, SlashCommandContext, Subcommand } from "necord";
 import { ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 import { ScheduleService } from "@/modules/schedule/schedule.service";
 import { configLayout } from "@/modules/bot/utility";

@@ -10,8 +10,6 @@ import { BulkWriteResult } from "mongodb";
 import { Summary } from "@/modules/management/member/summary.schema";
 import { Statistic } from "@/modules/management/member/statistic.schema";
 import { Backup } from "@/modules/management/backup.interface";
-import { result } from "lodash";
-import { Account } from "@/modules/management/account/account.schema";
 import { GithubService } from "@/modules/github/github.service";
 
 export type PointStatistic = Omit<Member, "isExist"> & { [key in PointType]: number };

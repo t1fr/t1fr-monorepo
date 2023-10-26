@@ -17,17 +17,17 @@ export class RatingStage implements CalculateStage {
 
 	calculate(results: CalculateResult[]): CalculateResult[] {
 		RatingStage.logger.log("根據賽季評分計算中");
-		const gainableAccounts = results.filter((result) => result.personalRating >= this.thresholds[this.thresholds.length - 1].rating);
-		gainableAccounts.sort((a, b) => b.personalRating - a.personalRating);
+		const awardableAccounts = results.filter((result) => result.personalRating >= this.thresholds[this.thresholds.length - 1].rating);
+		awardableAccounts.sort((a, b) => b.personalRating - a.personalRating);
 		let index = 0;
-		for (let i = 0; i < gainableAccounts.length; i++) {
-			const account = gainableAccounts[i];
+		for (let i = 0; i < awardableAccounts.length; i++) {
+			const account = awardableAccounts[i];
 			while (this.thresholds[index].rating > account.personalRating) index++;
 			const { rating, point } = this.thresholds[index];
 			account.point = point;
 			account.reasons.push(`${rating} ≤ 個人評分${index > 0 ? ` < ${this.thresholds[index - 1].rating}` : ""}`);
 		}
 		RatingStage.logger.log("根據賽季評分計算完畢");
-		return gainableAccounts;
+		return awardableAccounts;
 	}
 }

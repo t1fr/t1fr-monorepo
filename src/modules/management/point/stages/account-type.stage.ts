@@ -11,9 +11,9 @@ export class AccountTypeStage implements CalculateStage {
 		AccountTypeStage.logger.log("根據帳號類型計算中");
 		const lookupTable = new Map<string, number>();
 		const noGainTypes: AccountType[] = ["🇳 休閒主帳", "🇽 贊助者", "🇧 公用小帳", "🇩 半公用主帳"];
-		const gainableAccounts = results.filter(value => !noGainTypes.includes(value.type));
+		const awardableAccounts = results.filter(value => !noGainTypes.includes(value.type));
 
-		for (const account of gainableAccounts) {
+		for (const account of awardableAccounts) {
 			if (account.point === 0) continue;
 			switch (account.type) {
 				case "🇸 聯隊戰主帳":
@@ -31,6 +31,6 @@ export class AccountTypeStage implements CalculateStage {
 			}
 		}
 		AccountTypeStage.logger.log("根據帳號類型計算完畢");
-		return gainableAccounts;
+		return awardableAccounts;
 	}
 }

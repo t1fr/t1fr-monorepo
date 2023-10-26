@@ -161,7 +161,7 @@ export const TypeDictionary = {
 
 export function translateEvent(event?: string) {
 	if (!event) return event;
-	let match = null;
+	let match;
 	// noinspection JSAssignmentUsedAsCondition
 	if ((match = event.match(/battlepass_season(?<season>\d+)/))) return `戰鬥通行證第 ${match.groups!.season} 賽季`;
 	// noinspection JSAssignmentUsedAsCondition

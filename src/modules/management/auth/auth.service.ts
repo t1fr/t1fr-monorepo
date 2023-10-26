@@ -4,12 +4,9 @@ import { HttpService } from "@nestjs/axios";
 import { lastValueFrom } from "rxjs";
 import { Snowflake } from "discord.js";
 import { JwtService } from "@nestjs/jwt";
-import * as process from "process";
 
 @Injectable()
 export class AuthService {
-	static Host = process.env["NODE_ENV"] === "test" ? "localhost" : "220.133.81.52";
-
 	constructor(
 		private readonly memberService: MemberService,
 		private readonly httpService: HttpService,

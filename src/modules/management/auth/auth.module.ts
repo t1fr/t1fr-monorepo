@@ -1,4 +1,4 @@
-import { Global, Module } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { MemberModule } from "@/modules/management/member/member.module";
 import { AuthController } from "@/modules/management/auth/auth.controller";
 import { AuthService } from "@/modules/management/auth/auth.service";
