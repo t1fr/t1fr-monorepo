@@ -33,11 +33,11 @@ export class BudgetStage implements CalculateStage {
 			// 剩多少積分可以分配
 			const remainingBudget = this.budget - totalPoints;
 			const quotient = (remainingBudget / recordCount) >> 0;
-			const incretment = Math.min(quotient, maxPoint - groups[maxPoint][0].point);
-			if (incretment === 0) break;
-			totalPoints += incretment * recordCount;
+			const increment = Math.min(quotient, maxPoint - groups[maxPoint][0].point);
+			if (increment === 0) break;
+			totalPoints += increment * recordCount;
 			groups[maxPoint].forEach((result) => {
-				result.point += incretment;
+				result.point += increment;
 				result.reasons.push("因預算限制調整");
 			});
 		}

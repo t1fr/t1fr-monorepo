@@ -4,7 +4,6 @@ import { CookieOptions, Response } from "express";
 import { JwtGuard } from "@/guards/jwt.guard";
 import { User } from "@/decorators/user.decorator";
 import { Member } from "@/modules/management/member/member.schema";
-import * as url from "url";
 
 @Controller("auth")
 export class AuthController {
