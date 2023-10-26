@@ -19,6 +19,9 @@ export class Statistic implements Omit<Member, "isExist"> {
 
 	@Prop()
 	nickname: string;
+
+	@Prop()
+	noAccount: boolean;
 }
 
 export const StatisticModelDef: ModelDefinition = { name: Statistic.name, schema: SchemaFactory.createForClass(Statistic) };
