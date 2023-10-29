@@ -41,6 +41,18 @@ export class ScheduleCommand {
 		await interaction.reply({ content: `日程表發布${message ? "成功" : "失敗"}`, ephemeral: true });
 	}
 
+	@Subcommand({ name: "snapshot", description: "快照當前聯隊狀態進入賽季紀錄" })
+	async snapshot(@Context() [interaction]: SlashCommandContext) {
+		await this.battleService.snapshot(true);
+		interaction.reply({ content: "已記錄完畢" });
+	}
+
+	@Subcommand({ name: "rank", description: "查看當前聯隊排名" })
+	async getRank(@Context() [interaction]: SlashCommandContext) {
+		const rank = await this.battleService.getRank();
+		interaction.reply({ content: `當前排名 ${rank}` });
+	}
+
 	@Modal("set-schedule")
 	async onModal(@Ctx() [interaction]: ModalContext) {
 		await interaction.deferReply();

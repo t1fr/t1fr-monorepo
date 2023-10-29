@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Account } from "@/modules/management/account/account.schema";
 
 @Schema()
 export class Season {
@@ -10,6 +11,9 @@ export class Season {
 
 	@Prop()
 	sections: Section[];
+
+	@Prop()
+	accounts: Account[];
 }
 
 @Schema()

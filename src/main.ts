@@ -9,6 +9,9 @@ import { CustomOrigin } from "@nestjs/common/interfaces/external/cors-options.in
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import cookieParser from "cookie-parser";
+import { INestApplication } from "@nestjs/common";
+import { SpelunkerModule } from "nestjs-spelunker";
+import { writeFileSync } from "fs";
 
 dayjs.extend(customParse);
 dayjs.extend(utc);
@@ -22,6 +25,33 @@ const allowedOrigin: CustomOrigin = (origin: string, callback) => {
 	return callback(new Error(`請求的來源: ${origin} 不在白名單中`), false);
 };
 
+const extraModules = [
+	"ConfigHostModule",
+	"LoggerModule",
+	"MongooseCoreModule",
+	"MongooseModule",
+	"DiscoveryModule",
+	"HttpModule",
+	"JwtModule",
+	"NecordModule",
+	"ScheduleModule",
+	"ConfigModule",
+];
+
+function drawDepGraph(app: INestApplication) {
+	const tree = SpelunkerModule.explore(app);
+	const root = SpelunkerModule.graph(tree);
+	const edges = SpelunkerModule.findGraphEdges(root);
+	const mermaidEdges = edges
+		.filter(
+			// I'm just filtering some extra Modules out
+			({ from, to }) => !extraModules.includes(from.module.name) && !extraModules.includes(to.module.name),
+		)
+		.map(({ from, to }) => `${from.module.name}-->${to.module.name}`);
+
+	writeFileSync("graph.md", ["```mermaid", "graph TD", `\t${mermaidEdges.join("\n\t")}`, "```"].join("\n"));
+}
+
 async function bootstrap() {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule, { bufferLogs: true, cors: { origin: allowedOrigin, credentials: true } });
 	app.useLogger(app.get(ChannelLogger));
@@ -32,6 +62,7 @@ async function bootstrap() {
 	const document = SwaggerModule.createDocument(app, swaggerConfig);
 	SwaggerModule.setup("api", app, document);
 	const configService = app.get(ConfigService);
+	drawDepGraph(app);
 	await app.listen(configService.get("PORT")!);
 }
 

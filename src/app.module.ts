@@ -8,8 +8,9 @@ import LoggerModule from "@/modules/logging/logger.module";
 import { ConnectionName } from "@/constant";
 import { HttpModule } from "@nestjs/axios";
 import { ScheduleModule } from "@nestjs/schedule";
-import DiscordBotModule from "@/modules/bot/bot.module";
+import { DiscordBotModule } from "@/modules/bot/bot.module";
 import { BattleScheduleModule } from "@/modules/schedule/schedule.module";
+import { AuthModule } from '@/modules/auth/auth.module'
 
 const intents = [
 	IntentsBitField.Flags.Guilds,
@@ -55,9 +56,8 @@ const intents = [
 				development: ["1046623840710705152"],
 			}),
 		}),
-		BattleScheduleModule,
 		DiscordBotModule,
-		ManagementModule,
+		AuthModule,
 		LoggerModule,
 	],
 })
