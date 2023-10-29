@@ -6,6 +6,9 @@ import { Season, Section } from "@/modules/schedule/season.schema";
 import { ConnectionName } from "@/constant";
 import { Model } from "mongoose";
 import dayjs from "dayjs";
+import { AccountService } from "@/modules/management/account/account.service";
+import * as process from "process";
+import { HttpService } from "@nestjs/axios";
 
 @Injectable()
 export class ScheduleService {
@@ -13,7 +16,9 @@ export class ScheduleService {
 
 	constructor(
 		@InjectModel(Season.name, ConnectionName.Management) private readonly seasonModel: Model<Season>,
+		private readonly accountService: AccountService,
 		private readonly client: Client,
+		private readonly httpService: HttpService,
 	) {}
 
 	async upsertSeason(year: string, raw: string) {
@@ -27,10 +32,8 @@ export class ScheduleService {
 	}
 
 	async getCurrentBattleRating() {
-		return new Promise<number | null>(async (resolve, reject) => {
-			const now = new Date();
-			const year = now.getUTCFullYear();
-			const season = Math.floor(now.getUTCMonth() / 2) + 1;
+		return new Promise<number | null>(async resolve => {
+			const { now, year, season } = this.CurrentSeason;
 			const sections = await this.seasonModel.aggregate<{ battleRating: number }>([
 				{ $match: { year, season } },
 				{ $unwind: "$sections" },
@@ -43,10 +46,15 @@ export class ScheduleService {
 		});
 	}
 
-	async getCurrentSeasonTable() {
+	get CurrentSeason() {
 		const now = new Date();
 		const year = now.getUTCFullYear();
 		const season = Math.floor(now.getUTCMonth() / 2) + 1;
+		return { now, year, season };
+	}
+
+	async getCurrentSeasonTable() {
+		const { year, season } = this.CurrentSeason;
 		const found = await this.seasonModel.findOne({ year, season });
 
 		if (!found) return Promise.reject("查無當前賽季資料");
@@ -56,6 +64,7 @@ export class ScheduleService {
 
 	@Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, { utcOffset: 0 })
 	async updateBulletin() {
+		if (process.env["NODE_ENV"] === "test") return;
 		const battleRating = await this.getCurrentBattleRating();
 		const messages = { category: "聯隊戰", announcement: "今日分房：新賽季" };
 		if (battleRating) {
@@ -76,6 +85,20 @@ export class ScheduleService {
 		ScheduleService.logger.log("更新聯隊戰分房");
 
 		return battleRating !== undefined;
+	}
+
+	async getRank() {
+		const queryUrl = (page: number) => `https://warthunder.com/en/community/getclansleaderboard/dif/_hist/page/${page}/sort/dr_era5`;
+		let position = -1;
+		for(let i = 1 ; i< 20; i++){
+			const data = await this.httpService.axiosRef.get<{ data: { pos: number; _id: number }[] }>(queryUrl(i));
+			const squad = data.data.data.find(value => value._id === 1078072);
+			if (!squad) continue;
+			position = squad.pos;
+			break;
+		}
+
+		return position;
 	}
 
 	private static seasonToTable(currentSeason: Season) {
@@ -104,6 +127,19 @@ export class ScheduleService {
 		scheduleMessage.push("```");
 
 		return scheduleMessage.join("\n");
+	}
+
+	isLastDayOfMonth(now: Date) {
+		const lastDayOfMonth = dayjs.utc().endOf("month");
+		return lastDayOfMonth.isSame(now, "day");
+	}
+
+	@Cron(CronExpression.EVERY_DAY_AT_11PM, { utcOffset: 0 })
+	async snapshot(force: boolean = false) {
+		const { now, year, season } = this.CurrentSeason;
+		if (!force && !this.isLastDayOfMonth(now)) return;
+		const accounts = await this.accountService.listAccounts();
+		await this.seasonModel.updateOne({ year, season }, { $set: { accounts } });
 	}
 
 	static parseTextToSections(year: number, scheduleText: string): Section[] {

@@ -13,5 +13,5 @@ import { BattleScheduleModule } from "@/modules/schedule/schedule.module";
 	imports: [ManagementModule, WikiModule, BattleScheduleModule],
 	providers: [AccountCommand, MemberCommand, MemberUserCommand, DiscordListener, WikiCommand, ScheduleCommand],
 })
-export default class DiscordBotModule {}
+export  class DiscordBotModule {}
 

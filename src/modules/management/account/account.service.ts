@@ -72,6 +72,10 @@ export class AccountService implements OnModuleInit, Backup {
 		return this.accountModel.find({ _id: { $regex: RegExp(query, "i") } }, { _id: true }, { limit: 25 }).exec();
 	}
 
+	async listAccounts() {
+		return this.accountModel.find({ isExist: true }, { isExist: false });
+	}
+
 	async joinOnId() {
 		const data: { _id: string; owner: string }[] = await this.accountModel.aggregate([
 			{

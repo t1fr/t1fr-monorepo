@@ -1,5 +1,5 @@
 import { Controller, Delete, Get, Post, Query, Res, UseGuards } from "@nestjs/common";
-import { AuthService } from "@/modules/management/auth/auth.service";
+import { AuthService } from "@/modules/auth/auth.service";
 import { CookieOptions, Response } from "express";
 import { JwtGuard } from "@/guards/jwt.guard";
 import { User } from "@/decorators/user.decorator";
