@@ -43,14 +43,9 @@ export class ScheduleCommand {
 
 	@Subcommand({ name: "snapshot", description: "快照當前聯隊狀態進入賽季紀錄" })
 	async snapshot(@Context() [interaction]: SlashCommandContext) {
+		await interaction.deferReply();
 		await this.battleService.snapshot(true);
-		interaction.reply({ content: "已記錄完畢" });
-	}
-
-	@Subcommand({ name: "rank", description: "查看當前聯隊排名" })
-	async getRank(@Context() [interaction]: SlashCommandContext) {
-		const rank = await this.battleService.getRank();
-		interaction.reply({ content: `當前排名 ${rank}` });
+		interaction.followUp({ content: "已記錄完畢" });
 	}
 
 	@Modal("set-schedule")

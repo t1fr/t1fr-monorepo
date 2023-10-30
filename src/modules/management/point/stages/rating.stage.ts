@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { CalculateStage } from "@/modules/management/point/stages/stage";
-import { CalculateResult } from "@/modules/management/point/reward.service";
+import { CalculateData } from "@/modules/management/point/reward.service";
 
 @Injectable()
 export class RatingStage implements CalculateStage {
@@ -15,19 +15,17 @@ export class RatingStage implements CalculateStage {
 		{ rating: 500, point: 1 },
 	];
 
-	calculate(results: CalculateResult[]): CalculateResult[] {
+	calculate(data: CalculateData[]): CalculateData[] {
 		RatingStage.logger.log("根據賽季評分計算中");
-		const awardableAccounts = results.filter((result) => result.personalRating >= this.thresholds[this.thresholds.length - 1].rating);
-		awardableAccounts.sort((a, b) => b.personalRating - a.personalRating);
-		let index = 0;
-		for (let i = 0; i < awardableAccounts.length; i++) {
-			const account = awardableAccounts[i];
-			while (this.thresholds[index].rating > account.personalRating) index++;
-			const { rating, point } = this.thresholds[index];
-			account.point = point;
-			account.reasons.push(`${rating} ≤ 個人評分${index > 0 ? ` < ${this.thresholds[index - 1].rating}` : ""}`);
+		for (let i = 0; i < data.length; i++) {
+			const accounts = data[i].accounts;
+			for (const account of accounts) {
+				const matched = this.thresholds.find(threshold => threshold.rating < account.personalRating);
+				if (!matched) continue;
+				account.available = matched.point;
+			}
 		}
 		RatingStage.logger.log("根據賽季評分計算完畢");
-		return awardableAccounts;
+		return data;
 	}
 }

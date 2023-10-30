@@ -7,13 +7,19 @@ import { ConnectionName } from "@/constant";
 import { Backup } from "@/modules/management/backup.interface";
 import { GithubService } from "@/modules/github/github.service";
 import { Cron } from "@nestjs/schedule";
+import { RewardService } from "@/modules/management/point/reward.service";
 
 @Injectable()
-export class PointRepo implements Backup {
+export class PointService implements Backup {
 	constructor(
 		@InjectModel(PointEvent.name, ConnectionName.Management) private readonly pointModel: Model<PointEvent>,
+		private readonly rewardService: RewardService,
 		private readonly githubService: GithubService,
 	) {}
+
+	get Reward() {
+		return this.rewardService;
+	}
 
 	async append(type: PointType, data: Omit<PointEvent, "type"> | Omit<PointEvent, "type">[]) {
 		if (isArray(data)) {

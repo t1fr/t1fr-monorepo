@@ -1,44 +1,27 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { CalculateStage } from "@/modules/management/point/stages/stage";
-import { Account, AccountType } from "@/modules/management/account/account.schema";
+import { Summary } from "@/modules/management/member/summary.schema";
 
-
-export interface CalculateResult {
-	id: string;
-	type: AccountType;
-	personalRating: number;
-	owner: string;
-	point: number;
-	backup: number;
-	reasons: string[];
+export class CalculateData implements Summary {
+	_id: string;
+	nickname: string;
+	accounts: { _id: string; activity: number; personalRating: number; type: string; available: number; reasons: string[] }[];
+	points: { _id: string; sum: number; logs: { category: string; date: string; delta: number; detail: string }[] }[];
 }
-
 
 @Injectable()
 export class RewardService {
 	constructor(@Inject("stages") private readonly stages: CalculateStage[]) {}
 
-	async calculate(accounts: Account[]): Promise<CalculateResult[]> {
-		const noOwnerAccounts = accounts.filter((account) => !account.owner);
-		const noTypedAccounts = accounts.filter((account) => !account.type);
-
-		const error = [];
-
-		if (noOwnerAccounts.length > 0) error.push("以下帳號未設置擁有者", ...noOwnerAccounts.map((value) => value._id));
-		if (noTypedAccounts.length > 0) error.push("以下帳號未設置類型", ...noTypedAccounts.map((value) => value._id));
-
-		if (error.length > 0) throw new Error(error.join("\n"));
-
-		const rewardPointData: CalculateResult[] = accounts.map((account) => ({
-			id: account._id,
-			type: account.type!,
-			owner: account.owner!,
-			personalRating: account.personalRating,
-			point: 0,
-			backup: 0,
-			reasons: [],
-		}));
-
+	async calculate(summaries: Summary[]): Promise<CalculateData[]> {
+		const rewardPointData: CalculateData[] = summaries.map(summary => {
+			const { accounts, points, ...other } = summary;
+			return {
+				accounts: accounts.map(account => ({ ...account, available: 0, reasons: [] })),
+				points: points.map(point => ({ _id: point._id, sum: point.sum, logs: [] })),
+				...other,
+			};
+		});
 		return this.stages.reduce((acc, val) => val.calculate(acc), rewardPointData);
 	}
 }
