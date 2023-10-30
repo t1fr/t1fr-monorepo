@@ -11,6 +11,7 @@ import { Summary } from "@/modules/management/member/summary.schema";
 import { Statistic } from "@/modules/management/member/statistic.schema";
 import { Backup } from "@/modules/management/backup.interface";
 import { GithubService } from "@/modules/github/github.service";
+import { PointService } from "@/modules/management/point/point.service";
 
 export type PointStatistic = Omit<Member, "isExist"> & { [key in PointType]: number };
 
@@ -20,6 +21,7 @@ export class MemberService implements Backup {
 		@InjectModel(Member.name, ConnectionName.Management) private readonly memberModel: Model<Member>,
 		@InjectModel(Summary.name, ConnectionName.Management) private readonly summaryModel: Model<Summary>,
 		@InjectModel(Statistic.name, ConnectionName.Management) private readonly statisticModel: Model<Statistic>,
+		private readonly pointService: PointService,
 		private readonly client: Client,
 		private readonly githubService: GithubService,
 	) {}
@@ -34,6 +36,11 @@ export class MemberService implements Backup {
 			isOfficer: member.roles.cache.has(DiscordRole.軍官),
 			avatarUrl: member.displayAvatarURL({ size: 32, forceStatic: true }),
 		};
+	}
+
+	async calculateRewardPoint() {
+		const summaries = await this.summaryModel.find();
+		this.pointService.Reward.calculate(summaries);
 	}
 
 	@Cron(CronExpression.EVERY_DAY_AT_8AM)

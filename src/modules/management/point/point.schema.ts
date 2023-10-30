@@ -10,7 +10,7 @@ export const RewardPointCategories = ["結算發放", "傑出貢獻", "兌換獎
 
 export type RewardPointCategory = (typeof RewardPointCategories)[number];
 
-@Schema()
+@Schema({versionKey: false})
 export class PointEvent {
 	@Prop({ ref: Member.name })
 	member: string;

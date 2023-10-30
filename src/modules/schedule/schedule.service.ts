@@ -9,6 +9,8 @@ import dayjs from "dayjs";
 import { AccountService } from "@/modules/management/account/account.service";
 import * as process from "process";
 import { HttpService } from "@nestjs/axios";
+import { LeaderboardData, processLeaderboardData } from "@/modules/schedule/leaderboard.data";
+import Range from "lodash/range";
 
 @Injectable()
 export class ScheduleService {
@@ -87,20 +89,6 @@ export class ScheduleService {
 		return battleRating !== undefined;
 	}
 
-	async getRank() {
-		const queryUrl = (page: number) => `https://warthunder.com/en/community/getclansleaderboard/dif/_hist/page/${page}/sort/dr_era5`;
-		let position = -1;
-		for(let i = 1 ; i< 20; i++){
-			const data = await this.httpService.axiosRef.get<{ data: { pos: number; _id: number }[] }>(queryUrl(i));
-			const squad = data.data.data.find(value => value._id === 1078072);
-			if (!squad) continue;
-			position = squad.pos;
-			break;
-		}
-
-		return position;
-	}
-
 	private static seasonToTable(currentSeason: Season) {
 		const { year, season, sections } = currentSeason;
 		const startMonth = (season - 1) * 2 + 1;
@@ -139,7 +127,34 @@ export class ScheduleService {
 		const { now, year, season } = this.CurrentSeason;
 		if (!force && !this.isLastDayOfMonth(now)) return;
 		const accounts = await this.accountService.listAccounts();
-		await this.seasonModel.updateOne({ year, season }, { $set: { accounts } });
+
+		const top100squads = await this.scrapLeaderboard(1, 5);
+		let position = null;
+		let t1fr = top100squads.find(squad => squad._id === 1078072);
+		if (t1fr) {
+			position = t1fr.pos;
+		} else {
+			const top100to200squads = await this.scrapLeaderboard(6, 5);
+			t1fr = top100to200squads.find(squad => squad._id === 1078072);
+			if (t1fr) position = t1fr.pos;
+		}
+
+		await this.seasonModel.updateOne({ year, season }, { $set: { accounts, finalPos: position, top100squads: top100squads.map(processLeaderboardData) } });
+	}
+
+	async scrapLeaderboard(startPage: number, total: number) {
+		const queryUrl = (page: number) => `https://warthunder.com/en/community/getclansleaderboard/dif/_hist/page/${page}/sort/dr_era5`;
+
+		const response = await Promise.all(
+			Range(startPage, startPage + total).map(page => {
+				return new Promise<LeaderboardData[]>(async resolve => {
+					const data = await this.httpService.axiosRef.get<{ data: LeaderboardData[] }>(queryUrl(page));
+					resolve(data.data.data);
+				});
+			}),
+		);
+
+		return response.reduce((acc, cur) => [...acc, ...cur], []);
 	}
 
 	static parseTextToSections(year: number, scheduleText: string): Section[] {
