@@ -44,7 +44,7 @@ export class ScheduleCommand {
 	@Subcommand({ name: "snapshot", description: "快照當前聯隊狀態進入賽季紀錄" })
 	async snapshot(@Context() [interaction]: SlashCommandContext) {
 		await interaction.deferReply();
-		await this.battleService.snapshot(true);
+		await this.battleService.backup();
 		interaction.followUp({ content: "已記錄完畢" });
 	}
 

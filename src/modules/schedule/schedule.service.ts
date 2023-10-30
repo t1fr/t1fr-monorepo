@@ -11,9 +11,11 @@ import * as process from "process";
 import { HttpService } from "@nestjs/axios";
 import { LeaderboardData, processLeaderboardData } from "@/modules/schedule/leaderboard.data";
 import Range from "lodash/range";
+import { Backup } from '@/modules/management/backup.interface'
+import { GithubService } from '@/modules/github/github.service'
 
 @Injectable()
-export class ScheduleService {
+export class ScheduleService implements Backup{
 	private static readonly logger = new Logger(ScheduleService.name);
 
 	constructor(
@@ -21,6 +23,7 @@ export class ScheduleService {
 		private readonly accountService: AccountService,
 		private readonly client: Client,
 		private readonly httpService: HttpService,
+		private readonly githubService: GithubService
 	) {}
 
 	async upsertSeason(year: string, raw: string) {
@@ -169,6 +172,13 @@ export class ScheduleService {
 					battleRating: parseFloat(matches[1]),
 				};
 			});
+	}
+
+	@Cron("50 07 30 * *", { utcOffset: 0 })
+	async backup() {
+		const seasons = await this.seasonModel.find().sort({ year: -1, season: -1 }).limit(3);
+		const content = JSON.stringify(seasons.map(season => season.toObject()));
+		await this.githubService.upsertFile("season.json", content);
 	}
 }
 
