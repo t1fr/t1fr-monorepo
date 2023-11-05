@@ -14,6 +14,9 @@ export class Member {
 	@Prop({ default: false })
 	isOfficer?: boolean;
 
+	@Prop({ default: false })
+	onVacation?: boolean;
+
 	@Prop()
 	avatarUrl?: string;
 }

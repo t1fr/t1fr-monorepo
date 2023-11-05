@@ -1,32 +1,9 @@
 import { Injectable, UseInterceptors } from "@nestjs/common";
-import { BooleanOption, Context, createCommandGroupDecorator, Options, SlashCommandContext, StringOption, Subcommand } from "necord";
+import { Context, createCommandGroupDecorator, Options, SlashCommandContext, Subcommand } from "necord";
 import { MessageFlagsBitField } from "discord.js";
 import { UserAutocompleteInterceptor } from "@/modules/bot/autocomplete/user.autocomplete";
 import { AccountService } from "@/modules/management/account/account.service";
-import { AccountType, AccountTypes } from "@/modules/management/account/account.schema";
-
-class SetAccountTypeOption {
-	@StringOption({ name: "account-id", description: "戰雷 ID", required: true, autocomplete: true })
-	accountId: string;
-
-	@StringOption({ name: "account-type", description: "帳號類型", required: true, choices: AccountTypes.map(type => ({ name: type, value: type })) })
-	accountType: AccountType;
-}
-
-class SetOwnershipOption {
-	@StringOption({ name: "account-id", description: "戰雷 ID", required: true, autocomplete: true })
-	accountId: string;
-
-	@StringOption({ name: "member", description: "擁有者 DC 帳號", required: true, autocomplete: true })
-	memberDiscordId: string;
-}
-
-class CalculateRewardPointOption {
-	@BooleanOption({ name: "simulate", description: "是否試算，不紀錄結果", required: true })
-	isSimulate: boolean = true;
-	@BooleanOption({ name: "verbose", description: "是否顯示原因" })
-	verbose: boolean = false;
-}
+import { SetAccountTypeOption, SetOwnershipOption } from "@/modules/bot/option/account.option";
 
 const AccountCommandGroup = createCommandGroupDecorator({ name: "account", description: "管理聯隊內的 WT 帳號" });
 
@@ -34,6 +11,7 @@ const AccountCommandGroup = createCommandGroupDecorator({ name: "account", descr
 @AccountCommandGroup()
 export class AccountCommand {
 	constructor(readonly accountService: AccountService) {}
+
 	@Subcommand({ name: "sync", description: "從網頁上爬帳號資料" })
 	private async sync(@Context() [interaction]: SlashCommandContext) {
 		await interaction.deferReply();
@@ -72,24 +50,6 @@ export class AccountCommand {
 		const { linkable, modified, errors } = await this.accountService.joinOnId();
 		const content = [`可連結 ${linkable} 個帳號`, `已更新 ${modified} 個帳號`];
 		if (errors.length) content.push(...errors);
-
 		interaction.followUp({ content: content.join("\n") });
-	}
-
-	@Subcommand({ name: "reward-point", description: "計算當前隊員的積分點" })
-	async onCalculateRewardPoint(@Context() [interaction]: SlashCommandContext, @Options() { isSimulate, verbose }: CalculateRewardPointOption) {
-		interaction.reply({ ephemeral: true, content: "尚未實作" });
-		// await interaction.deferReply();
-		// let messages: string[] = [];
-		// try {
-		// 	messages = await this.accountService.calculateRewardPoint(isSimulate, verbose);
-		// } catch (e) {
-		// 	return interaction.followUp({ content: e });
-		// }
-		//
-		// for (let i = 0; i < messages.length; i += 10) {
-		// 	const message = messages.slice(i, i + 10).join("\n");
-		// 	interaction.followUp({ content: message.replace("_", "\\_") });
-		// }
 	}
 }

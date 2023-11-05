@@ -8,10 +8,11 @@ import { WikiCommand } from "@/modules/bot/command/wiki.command";
 import { ScheduleCommand } from "@/modules/bot/command/schedule.command";
 import { WikiModule } from "@/modules/wiki/wiki.module";
 import { BattleScheduleModule } from "@/modules/schedule/schedule.module";
+import { PointCommand } from "@/modules/bot/command/point.command";
 
 @Module({
 	imports: [ManagementModule, WikiModule, BattleScheduleModule],
-	providers: [AccountCommand, MemberCommand, MemberUserCommand, DiscordListener, WikiCommand, ScheduleCommand],
+	providers: [AccountCommand, MemberCommand, MemberUserCommand, DiscordListener, WikiCommand, ScheduleCommand, PointCommand],
 })
-export  class DiscordBotModule {}
+export class DiscordBotModule {}
 

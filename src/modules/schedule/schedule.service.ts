@@ -38,7 +38,7 @@ export class ScheduleService implements Backup{
 
 	async getCurrentBattleRating() {
 		return new Promise<number | null>(async resolve => {
-			const { now, year, season } = this.CurrentSeason;
+			const { now, year, season } = ScheduleService.CurrentSeason;
 			const sections = await this.seasonModel.aggregate<{ battleRating: number }>([
 				{ $match: { year, season } },
 				{ $unwind: "$sections" },
@@ -51,7 +51,7 @@ export class ScheduleService implements Backup{
 		});
 	}
 
-	get CurrentSeason() {
+	static get CurrentSeason() {
 		const now = new Date();
 		const year = now.getUTCFullYear();
 		const season = Math.floor(now.getUTCMonth() / 2) + 1;
@@ -59,7 +59,7 @@ export class ScheduleService implements Backup{
 	}
 
 	async getCurrentSeasonTable() {
-		const { year, season } = this.CurrentSeason;
+		const { year, season } = ScheduleService.CurrentSeason;
 		const found = await this.seasonModel.findOne({ year, season });
 
 		if (!found) return Promise.reject("查無當前賽季資料");
@@ -127,7 +127,7 @@ export class ScheduleService implements Backup{
 
 	@Cron(CronExpression.EVERY_DAY_AT_11PM, { utcOffset: 0 })
 	async snapshot(force: boolean = false) {
-		const { now, year, season } = this.CurrentSeason;
+		const { now, year, season } = ScheduleService.CurrentSeason;
 		if (!force && !this.isLastDayOfMonth(now)) return;
 		const accounts = await this.accountService.listAccounts();
 
