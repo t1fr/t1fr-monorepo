@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { CalculateStage } from "@/modules/management/point/stages/stage";
-import { CalculateData } from "@/modules/management/point/reward.service";
+import { RewardCalculateData } from '@/modules/management/point/subservice/result.data'
 
 @Injectable()
 export class RatingStage implements CalculateStage {
@@ -15,16 +15,21 @@ export class RatingStage implements CalculateStage {
 		{ rating: 500, point: 1 },
 	];
 
-	calculate(data: CalculateData[]): CalculateData[] {
+	calculate(data: RewardCalculateData[]): RewardCalculateData[] {
 		RatingStage.logger.log("根據賽季評分計算中");
-		for (let i = 0; i < data.length; i++) {
-			const accounts = data[i].accounts;
-			for (const account of accounts) {
-				const matched = this.thresholds.find(threshold => threshold.rating < account.personalRating);
-				if (!matched) continue;
-				account.available = matched.point;
-			}
-		}
+
+		data = data.filter(value => value.personalRating >= 500);
+
+		// 非最優算法，但足夠簡單去維護
+		data.forEach(value => {
+			const nearestIndex = this.thresholds.findIndex(t => value.personalRating >= t.rating);
+			// 因前面已過濾掉沒有滿足條件的帳號，可放心認為 nearestIndex > -1
+			const { point, rating } = this.thresholds[nearestIndex];
+			value.point = point;
+			if (nearestIndex === 0) value.reason.push(`個人評分 ≥ ${rating}`);
+			else value.reason.push(`${this.thresholds[nearestIndex - 1].rating} > 個人評分 ≥ ${rating}`);
+		});
+
 		RatingStage.logger.log("根據賽季評分計算完畢");
 		return data;
 	}

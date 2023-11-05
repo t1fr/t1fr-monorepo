@@ -77,6 +77,9 @@ dependencies:
   reflect-metadata:
     specifier: ^0.1.13
     version: 0.1.13
+  romanumber:
+    specifier: ^1.1.1
+    version: 1.1.1
   rxjs:
     specifier: ^7.8.1
     version: 7.8.1
@@ -5658,6 +5661,10 @@ packages:
     dependencies:
       glob: 9.3.5
     dev: true
+
+  /romanumber@1.1.1:
+    resolution: {integrity: sha512-GJTAmZoZcy1bKGs6RVH7swIE/FYcdjU/QjDSZLHydWx5f7yV8gB217d/v6fAxIfeABtBSMkkOOfavlDX5/DbMg==}
+    dev: false
 
   /run-applescript@5.0.0:
     resolution: {integrity: sha512-XcT5rBksx1QdIhlFOCtgZkB99ZEouFZ1E2Kc2LHqNW13U3/74YGdkQRmThTwxy4QIyookibDKYZOPqX//6BlAg==}

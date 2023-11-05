@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Context, createCommandGroupDecorator, Ctx, Modal, ModalContext, SlashCommandContext, Subcommand } from "necord";
 import { ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 import { ScheduleService } from "@/modules/schedule/schedule.service";
-import { configLayout } from "@/modules/bot/utility";
+import { configLayout } from "@/utlity";
 import { Channel, DiscordRole } from "@/constant";
 
 const ScheduleCommandDecorator = createCommandGroupDecorator({ name: "schedule", description: "管理聯隊戰行程" });
@@ -36,7 +36,7 @@ export class ScheduleCommand {
 	async display(@Context() [interaction]: SlashCommandContext) {
 		const markdownTable = await this.battleService.getCurrentSeasonTable();
 		const channel = interaction.guild?.channels.resolve(Channel.聯隊戰公告);
-		const content = [`<@${DiscordRole.推播.聯隊戰}`, markdownTable].join("\n");
+		const content = [`<@&${DiscordRole.推播.聯隊戰}>`, markdownTable].join("\n");
 		const message = channel?.isTextBased() ? await channel.send({ content }) : null;
 		await interaction.reply({ content: `日程表發布${message ? "成功" : "失敗"}`, ephemeral: true });
 	}
