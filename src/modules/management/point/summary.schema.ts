@@ -17,7 +17,7 @@ export class Summary implements Pick<Member, "_id" | "nickname" | "onVacation"> 
 	@Prop()
 	accounts: { _id: string; activity: number; personalRating: number; type: string }[];
 
-	@Prop({ get: transformPoint, type: SchemaTypes.Mixed })
+	@Prop({ get: transformPoint, type: SchemaTypes.Mixed, transform: (value: PointMap) => value })
 	points: PointMap;
 
 	@Prop()
