@@ -17,7 +17,7 @@ export class AuthController {
 		const isLocalhost = new URL(redirect).hostname === "localhost";
 		try {
 			const token = await this.authService.login(isLocalhost, code);
-			response.cookie("token", token, { ...AuthController.cookieOptions, domain: isLocalhost ? "localhost" : "220.133.81.52" });
+			response.cookie("token", token, { ...AuthController.cookieOptions, domain: isLocalhost ? "localhost" : "t1fr.club" });
 			response.redirect(redirect);
 		} catch (error) {
 			response.redirect(`${redirect}?error=${error.message}`);
