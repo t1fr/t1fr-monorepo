@@ -51,7 +51,7 @@ function drawDepGraph(app: INestApplication) {
 }
 
 async function bootstrap() {
-	const app = await NestFactory.create<NestExpressApplication>(AppModule, { bufferLogs: true, cors: { origin: allowedOrigin, credentials: true } });
+	const app = await NestFactory.create<NestExpressApplication>(AppModule, { bufferLogs: true });
 	app.useLogger(app.get(ChannelLogger));
 	app.disable("x-powered-by");
 	app.use(cookieParser());
