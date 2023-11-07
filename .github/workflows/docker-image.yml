@@ -51,4 +51,5 @@ jobs:
           -e DATABASE=production
           -e BOT_TOKEN=$env:BOT_TOKEN
           -e ACCESS_TOKEN=$env:ACCESS_TOKEN
+          --network nginx_network
           ghcr.io/t1fr/squadron-manager:latest
