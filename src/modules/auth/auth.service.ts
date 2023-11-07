@@ -24,7 +24,7 @@ export class AuthService {
 	}
 
 	private async getToken(code: string, isLocalhost: boolean) {
-		const data = { grant_type: "authorization_code", code, redirect_uri: `http://${isLocalhost ? "localhost" : "220.133.81.52"}:6518/api/auth/redirect` };
+		const data = { grant_type: "authorization_code", code, redirect_uri: `http://${isLocalhost ? "localhost" : "t1fr.club"}:6518/api/auth/redirect` };
 		try {
 			const response = await this.httpService.axiosRef.post<{ access_token?: string }>("https://discord.com/api/v10/oauth2/token", data, {
 				auth: { username: "1013280626000003132", password: "l6l-mpiqLQjhIbukQjiW7zitAq3Xxbme" },
