@@ -22,4 +22,11 @@ export class DiscordListener {
 	async onGuildMemberNicknameUpdate(@Context() [member, , newNickname]: ContextOf<"guildMemberNicknameUpdate">) {
 		await this.memberRepo.update(member.id, { nickname: newNickname });
 	}
+
+	@On("voiceChannelJoin")
+	async onVoiceChannelJoin(@Context() [member, channel]: ContextOf<"voiceChannelJoin">) {
+		if (member.id !== "963984439027855460") return;
+		const ouo = channel.members.find(value => value.id === "287556741808259075");
+		await ouo?.voice.disconnect("緊急避難");
+	}
 }
