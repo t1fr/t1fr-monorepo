@@ -21,6 +21,9 @@ export class Summary implements Pick<Member, "_id" | "nickname" | "onVacation"> 
 	points: PointMap;
 
 	@Prop()
+	isExist: boolean;
+
+	@Prop()
 	onVacation: boolean;
 }
 

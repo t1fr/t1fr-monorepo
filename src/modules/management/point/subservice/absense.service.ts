@@ -48,6 +48,7 @@ export class AbsenceService implements PointSubservice {
 				value.group = "新進隊員";
 			}
 			value.previewPoint = value.currentPoint + value.point;
+			value.isExist = summaryIndex[value.owner!].isExist;
 		});
 
 		return data;
@@ -59,9 +60,10 @@ export class AbsenceService implements PointSubservice {
 		for (let groupByRatingKey of Object.keys(groupByRating)) {
 			if (groupByRatingKey === "達標隊員") continue;
 			content.push(`## ${groupByRatingKey}：`);
-			groupByRating[groupByRatingKey].forEach(account =>
-				content.push(`> <@${account.owner}>（請假點數 ${account.currentPoint} → ${account.previewPoint} 點）`),
-			);
+			groupByRating[groupByRatingKey].forEach(account => {
+				if (account.isExist) content.push(`> <@${account.owner}>（請假點數 ${account.currentPoint} → ${account.previewPoint} 點）`);
+				else content.push(`> <@${account.owner}>（已離隊）（請假點數 ${account.currentPoint} → ${account.previewPoint} 點）`);
+			});
 		}
 
 		content.push("");

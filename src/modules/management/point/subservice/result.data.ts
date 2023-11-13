@@ -19,4 +19,5 @@ export class AbsenceCalculateData extends BaseResultData implements Partial<Acco
 	currentPoint: number;
 	previewPoint: number;
 	joinDate: string;
+	isExist: boolean;
 }
