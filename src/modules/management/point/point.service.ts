@@ -17,6 +17,11 @@ import { AwardData } from "@/modules/bot/option/point.option";
 import { Decimal128 } from "mongodb";
 import { AbsenceService } from "@/modules/management/point/subservice/absense.service";
 
+export class PageParam {
+	first: number;
+	rows: number;
+}
+
 @Injectable()
 export class PointService implements Backup {
 	constructor(
@@ -44,7 +49,7 @@ export class PointService implements Backup {
 					date: now,
 					category: "結算發放",
 					comment: value.reason.join("丨"),
-					delta: value.point,
+					delta: new Decimal128(value.point.toString()),
 					member: value.owner,
 				})),
 		);
@@ -71,10 +76,10 @@ export class PointService implements Backup {
 		return content;
 	}
 
-	async calculate(type: PointType, simulate: boolean | undefined): Promise<string[]> {
+	async calculate(type: PointType, simulate: boolean | null): Promise<string[]> {
 		const notCompletedAccounts = await this.snapshotModel.find({ $or: [{ type: null }, { owner: null }] });
 		if (notCompletedAccounts.length > 0) return this.showNotCompletedAccounts(notCompletedAccounts);
-		if (!simulate) simulate = true;
+		if (simulate === null) simulate = true;
 		let service: PointSubservice | null = null;
 		if (type === "獎勵") service = this.rewardService;
 		else if (type === "請假") service = this.absenceService;
@@ -88,5 +93,11 @@ export class PointService implements Backup {
 	async award(data: AwardData) {
 		const { delta, ...other } = data;
 		this.pointModel.insertMany({ ...other, delta: new Decimal128(delta.toString()), type: "獎勵", date: dayjs().format("YYYY-MM-DD") });
+	}
+
+	async fetch(type: PointType, params: PageParam) {
+		const total = await this.pointModel.count({ type });
+		const logs = await this.pointModel.find({ type }, { type: false }, { skip: params.first, limit: params.rows, sort: { _id: -1 } });
+		return { total, logs };
 	}
 }
