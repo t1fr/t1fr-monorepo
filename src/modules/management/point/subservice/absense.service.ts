@@ -14,13 +14,11 @@ export class AbsenceService implements PointSubservice {
 	constructor() {}
 
 	async calculate(snapshotModel: Model<AccountSnapshot>, summaries: Summary[]): Promise<AbsenceCalculateData[]> {
-		const data = await snapshotModel
-			.aggregate<AbsenceCalculateData>([
-				{ $match: { type: "🇸 聯隊戰主帳" } },
-				{ $set: { point: 0, reason: [], alert: false } },
-				{ $unset: ["activity", "type"] },
-			])
-			.exec();
+		const data = await snapshotModel.aggregate<AbsenceCalculateData>([
+			{ $match: { type: "🇸 聯隊戰主帳" } },
+			{ $set: { point: 0, reason: [], alert: false } },
+			{ $unset: ["activity", "type"] },
+		]);
 
 		const summaryIndex = summaries.reduce<{ [key: string]: Summary }>((acc, cur) => ({ ...acc, [cur._id]: cur }), {});
 		const forgiveDate = dayjs().startOf("month").subtract(3, "weeks");
@@ -30,13 +28,7 @@ export class AbsenceService implements PointSubservice {
 			season = 6;
 		}
 		const seasonRomanize = numberToRomanNumeral(season);
-		for (let i = 0; i < data.length; i++) {
-			const value = data[i];
-			const summary = summaryIndex[value.owner!];
-			if (!summary) {
-				value.group = "未知";
-				continue;
-			}
+		data.forEach(value => {
 			value.currentPoint = summaryIndex[value.owner!].points.請假.sum;
 			const onVacation = summaryIndex[value.owner!].onVacation;
 			if (value.personalRating >= 300) {
@@ -57,7 +49,7 @@ export class AbsenceService implements PointSubservice {
 			}
 			value.previewPoint = value.currentPoint + value.point;
 			value.isExist = summaryIndex[value.owner!].isExist;
-		}
+		});
 
 		return data;
 	}
