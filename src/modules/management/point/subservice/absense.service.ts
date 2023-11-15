@@ -67,7 +67,7 @@ export class AbsenceService implements PointSubservice {
 		}
 
 		content.push("");
-		content.push(`未列在上面的隊員，請假點數 +0.5 點`);
+		content.push(`**未列在上面的隊員，請假點數沒有變化**`);
 
 		return content;
 	}
