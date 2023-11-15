@@ -16,7 +16,7 @@ export class AbsenceService implements PointSubservice {
 	async calculate(snapshotModel: Model<AccountSnapshot>, summaries: Summary[]): Promise<AbsenceCalculateData[]> {
 		const data = await snapshotModel.aggregate<AbsenceCalculateData>([
 			{ $match: { type: "🇸 聯隊戰主帳" } },
-			{ $set: { point: 0, reason: [], alert: false } },
+			{ $set: { point: 0, reason: [] } },
 			{ $unset: ["activity", "type"] },
 		]);
 
@@ -35,6 +35,7 @@ export class AbsenceService implements PointSubservice {
 				value.point = Math.min(2 - value.currentPoint, 0.5);
 				value.reason.push(`${year}-${seasonRomanize} 達標`);
 				value.group = "達標隊員";
+				if (value.point > 0) value.group += "（未滿上限）"
 			} else if (onVacation) {
 				value.point = Math.max(0 - value.currentPoint, -1);
 				value.reason.push(`${year}-${seasonRomanize} 未達標`);
@@ -55,10 +56,9 @@ export class AbsenceService implements PointSubservice {
 	}
 
 	toPost(data: AbsenceCalculateData[]): string[] {
-		const groupByRating = groupBy(data, it => it.group);
+		const groupByRating = groupBy(data.filter(value => value.group !== "達標隊員"), it => it.group);
 		const content: string[] = [];
 		for (let groupByRatingKey of Object.keys(groupByRating)) {
-			if (groupByRatingKey === "達標隊員") continue;
 			content.push(`## ${groupByRatingKey}：`);
 			groupByRating[groupByRatingKey].forEach(account => {
 				if (account.isExist) content.push(`> <@${account.owner}>（請假點數 ${account.currentPoint} → ${account.previewPoint} 點）`);

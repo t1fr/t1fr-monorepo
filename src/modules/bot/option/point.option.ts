@@ -1,5 +1,5 @@
 import { BooleanOption, NumberOption, StringOption } from "necord";
-import { PointEvent, PointType, PointTypes, RewardPointCategories, RewardPointCategory } from '@/modules/management/point/point.schema'
+import { PointEvent, PointType, PointTypes, RewardPointCategories, RewardPointCategory } from "@/modules/management/point/point.schema";
 import { arrayToChoices } from "@/utlity";
 
 export class AwardData implements Omit<PointEvent, "type" | "date"> {
@@ -31,6 +31,5 @@ export class SeasonSummary {
 	type: PointType;
 
 	@BooleanOption({ name: "simulate", description: "是否儲存" })
-	simulate?: boolean;
-
+	simulate: boolean | null;
 }
