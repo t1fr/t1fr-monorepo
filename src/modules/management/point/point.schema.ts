@@ -10,18 +10,23 @@ export const RewardPointCategories = ["結算發放", "傑出貢獻", "兌換獎
 
 export type RewardPointCategory = (typeof RewardPointCategories)[number];
 
-@Schema({versionKey: false})
+@Schema({ versionKey: false })
 export class PointEvent {
 	@Prop({ ref: Member.name })
 	member: string;
 
-	@Prop({ enum: PointTypes })
+	@Prop({ enum: PointTypes, type: String })
 	type: PointType;
 
-	@Prop({ enum: RewardPointCategories })
+	@Prop({ enum: RewardPointCategories, type: String })
 	category: RewardPointCategory;
 
-	@Prop({ type: Types.Decimal128 })
+	@Prop({
+		type: Types.Decimal128,
+		transform(value: Types.Decimal128) {
+			return parseFloat(value.toString());
+		},
+	})
 	delta: number;
 
 	@Prop()

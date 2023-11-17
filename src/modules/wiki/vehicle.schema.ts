@@ -49,7 +49,7 @@ export class Vehicle {
 	@Prop()
 	extended_type?: string[];
 
-	@Prop({ enum: ObtainWays })
+	@Prop({ enum: ObtainWays, type: String })
 	obtainFrom?: ObtainFrom;
 
 	@Prop()
