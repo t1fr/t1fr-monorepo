@@ -13,6 +13,12 @@ import { GithubService } from "@/modules/github/github.service";
 
 export type PointStatistic = Omit<Member, "isExist"> & { [key in PointType]: number };
 
+export enum UpdateMemberAction {
+	Disband = "移除隊員身分",
+	ToBattle = "給予聯隊戰隊員身分",
+	ToRelax = "給予休閒隊員身分",
+}
+
 @Injectable()
 export class MemberService implements Backup {
 	constructor(
@@ -34,7 +40,6 @@ export class MemberService implements Backup {
 		};
 	}
 
-
 	@Cron(CronExpression.EVERY_DAY_AT_8AM)
 	async sync() {
 		const guild = await this.client.guilds.fetch({ guild: "1046623840710705152", force: true });
@@ -47,12 +52,12 @@ export class MemberService implements Backup {
 			.filter(member => member.roles.cache.hasAny(DiscordRole.聯隊戰隊員, DiscordRole.休閒隊員))
 			.map(MemberService.TransformDiscordMemberToMember);
 
-		const result = await this.upsert(memberWithSquadronRole);
+		const result = await this.upsert(...memberWithSquadronRole);
 		this.logger.log(["同步聯隊 DC 帳號完畢", `新增 ${result.insertedCount} 個帳號`, `更新 ${result.modifiedCount} 個帳號`].join("\n"));
 	}
 
-	async upsert(members: Member[]): Promise<BulkWriteResult> {
-		return this.memberModel.bulkWrite(members.map(member => ({ updateOne: { filter: { _id: member._id }, update: member, upsert: true } })));
+	async upsert(...members: Partial<Member>[]): Promise<BulkWriteResult> {
+		return this.memberModel.bulkWrite(members.map(member => ({ updateOne: { filter: { _id: member._id }, update: { $set: member }, upsert: true } })));
 	}
 
 	async update(discordId: string, data: UpdateQuery<Member>) {
@@ -73,6 +78,51 @@ export class MemberService implements Backup {
 
 	async findMemberById(_id: string) {
 		return this.memberModel.findOne({ _id, isExist: true });
+	}
+
+	async updateMemberState(action: UpdateMemberAction, member: GuildMember) {
+		let change = { add: [] as string[], remove: [] as string[] };
+		let message: string;
+		if (action === UpdateMemberAction.Disband) {
+			message = `已成功移除 <@${member?.id}> 隊員身分組`;
+			change.remove.push(DiscordRole.休閒隊員, DiscordRole.聯隊戰隊員);
+			await this.upsert({ _id: member.id, isExist: false });
+		} else if (action === UpdateMemberAction.ToBattle) {
+			message = MemberService.createWelcomeMessage(member, "聯隊戰");
+			change.remove.push(DiscordRole.休閒隊員);
+			change.add.push(DiscordRole.聯隊戰身分群, DiscordRole.聯隊戰隊員);
+			await this.upsert({ _id: member.id, nickname: member.displayName });
+		} else {
+			change.remove.push(DiscordRole.聯隊戰隊員);
+			change.add.push(DiscordRole.休閒隊員);
+			message = MemberService.createWelcomeMessage(member, "休閒");
+			await this.upsert({ _id: member.id, nickname: member.displayName });
+		}
+
+		try {
+			await this.updateRoles(member, action, change);
+			return message;
+		} catch (e) {
+			return `${e}`;
+		}
+	}
+
+	private static createWelcomeMessage(member: GuildMember, type: "聯隊戰" | "休閒") {
+		const message = [`您好，<@${member.id}>`, `您已成為 T1FR ${type}隊員`];
+
+		if (!member.displayName.match(/^[^丨].*(丨.*)?丨.*[^丨]$/))
+			message.push("請將伺服器個人暱稱用 `/nickname` 指令或手動改為：", "```", "T1FR丨您的暱稱丨您的戰雷ID", "```");
+
+		return message.join("\n");
+	}
+
+	private async updateRoles(member: GuildMember, reason: string, change: { add: string[]; remove: string[] }) {
+		const rolesManager = member.roles;
+		const newRoles = rolesManager.cache
+			.map(role => role.id)
+			.filter(role => change.remove.includes(role))
+			.concat(...change.add);
+		return rolesManager.set(newRoles, reason);
 	}
 
 	@Cron("04 08,20 * * *", { utcOffset: 8 })

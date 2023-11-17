@@ -10,6 +10,7 @@ import { PointEventModelDef } from "@/modules/management/point/point.schema";
 import { AccountSnapshotModelDef } from "@/modules/management/point/account.snapshot.schema";
 import { SummaryModelDef } from "@/modules/management/point/summary.schema";
 import { AbsenceService } from "@/modules/management/point/subservice/absense.service";
+import { PointLogController } from "@/modules/management/point/point.controller";
 
 @Module({
 	imports: [GithubModule, MongooseModule.forFeature([SummaryModelDef, PointEventModelDef, AccountSnapshotModelDef], ConnectionName.Management)],
@@ -21,6 +22,6 @@ import { AbsenceService } from "@/modules/management/point/subservice/absense.se
 		{ provide: "stages", useFactory: (...stages: CalculateStage[]) => stages, inject: stages },
 	],
 	exports: [PointService],
-	controllers: [SummaryController],
+	controllers: [SummaryController, PointLogController],
 })
 export default class PointModule {}

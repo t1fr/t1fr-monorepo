@@ -65,7 +65,7 @@ export class AccountService implements OnModuleInit, Backup {
 	}
 
 	async findExistingAccount() {
-		return this.accountModel.find({ isExist: true }, { isExist: false }, { populate: { path: "owner", select: ["_id", "nickname", "avatarUrl"] } });
+		return this.accountModel.find({ isExist: true }, { isExist: false });
 	}
 
 	async searchByIdContain(query: string) {
