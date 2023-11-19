@@ -20,6 +20,7 @@ import { AbsenceService } from "@/modules/management/point/subservice/absense.se
 export class PageParam {
 	first: number;
 	rows: number;
+	member: string | null;
 }
 
 @Injectable()
@@ -96,8 +97,9 @@ export class PointService implements Backup {
 	}
 
 	async fetch(type: PointType, params: PageParam) {
-		const total = await this.pointModel.count({ type });
-		const logs = await this.pointModel.find({ type }, { type: false }, { skip: params.first, limit: params.rows, sort: { _id: -1 } });
+		const filter = params.member ? { type, member: params.member } : { type };
+		const total = await this.pointModel.count(filter);
+		const logs = await this.pointModel.find(filter, { type: false }, { skip: params.first, limit: params.rows, sort: { _id: -1 } });
 		return { total, logs };
 	}
 }
