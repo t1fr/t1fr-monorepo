@@ -69,7 +69,7 @@ export class PointCommand {
 		const embeds = [];
 
 		if (accounts.length) {
-			const accountFields = selectToFields(accounts, ["_id", "type", "activity", "personalRating"], ["遊戲 ID", "類型", "個人評分", "活躍度"]);
+			const accountFields = selectToFields(accounts, ["_id", "type", "activity", "personalRating"], ["遊戲 ID", "類型", "活躍度", "個人評分"]);
 			embeds.push(
 				new EmbedBuilder()
 					.setTitle("帳號列表")
