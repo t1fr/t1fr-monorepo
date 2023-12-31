@@ -6,10 +6,8 @@ import { RewardCalculateData } from '@/modules/management/point/subservice/resul
 export class RatingStage implements CalculateStage {
 	private static readonly logger = new Logger(RatingStage.name);
 	private readonly thresholds = [
-		{ rating: 1700, point: 20 },
-		{ rating: 1690, point: 15 },
+		{ rating: 1666, point: 20 },
 		{ rating: 1400, point: 10 },
-		{ rating: 1395, point: 8 },
 		{ rating: 1100, point: 6 },
 		{ rating: 800, point: 3 },
 		{ rating: 500, point: 1 },
