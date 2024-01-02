@@ -40,11 +40,11 @@ export class PointCommand {
 	}
 
 	@Subcommand({ name: "season-summary", description: "計算賽季結果並產生獎勵名單內容" })
-	async seasonSummary(@Context() [interaction]: SlashCommandContext, @Options() { simulate, type }: SeasonSummary) {
+	async seasonSummary(@Context() [interaction]: SlashCommandContext, @Options() { writeInToDb, type }: SeasonSummary) {
 		if (type === "懲罰") return interaction.reply({ content: "未實裝功能" });
 
 		await interaction.deferReply();
-		const content = await this.pointService.calculate(type, simulate);
+		const content = await this.pointService.calculate(type, writeInToDb);
 		await interaction.followUp({ content: "報表如下" });
 		const channel = interaction.channel;
 		if (!channel) return;

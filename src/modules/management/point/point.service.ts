@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { PointEvent, PointType } from "@/modules/management/point/point.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { isArray } from "lodash";
 import { ConnectionName } from "@/constant";
 import { Backup } from "@/modules/management/backup.interface";
 import { GithubService } from "@/modules/github/github.service";
@@ -77,17 +76,17 @@ export class PointService implements Backup {
 		return content;
 	}
 
-	async calculate(type: PointType, simulate: boolean | null): Promise<string[]> {
+	async calculate(type: PointType, writeIntoDb: boolean | null): Promise<string[]> {
 		const notCompletedAccounts = await this.snapshotModel.find({ $or: [{ type: null }, { owner: null }] });
 		if (notCompletedAccounts.length > 0) return this.showNotCompletedAccounts(notCompletedAccounts);
-		if (simulate === null) simulate = true;
+		if (writeIntoDb === null) writeIntoDb = false;
 		let service: PointSubservice | null = null;
 		if (type === "獎勵") service = this.rewardService;
 		else if (type === "請假") service = this.absenceService;
 		const summaries = await this.summaryModel.find();
 		if (!service) return [];
 		const result = await service.calculate(this.snapshotModel, summaries);
-		if (!simulate) this.flush(type, result);
+		if (writeIntoDb) this.flush(type, result);
 		return service.toPost(result);
 	}
 
