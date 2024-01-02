@@ -30,6 +30,6 @@ export class SeasonSummary {
 	@StringOption({ name: "type", description: "積分類型", choices: arrayToChoices(PointTypes), required: true })
 	type: PointType;
 
-	@BooleanOption({ name: "simulate", description: "是否儲存" })
-	simulate: boolean | null;
+	@BooleanOption({ name: "write", description: "結果是否寫入資料庫" })
+	writeInToDb: boolean | null;
 }
