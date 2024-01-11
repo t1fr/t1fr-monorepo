@@ -26,29 +26,34 @@ jobs:
   deploy:
     name: Deploy image to KCL Server
     needs: build-and-push
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
+    env:
+      HOST: 220.133.81.52
+      ADDRESS: 'T1FR Server'@220.133.81.52
+      CONTAINER_NAME: squadron-management-backend
     steps:
-      - name: Login Github container registry
-        uses: docker/login-action@v3
+      - run: mkdir -p ~/.ssh/ && touch ~/.ssh/known_hosts
+      - run: ssh-keyscan ${{env.HOST}} >> ~/.ssh/known_hosts
+      - uses: webfactory/ssh-agent@v0.8.0
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - run: docker pull ghcr.io/t1fr/squadron-manager:latest
-      - run: docker stop squadron-management-backend
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Login Github container registry
+        run: ssh ${{env.ADDRESS}} docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ghcr.io
+      - run: ssh ${{env.ADDRESS}} docker pull ghcr.io/t1fr/squadron-manager:latest
+      - run: ssh ${{env.ADDRESS}} docker stop ${{env.CONTAINER_NAME}}
         continue-on-error: true
-      - run: docker rm squadron-management-backend
+      - run: ssh ${{env.ADDRESS}} docker rm ${{env.CONTAINER_NAME}}
         continue-on-error: true
       - name: Start Container
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         run: >
-          docker run -itd --name squadron-management-backend
+          ssh ${{env.ADDRESS}} docker run -itd --name ${{env.CONTAINER_NAME}}
           -p 6518:6518 --restart unless-stopped
           -e PORT=6518
           -e NODE_ENV=production
-          -e DATABASE=production
+          -e DATABASE=management-production
           -e BOT_TOKEN=$env:BOT_TOKEN
           -e ACCESS_TOKEN=$env:ACCESS_TOKEN
           --network nginx_network
