@@ -27,34 +27,29 @@ jobs:
     name: Deploy image to KCL Server
     needs: build-and-push
     runs-on: ubuntu-latest
-    env:
-      HOST: 220.133.81.52
-      ADDRESS: 'T1FR Server'@220.133.81.52
-      CONTAINER_NAME: squadron-management-backend
     steps:
-      - run: mkdir -p ~/.ssh/ && touch ~/.ssh/known_hosts
-      - run: ssh-keyscan ${{env.HOST}} >> ~/.ssh/known_hosts
-      - uses: webfactory/ssh-agent@v0.8.0
+      - uses: actions/checkout@v4
+      - name: rsync docker-compose.yml
+        uses: burnett01/rsync-deployments@6.0.0
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-      - name: Login Github container registry
-        run: ssh ${{env.ADDRESS}} docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ghcr.io
-      - run: ssh ${{env.ADDRESS}} docker pull ghcr.io/t1fr/squadron-manager:latest
-      - run: ssh ${{env.ADDRESS}} docker stop ${{env.CONTAINER_NAME}}
-        continue-on-error: true
-      - run: ssh ${{env.ADDRESS}} docker rm ${{env.CONTAINER_NAME}}
-        continue-on-error: true
-      - name: Start Container
+          switches: -azvh --delete-after
+          path: docker-compose.yml
+          remote_path: ./Documents/tmp/
+          remote_host: 220.133.81.52
+          remote_user: '"T1FR Server"'
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Docker Login and Compose up
+        uses: appleboy/ssh-action@v1.0.3
         env:
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-        run: >
-          ssh ${{env.ADDRESS}} docker run -itd --name ${{env.CONTAINER_NAME}}
-          -p 6518:6518 --restart unless-stopped
-          -e PORT=6518
-          -e NODE_ENV=production
-          -e DATABASE=management-production
-          -e BOT_TOKEN=$env:BOT_TOKEN
-          -e ACCESS_TOKEN=$env:ACCESS_TOKEN
-          --network nginx_network
-          ghcr.io/t1fr/squadron-manager:latest
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USERNAME: ${{ github.actor }}
+          BOT: ${{ secrets.BOT_TOKEN }}
+          ACCESS: ${{ secrets.ACCESS_TOKEN }}
+        with:
+          host: "220.133.81.52"
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          username: T1FR Server
+          script: |
+            echo ${{env.TOKEN}} | docker --config ./Documents/tmp login -u ${{env.USERNAME}} --password-stdin ghcr.io
+            export ACCESS_TOKEN=${{env.ACCESS}} && export BOT_TOKEN=${{env.BOT}} && docker --config ./Documents/tmp compose -f ./Documents/tmp/docker-compose.yml up -d
+            docker --config ./Documents/tmp logout ghcr.io
