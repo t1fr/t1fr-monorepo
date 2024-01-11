@@ -9,7 +9,7 @@
     <envs>
       <env name="ACCESS_TOKEN" value="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" />
       <env name="BOT_TOKEN" value="***REMOVED***" />
-      <env name="DATABASE" value="test" />
+      <env name="DATABASE" value="management-test" />
       <env name="NODE_ENV" value="test" />
       <env name="PORT" value="6518" />
     </envs>

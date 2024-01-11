@@ -1,0 +1,21 @@
+version: '3.7'
+name: squadron-backend
+networks:
+  nginx:
+    name: nginx_network
+    external: true
+services:
+  api:
+    image: ghcr.io/t1fr/squadron-manager
+    container_name: squadron-management-backend
+    pull_policy: always
+    networks:
+      - nginx
+    restart: unless-stopped
+    environment:
+      PORT: 6518
+      NODE_ENV: production
+      DATABASE: management-production
+      #     Use Env var from shell
+      BOT_TOKEN: ${BOT_TOKEN}
+      ACCESS_TOKEN: ${ACCESS_TOKEN}
