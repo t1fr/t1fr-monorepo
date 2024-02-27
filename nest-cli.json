@@ -11,6 +11,27 @@
         "outDir": "./dist/config",
         "watchAssets": true
       }
-    ]
+    ],
+    "webpack": true
+  },
+  "projects": {
+    "battle-schedule": {
+      "type": "library",
+      "root": "libs/battle-schedule",
+      "entryFile": "index",
+      "sourceRoot": "libs/battle-schedule/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/battle-schedule/tsconfig.lib.json"
+      }
+    },
+    "shared": {
+      "type": "library",
+      "root": "libs/shared",
+      "entryFile": "index",
+      "sourceRoot": "libs/shared/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/shared/tsconfig.lib.json"
+      }
+    }
   }
 }
