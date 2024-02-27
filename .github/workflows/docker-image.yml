@@ -35,7 +35,7 @@ jobs:
           switches: -azvh --delete-after
           path: docker-compose.yml
           remote_path: ./Documents/tmp/
-          remote_host: 220.133.81.52
+          remote_host: 220.135.86.181
           remote_user: '"T1FR Server"'
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Docker Login and Compose up
@@ -46,7 +46,7 @@ jobs:
           BOT: ${{ secrets.BOT_TOKEN }}
           ACCESS: ${{ secrets.ACCESS_TOKEN }}
         with:
-          host: "220.133.81.52"
+          host: "220.135.86.181"
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           username: T1FR Server
           script: |
