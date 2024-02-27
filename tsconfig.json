@@ -21,6 +21,18 @@
     "paths": {
       "@/*": [
         "src/*"
+      ],
+      "@app/battle-schedule": [
+        "libs/battle-schedule/src"
+      ],
+      "@app/battle-schedule/*": [
+        "libs/battle-schedule/src/*"
+      ],
+      "@app/shared": [
+        "libs/shared/src"
+      ],
+      "@app/shared/*": [
+        "libs/shared/src/*"
       ]
     },
     "lib": [
