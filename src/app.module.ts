@@ -29,7 +29,7 @@ const intents = [
 			imports: [ConfigModule],
 			inject: [ConfigService],
 			useFactory: (configService: ConfigService) => ({
-				uri: "mongodb://220.133.81.52:38422",
+				uri: "mongodb://220.135.86.181:38422",
 				user: "t1fr_admin",
 				pass: "***REMOVED***",
 				dbName: configService.getOrThrow("DATABASE"),
@@ -38,7 +38,7 @@ const intents = [
 			connectionName: ConnectionName.Management,
 		}),
 
-		MongooseModule.forRoot("mongodb://220.133.81.52:38422", {
+		MongooseModule.forRoot("mongodb://220.135.86.181:38422", {
 			user: "t1fr_admin",
 			pass: "***REMOVED***",
 			dbName: "common",
