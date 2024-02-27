@@ -26,10 +26,9 @@ const intents = [
 		{ ...HttpModule.register({}), global: true },
 		ScheduleModule.forRoot(),
 		MongooseModule.forRootAsync({
-			imports: [ConfigModule],
 			inject: [ConfigService],
 			useFactory: (configService: ConfigService) => ({
-				uri: "mongodb://220.135.86.181:38422",
+				uri: "mongodb://192.168.200.111:38422",
 				user: "***REMOVED***",
 				pass: "***REMOVED***",
 				dbName: configService.getOrThrow("DATABASE"),
@@ -38,7 +37,7 @@ const intents = [
 			connectionName: ConnectionName.Management,
 		}),
 
-		MongooseModule.forRoot("mongodb://220.135.86.181:38422", {
+		MongooseModule.forRoot("mongodb://192.168.200.111:38422", {
 			user: "***REMOVED***",
 			pass: "***REMOVED***",
 			dbName: "common",
@@ -47,7 +46,6 @@ const intents = [
 		}),
 
 		NecordModule.forRootAsync({
-			imports: [ConfigModule],
 			inject: [ConfigService],
 			useFactory: (configService: ConfigService) => ({
 				token: configService.getOrThrow("BOT_TOKEN"),
