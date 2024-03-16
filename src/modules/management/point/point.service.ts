@@ -31,7 +31,8 @@ export class PointService implements Backup {
 		private readonly rewardService: RewardService,
 		private readonly absenceService: AbsenceService,
 		private readonly githubService: GithubService,
-	) {}
+	) {
+	}
 
 	async summary(userId: string) {
 		const results = await this.summaryModel.findById(userId);
@@ -97,8 +98,7 @@ export class PointService implements Backup {
 
 	async fetch(type: PointType, params: PageParam) {
 		const filter = params.member ? { type, member: params.member } : { type };
-		const total = await this.pointModel.count(filter);
 		const logs = await this.pointModel.find(filter, { type: false }, { skip: params.first, limit: params.rows, sort: { _id: -1 } });
-		return { total, logs };
+		return { total: logs.length, logs };
 	}
 }

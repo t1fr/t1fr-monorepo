@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { Model } from "mongoose";
 import { Vehicle } from "@/modules/wiki/vehicle.schema";
 import { InjectModel } from "@nestjs/mongoose";
@@ -38,11 +38,12 @@ interface VehicleJsonSchema {
 }
 
 @Injectable()
-export class WikiService implements OnModuleInit {
+export class WikiService {
 	constructor(
 		@InjectModel(Vehicle.name, ConnectionName.Common) private readonly vehicleModel: Model<Vehicle>,
 		private httpService: HttpService,
-	) {}
+	) {
+	}
 
 	private static logger = new Logger(WikiService.name);
 
@@ -96,10 +97,6 @@ export class WikiService implements OnModuleInit {
 
 	async getByKey(key: string) {
 		return this.vehicleModel.findOne({ key });
-	}
-
-	async onModuleInit() {
-		await this.sync();
 	}
 }
 

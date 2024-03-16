@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { ConnectionName, SquadronMemberListUrl } from "@/constant";
 import { InjectModel } from "@nestjs/mongoose";
@@ -13,18 +13,16 @@ import { GithubService } from "@/modules/github/github.service";
 import { Backup } from "@/modules/management/backup.interface";
 
 @Injectable()
-export class AccountService implements OnModuleInit, Backup {
+export class AccountService implements Backup {
 	private readonly logger: Logger = new Logger(AccountService.name);
 
 	constructor(
 		@InjectModel(Account.name, ConnectionName.Management) private readonly accountModel: Model<Account>,
 		private httpService: HttpService,
 		private githubService: GithubService,
-	) {}
-
-	async onModuleInit() {
-		await this.sync();
+	) {
 	}
+
 
 	@Cron(CronExpression.EVERY_4_HOURS)
 	public async sync() {
