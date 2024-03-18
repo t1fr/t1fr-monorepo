@@ -9,6 +9,7 @@ import { CustomOrigin } from "@nestjs/common/interfaces/external/cors-options.in
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import cookieParser from "cookie-parser";
+import * as process from "process";
 
 dayjs.extend(customParse);
 dayjs.extend(utc);
@@ -26,9 +27,12 @@ async function bootstrap() {
 	app.disable("x-powered-by");
 	app.use(cookieParser());
 	app.setGlobalPrefix("api");
-	const swaggerConfig = new DocumentBuilder().setTitle("聯隊管理系統 API").build();
-	const document = SwaggerModule.createDocument(app, swaggerConfig);
-	SwaggerModule.setup("api", app, document);
+
+	if (process.env["NODE_ENV"] !== "production") {
+		const swaggerConfig = new DocumentBuilder().setTitle("聯隊管理系統 API").build();
+		const document = SwaggerModule.createDocument(app, swaggerConfig);
+		SwaggerModule.setup("api", app, document);
+	}
 	const configService = app.get(ConfigService);
 	await app.listen(configService.get("PORT")!);
 }
