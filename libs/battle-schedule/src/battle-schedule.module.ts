@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
-import { BattleScheduleService } from "./battle-schedule.service";
 
 @Module({
-	providers: [BattleScheduleService],
-	exports: [BattleScheduleService],
+	providers: [],
+	exports: [],
 })
-export class BattleScheduleModule {}
+export class BattleScheduleModule {
+}
