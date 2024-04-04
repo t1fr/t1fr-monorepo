@@ -19,21 +19,15 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "@app/battle-schedule": [
+      "@lib/battle-schedule": [
         "libs/battle-schedule/src"
       ],
-      "@app/battle-schedule/*": [
-        "libs/battle-schedule/src/*"
+      "@lib/analysis": [
+        "libs/analysis/src"
       ],
-      "@app/shared": [
-        "libs/shared/src"
+      "@lib/ddd-types": [
+        "libs/ddd-types/src"
       ],
-      "@app/shared/*": [
-        "libs/shared/src/*"
-      ]
     },
     "lib": [
       "ES2021.String"

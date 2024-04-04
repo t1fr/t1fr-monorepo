@@ -1,5 +1,7 @@
-import { ValueObject } from "@app/shared/ValueObject";
+import { ValueObject } from "@lib/ddd-types";
+import { Err, Ok } from "ts-results-es";
 import dayjs from "dayjs";
+import "dayjs/plugin/utc";
 
 interface SectionProps {
 	from: Date;
@@ -7,25 +9,33 @@ interface SectionProps {
 	battleRating: number;
 }
 
+type SectionParseData = { year: number, fromText: string, toText: string, brText: string }
+
 export class Section extends ValueObject<SectionProps> {
-	constructor(props: { from: string | Date, to: string | Date, battleRating: number }) {
-		const from = dayjs(props.from);
-		const to = dayjs(props.to);
-		if (from.isAfter(to)) throw Error(`from: ${from.toDate()} 不可晚於 to: ${to.toDate()}`);
-		if (props.battleRating < 1.0) throw Error(`BR ${props.battleRating} 不可小於 1.0`);
-		super({ from: from.toDate(), to: to.toDate(), battleRating: props.battleRating });
+	static create({ from, to, battleRating }: SectionProps) {
+		if (from > to) return Err(`from: ${from} 不可晚於 to: ${to}`);
+		if (battleRating < 1.0) return Err(`BR ${battleRating} 不可小於 1.0`);
+		return Ok(new Section({ from, to, battleRating }));
 	}
 
-	setFrom(date: Date | string) {
-		return new Section({ ...this.props, from: date });
+	static parse({ year, fromText, toText, brText }: SectionParseData) {
+		return Section.create({
+			from: dayjs.utc(`${year}.${fromText}`, "YYYY.DD.MM").toDate(),
+			to: dayjs.utc(`${year}.${toText}`, "YYYY.DD.MM").add(1, "day").toDate(),
+			battleRating: parseFloat(brText),
+		});
 	}
 
-	setTo(date: Date | string) {
-		return new Section({ ...this.props, to: date });
+	setFrom(from: Date) {
+		return Section.create({ ...this.props, from });
+	}
+
+	setTo(to: Date) {
+		return Section.create({ ...this.props, to });
 	}
 
 	setBattleRating(battleRating: number) {
-		return new Section({ ...this.props, battleRating });
+		return Section.create({ ...this.props, battleRating });
 	}
 }
 
