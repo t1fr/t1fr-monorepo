@@ -1,0 +1,9 @@
+{
+  "name": "backend-sqb-schedule",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/backend/sqb-schedule/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project backend-sqb-schedule --web",
+  "targets": {}
+}
