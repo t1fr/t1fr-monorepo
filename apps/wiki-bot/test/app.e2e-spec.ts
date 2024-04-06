@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";
-import { WikiBotModule } from "../src/wiki-bot.module";
+import { WikiBotModule } from "../src/WikiBotModule";
 
 describe("WikiBotController (e2e)", () => {
 	let app: INestApplication;

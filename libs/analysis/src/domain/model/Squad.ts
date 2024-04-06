@@ -3,6 +3,8 @@ import { ValueObject } from "@lib/ddd-types";
 import { Ok } from "ts-results-es";
 
 export interface SquadProps {
+	id: number;
+
 	position: number;
 
 	tag: string;

@@ -28,6 +28,12 @@
       "@lib/ddd-types": [
         "libs/ddd-types/src"
       ],
+      "@lib/wiki": [
+        "libs/wiki/src"
+      ],
+      "@lib/configs": [
+        "libs/configs/src"
+      ],
     },
     "lib": [
       "ES2021.String"

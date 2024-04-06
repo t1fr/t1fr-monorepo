@@ -1,4 +1,5 @@
 import { EntityId } from "./EntityId";
+import { cloneDeep } from "lodash";
 
 export abstract class Entity<Id extends EntityId<unknown>, Props> {
 	readonly id: Id;
@@ -7,6 +8,10 @@ export abstract class Entity<Id extends EntityId<unknown>, Props> {
 	protected constructor(id: Id, props: Props) {
 		this.id = id;
 		this.props = props;
+	}
+
+	toObject() {
+		return Object.freeze(cloneDeep(this.props));
 	}
 
 	equals(obj?: Entity<Id, Props>): boolean {
