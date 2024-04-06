@@ -1,8 +1,8 @@
-import { NestFactory } from '@nestjs/core';
-import { WikiBotModule } from './wiki-bot.module';
+import { NestFactory } from "@nestjs/core";
+import { WikiBotModule } from "./WikiBotModule";
 
 async function bootstrap() {
-  const app = await NestFactory.create(WikiBotModule);
-  await app.listen(3000);
+	const app = await NestFactory.createApplicationContext(WikiBotModule);
 }
+
 bootstrap();

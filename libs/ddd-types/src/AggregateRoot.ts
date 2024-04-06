@@ -1,6 +1,7 @@
 import { AggregateRoot as NestAggregateRoot } from "@nestjs/cqrs";
 import { Entity } from "./Entity";
 import { EntityId } from "./EntityId";
+import { cloneDeep } from "lodash";
 
 export abstract class AggregateRoot<Id extends EntityId<unknown>, Props> extends NestAggregateRoot {
 	readonly id: Id;
@@ -10,6 +11,10 @@ export abstract class AggregateRoot<Id extends EntityId<unknown>, Props> extends
 		super();
 		this.id = id;
 		this.props = props;
+	}
+
+	toObject() {
+		return Object.freeze(cloneDeep(this.props));
 	}
 
 	equals(obj?: Entity<Id, Props>): boolean {

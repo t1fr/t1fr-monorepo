@@ -2,20 +2,41 @@
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
   "sourceRoot": "apps/squadron-manage-backend/src",
+  "defaultLibraryPrefix": "@lib",
+  "generateOptions": {
+    "spec": false
+  },
   "compilerOptions": {
     "deleteOutDir": true,
-    "builder": "swc",
-    "assets": [
-      {
-        "include": "../config/*.yaml",
-        "outDir": "./dist/config",
-        "watchAssets": true
-      }
-    ],
-    "webpack": true,
+    "builder": "webpack",
     "tsConfigPath": "apps/squadron-manage-backend/tsconfig.app.json"
   },
   "projects": {
+    "squadron-manage-backend": {
+      "type": "application",
+      "root": "apps/squadron-manage-backend",
+      "entryFile": "main",
+      "sourceRoot": "apps/squadron-manage-backend/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/squadron-manage-backend/tsconfig.app.json"
+      }
+    },
+    "wiki-bot": {
+      "type": "application",
+      "root": "apps/wiki-bot",
+      "entryFile": "main",
+      "sourceRoot": "apps/wiki-bot/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/wiki-bot/tsconfig.app.json",
+        "assets": [
+          {
+            "include": "config/*.yaml",
+            "outDir": "./dist/config",
+            "watchAssets": true
+          }
+        ]
+      }
+    },
     "battle-schedule": {
       "type": "library",
       "root": "libs/battle-schedule",
@@ -43,22 +64,22 @@
         "tsConfigPath": "libs/ddd-types/tsconfig.lib.json"
       }
     },
-    "squadron-manage-backend": {
-      "type": "application",
-      "root": "apps/squadron-manage-backend",
-      "entryFile": "main",
-      "sourceRoot": "apps/squadron-manage-backend/src",
+    "wiki": {
+      "type": "library",
+      "root": "libs/wiki",
+      "entryFile": "index",
+      "sourceRoot": "libs/wiki/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/squadron-manage-backend/tsconfig.app.json"
+        "tsConfigPath": "libs/wiki/tsconfig.lib.json"
       }
     },
-    "wiki-bot": {
-      "type": "application",
-      "root": "apps/wiki-bot",
-      "entryFile": "main",
-      "sourceRoot": "apps/wiki-bot/src",
+    "configs": {
+      "type": "library",
+      "root": "libs/configs",
+      "entryFile": "index",
+      "sourceRoot": "libs/configs/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/wiki-bot/tsconfig.app.json"
+        "tsConfigPath": "libs/configs/tsconfig.lib.json"
       }
     }
   },

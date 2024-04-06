@@ -1,6 +1,6 @@
 import { ICommand } from "@nestjs/cqrs";
 
-export abstract class Command<T extends NonNullable<unknown>> implements ICommand {
+export abstract class Command<T = unknown> implements ICommand {
 	readonly data: Readonly<T>;
 
 	constructor(data: T) {
