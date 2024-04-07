@@ -1,0 +1,16 @@
+{
+  "autocomplete": "{name} {country} {rank} 階",
+  "description": {
+    "intro": "{name} 是位於{country}科技樹 {rank} 階的{operator}{type}",
+    "event": "為**{event}**的獎勵載具之一",
+    "gift": "是禮品載具，可從其他地方獲得或暫時絕版",
+    "store": "你可以在 **[Gaijin 商城]({url})**購買",
+    "marketplace": "你可以在**[市場]({url})**上交易獲得",
+    "gold": "你可以在遊戲內支付 **{price}** <:WtItemGoldenEagle:1047708655165911070> 購買",
+    "squadWithPromotion": "你可以在遊戲內加入[聯隊](https://discord.com/channels/1046623840710705152/1145362065813405776)，累積聯隊經驗研發或透過 <:WtItemGoldenEagle:1047708655165911070> 購買",
+    "squad": "你可以在遊戲內加入聯隊，累積聯隊經驗研發或透過 <:WtItemGoldenEagle:1047708655165911070> 購買",
+    "arcade": "街機娛樂",
+    "realistic": "歷史性能",
+    "simulator": "全真模擬"
+  }
+}

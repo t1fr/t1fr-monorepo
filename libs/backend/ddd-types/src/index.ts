@@ -4,3 +4,4 @@ export * from "./Entity";
 export * from "./ValueObject";
 export * from "./Command";
 export * from "./Adapter";
+export * from "./Query";
