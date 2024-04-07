@@ -1,0 +1,9 @@
+{
+    "name": "backend-member-manage",
+    "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "libs/backend/member-manage/src",
+    "projectType": "library",
+    "tags": [],
+    "// targets": "to see all targets run: nx show project backend-member-manage --web",
+    "targets": {}
+}
