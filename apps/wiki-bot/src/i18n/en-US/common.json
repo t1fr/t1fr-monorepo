@@ -3,10 +3,10 @@
   "description": {
     "intro": "{name} is a Rank {rank} {operator} {type} in {country} tech tree",
     "event": "It is one of **{event} Event reward**",
-    "gift": "It is a gift vehicle can or cannot obtain from other source**",
+    "gift": "It is a gift vehicle can obtain from other source or has been phased out**",
     "store": "You can by it in **[Gaijin Store]({url})**",
     "marketplace": "You can trade it in **[Gaijin Market]({url})**",
-    "gold": "You can by it in game with **{price}** <:WtItemGoldenEagle:1047708655165911070>",
+    "gold": "You can buy it in game with **{price}** <:WtItemGoldenEagle:1047708655165911070>",
     "squadWithPromotion": "You can join us [T1FR Squad Recruitment](https://discord.com/channels/1046623840710705152/1145362065813405776) and obtain Squad Exp. to research, or pay <:WtItemGoldenEagle:1047708655165911070> to buy",
     "squad": "You can join a squad in game and obtain Squad Exp. to research, or pay <:WtItemGoldenEagle:1047708655165911070> to buy",
     "arcade": "Arcade",
