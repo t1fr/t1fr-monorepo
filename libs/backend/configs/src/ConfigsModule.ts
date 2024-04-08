@@ -8,7 +8,7 @@ export class ConfigsModule {
     static forRoot(): DynamicModule {
         ConfigHelper.loadGlob();
         return {
-            module: ConfigModule,
+            module: ConfigsModule,
             imports: [ConfigModule.forRoot({ isGlobal: true, load: [() => ConfigHelper.Config] })],
         };
     }
