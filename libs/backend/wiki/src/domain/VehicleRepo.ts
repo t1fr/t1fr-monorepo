@@ -14,10 +14,14 @@ export type SearchCriteria = {
   country?: string
 }
 
+export type EnumFields = Extract<keyof Vehicle["props"], "country" | "rank" | "vehicleClasses">;
+
 export interface VehicleRepo {
   save(data: Vehicle | Vehicle[]): Promise<Result<void, DomainError>>;
 
   searchByName(name: string, criteria: SearchCriteria, options?: FindByNameOptions): Promise<Result<Vehicle[], DomainError>>;
 
   findById(id: string): Promise<Result<Vehicle, DomainError>>;
+
+  listEnumField(field: EnumFields): Promise<Result<string[], DomainError>>;
 }

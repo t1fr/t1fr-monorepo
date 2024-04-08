@@ -1,8 +1,9 @@
 import { Injectable, Provider } from "@nestjs/common";
-import { BattleRating, DomainError, FindByNameOptions, SearchCriteria, Vehicle, VehicleRepo } from "../domain";
-import { Err, Ok, Result } from "ts-results-es";
-import { castArray } from "lodash";
 import { Adapter } from "@t1fr/backend/ddd-types";
+import * as console from "console";
+import { castArray } from "lodash";
+import { Err, Ok, Result } from "ts-results-es";
+import { BattleRating, DomainError, EnumFields, FindByNameOptions, SearchCriteria, Vehicle, VehicleRepo } from "../domain";
 import { InjectVehicleModel, VehicleModel, VehicleSchema } from "./VehicleSchema";
 
 @Injectable()
@@ -57,7 +58,11 @@ export class MongoVehicleRepo implements VehicleRepo, Adapter<Vehicle, VehicleSc
     return Vehicle.create({ ...other, id, battleRating: battleRatingModel });
   }
 
-
+  async listEnumField(field: EnumFields): Promise<Result<string[], DomainError>> {
+    const aggregate = this.vehicleModel.aggregate<{ _id: string }>();
+    const options = await (field === "vehicleClasses" ? aggregate.unwind("$vehicleClasses").group({ _id: "$vehicleClasses" }) : aggregate.group({ _id: `$${field}` }));
+    return Ok(options.map(it => it._id));
+  }
 }
 
 export const MongoVehicleRepoProvider: Provider = { provide: VehicleRepo, useClass: MongoVehicleRepo };

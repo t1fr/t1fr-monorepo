@@ -4,7 +4,8 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./AppModule";
 
 async function bootstrap() {
-  await NestFactory.createApplicationContext(AppModule);
+  const app = await NestFactory.createApplicationContext(AppModule);
+  app.init();
   Logger.log(`🚀 Discord Bot is running`);
 }
 
