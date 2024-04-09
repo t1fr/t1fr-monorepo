@@ -8,18 +8,47 @@ import { I18nService } from "nestjs-i18n";
 import { Result } from "ts-results-es";
 import { WikiAutocompleteInterceptor } from "./WikiAutocomplete";
 
-const WikiCommandGroup = createCommandGroupDecorator({ name: "wiki", nameLocalizations: { "zh-TW": "維基" }, description: "Search War Thunder wiki", descriptionLocalizations: { "zh-TW": "查詢戰雷維基" } });
+const WikiCommandGroup = createCommandGroupDecorator({
+    name: "wiki",
+    description: "Search War Thunder wiki",
+    descriptionLocalizations: { "zh-TW": "查詢戰雷維基" },
+});
 
 const RankChoices = range(1, 8).map(it => ({ name: `${it}`, value: it }));
 
 export class SearchVehicleOption {
-    @StringOption({ name: "query", name_localizations: { "zh-TW": "搜尋詞" }, autocomplete: true, required: true, description: "search query", description_localizations: { "zh-TW": "搜尋詞" } })
+    @StringOption({
+        name: "query",
+        name_localizations: { "zh-TW": "搜尋詞" },
+        autocomplete: true,
+        required: true,
+        description: "search query",
+        description_localizations: { "zh-TW": "搜尋詞" },
+    })
     query: string;
-    @NumberOption({ name: "rank", name_localizations: { "zh-TW": "階級" }, choices: RankChoices, description: "rank", description_localizations: { "zh-TW": "階級" } })
+    @NumberOption({
+        name: "rank",
+        name_localizations: { "zh-TW": "階級" },
+        choices: RankChoices,
+        description: "rank",
+        description_localizations: { "zh-TW": "階級" },
+    })
     rank: number;
-    @StringOption({ name: "country", name_localizations: { "zh-TW": "國家" }, autocomplete: true, description: "country", description_localizations: { "zh-TW": "國家" } })
+    @StringOption({
+        name: "country",
+        name_localizations: { "zh-TW": "國家" },
+        autocomplete: true,
+        description: "country",
+        description_localizations: { "zh-TW": "國家" },
+    })
     country: string;
-    @StringOption({ name: "class", name_localizations: { "zh-TW": "類型" }, autocomplete: true, description: "class", description_localizations: { "zh-TW": "類型" } })
+    @StringOption({
+        name: "class",
+        name_localizations: { "zh-TW": "類型" },
+        autocomplete: true,
+        description: "class",
+        description_localizations: { "zh-TW": "類型" },
+    })
     vehicleClass: string;
 }
 
@@ -72,7 +101,11 @@ export class WikiCommand {
     }
 
     @UseInterceptors(WikiAutocompleteInterceptor)
-    @Subcommand({ name: "vehicle", nameLocalizations: { "zh-TW": "車輛" }, description: "search vehicle by name, can be filtered by other conditions", descriptionLocalizations: { "zh-TW": "以名稱搜尋載具，可以其他條件過濾" } })
+    @Subcommand({
+        name: "vehicle",
+        description: "search vehicle by name, can be filtered by other conditions",
+        descriptionLocalizations: { "zh-TW": "以名稱搜尋載具，可以其他條件過濾" },
+    })
     async searchVehicle(@Context() [interaction]: SlashCommandContext, @Options() { query }: SearchVehicleOption) {
         await interaction.deferReply();
         const result = await this.queryBus.execute<FindById, Result<FindByIdResult, string>>(new FindById({ id: query }));

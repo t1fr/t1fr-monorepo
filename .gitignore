@@ -41,3 +41,4 @@ Thumbs.db
 .nx/cache
 
 apps/**/*.config.json
+apps/**/*.config.yaml

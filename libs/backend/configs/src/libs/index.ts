@@ -1,2 +1,2 @@
-export * from "./NecordOptionsFactory";
-export * from "./MongooseOptionsFactory";
+export * from "./AbstractNecordOptionsFactory";
+export * from "./AbstractMongooseOptionsFactory";
