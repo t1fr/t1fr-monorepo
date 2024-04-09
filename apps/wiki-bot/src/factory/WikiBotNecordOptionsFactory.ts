@@ -1,21 +1,14 @@
-import { ConfigParam, Configurable, NecordOptionsFactory } from "@t1fr/backend/configs";
+import { AbstractNecordOptionsFactory, ConfigParam, Configurable } from "@t1fr/backend/configs";
 import { NecordModuleOptions } from "necord";
-import { IntentsBitField } from "discord.js";
 
-export class WikiBotNecordOptionsFactory implements NecordOptionsFactory {
+export class WikiBotNecordOptionsFactory extends AbstractNecordOptionsFactory {
 
-  @Configurable()
-  getToken(@ConfigParam("bot.token") token?: string) {
-    return token;
-  }
-
-
-  createNecordOptions(): Promise<NecordModuleOptions> | NecordModuleOptions {
-    const token = this.getToken();
-    return {
-      token: token,
-      intents: [IntentsBitField.Flags.Guilds],
-      development: ["1046623840710705152"],
-    };
-  }
+    @Configurable()
+    protected getOptions(@ConfigParam("bot") options?: NecordModuleOptions): NecordModuleOptions {
+        return {
+            ...options,
+            intents: [],
+            development: ["1046623840710705152"],
+        };
+    }
 }

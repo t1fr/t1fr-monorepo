@@ -4,23 +4,38 @@ import { readFileSync } from "fs";
 import { globSync } from "glob";
 import { load } from "js-yaml";
 import { isArray, mergeWith } from "lodash";
-import path from "path";
+import { basename, extname, resolve } from "path";
+import { env } from "process";
+import { ConfigsModuleOptions } from "./ConfigsModuleOptions";
 
 export class ConfigHelper {
     static Config: ConfigObject = {};
     private static logger = new Logger(ConfigHelper.name);
 
-    static loadGlob() {
-        const pattern = path.resolve(__dirname, "config", "**/*.config.json").replace(/\\/g, "/");
-        const filenames = globSync(pattern);
+    private static getFilenames(configDir: string) {
+        const configPath = resolve(__dirname, configDir);
+        const basePattern = resolve(configPath, "**/+([!.]).config.{json,yaml}").replace(/\\/g, "/");
+        const filenames = globSync(basePattern);
+
+        if (env["NODE_ENV"]) {
+            const envPattern = resolve(configPath, `**/+([!.]).${env["NODE_ENV"]}.config.{json,yaml}`).replace(/\\/g, "/");
+            filenames.push(...globSync(envPattern));
+        }
+
+        return filenames;
+    }
+
+    static loadGlob(options: ConfigsModuleOptions) {
+        const filenames = this.getFilenames(options.configDir);
         const configs = filenames.reduce((record, filename) => {
-            this.logger.verbose(`載入 ${filename}`);
-            const extension = path.extname(filename);
-            const basename = path.basename(filename, extension).replace(".config", "");
+            if (options.logging) this.logger.verbose(`載入 ${filename}`);
+            const extension = extname(filename);
+            const baseFilename = basename(filename, extension).split(".")[0];
             const content = readFileSync(filename, { encoding: "utf8" });
             const configObject = load(content, { json: true });
-            return mergeWith(record, { [basename]: configObject }, (a, b) => isArray(b) ? b : undefined);
+            return mergeWith(record, { [baseFilename]: configObject }, (a, b) => isArray(b) ? b : undefined);
         }, {});
         Object.assign(this.Config, configs);
+        if (options.logging) this.logger.verbose(JSON.stringify(this.Config));
     }
 }
