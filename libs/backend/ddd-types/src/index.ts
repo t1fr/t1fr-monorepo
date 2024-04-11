@@ -5,3 +5,4 @@ export * from "./ValueObject";
 export * from "./Command";
 export * from "./Adapter";
 export * from "./Query";
+export * from "./Enum";
