@@ -3,6 +3,9 @@ import { AdapterError } from "@t1fr/backend/ddd-types";
 export const DomainError = {
 	NotFoundVehicle: "Cannot find vehicle by provided name",
 	UnknownVehicleObtainWay: "Cannot map vehicle obtain from string",
+	UnknownVehicleType: "UnknownVehicleType",
+	UnknownVehicleCountry: "UnknownVehicleCountry",
+	UnknownVehicleClass: "UnknownVehicleClass",
 	NoDatamineJsonResponse: "Datamine JSON no response",
 	VersionNotChange: "Version is not changed",
 } as const;

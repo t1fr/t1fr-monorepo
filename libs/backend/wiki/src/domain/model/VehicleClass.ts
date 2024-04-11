@@ -1,20 +1,47 @@
-export const ArmyClass = {
-	MediumTank: "type_medium_tank",
+import { Enum, isEnum } from "@t1fr/backend/ddd-types";
+
+export const VehicleClass = {
+    Bomber: "type_bomber",
+    LightTank: "type_light_tank",
+    LightCruiser: "type_light_cruiser",
+    Battlecruiser: "type_battlecruiser",
+    UtilityHelicopter: "type_utility_helicopter",
+    MediumTank: "type_medium_tank",
+    Fighter: "type_fighter",
+    HeavyCruiser: "type_heavy_cruiser",
+    TankDestroyer: "type_tank_destroyer",
+    Destroyer: "type_destroyer",
+    Assault: "type_assault",
+    Boat: "type_boat",
+    Frigate: "type_frigate",
+    HeavyTank: "type_heavy_tank",
+    Battleship: "type_battleship",
+    Spaa: "type_spaa",
+    Barge: "type_barge",
+    AttackHelicopter: "type_attack_helicopter",
+    Hydroplane: "type_hydroplane",
+    DiveBomber: "type_dive_bomber",
+    SubmarineChaser: "type_submarine_chaser",
+    GunBoat: "type_gun_boat",
+    NavalFerryBarge: "type_naval_ferry_barge",
+    TorpedoBomber: "type_torpedo_bomber",
+    LongrangeBomber: "type_longrange_bomber",
+    MissileTank: "type_missile_tank",
+    JetFighter: "type_jet_fighter",
+    AirDefenseFighter: "type_aa_fighter",
+    Minelayer: "type_minelayer",
+    JetBomber: "type_jet_bomber",
+    ArmoredBoat: "type_armored_boat",
+    HeavyBoat: "type_heavy_boat",
+    LightBomber: "type_light_bomber",
+    FrontlineBomber: "type_frontline_bomber",
+    Interceptor: "type_interceptor",
+    TorpedoBoat: "type_torpedo_boat",
+    TorpedoGunBoat: "type_torpedo_gun_boat",
+    NavalAircraft: "type_naval_aircraft",
+    NavalAntiAirFerry: "type_naval_aa_ferry",
 } as const;
-export type ArmyClass = typeof ArmyClass[keyof typeof ArmyClass];
 
-export const ShipClass = {
-	Battleship: "type_battleship",
-} as const;
-export type ShipClass = typeof ShipClass[keyof typeof ShipClass];
+export type VehicleClass = Enum<typeof VehicleClass>;
 
-export const BoatClass = {} as const;
-export type BoatClass = typeof BoatClass[keyof typeof BoatClass];
-
-export const HeliClass = {} as const;
-export type HeliClass = typeof HeliClass[keyof typeof HeliClass];
-
-export const AircraftClass = {} as const;
-export type AircraftClass = typeof AircraftClass[keyof typeof AircraftClass];
-
-export type VehicleClass = ArmyClass | AircraftClass | ShipClass | BoatClass | HeliClass
+export const isValidVehicleClass = isEnum(VehicleClass);

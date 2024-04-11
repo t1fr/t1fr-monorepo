@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { Ok } from "ts-results-es";
+import { Err, Ok } from "ts-results-es";
 import { VehicleApiRepo, VehicleRepo } from "../../domain";
 import { ScapeDatamine } from "./ScapeDatamine";
 
@@ -16,7 +16,7 @@ export class ScrpeDatamineHandler implements ICommandHandler<ScapeDatamine> {
 
     async execute() {
         const scrpeResult = await this.apiRepo.fromDatamine(ScrpeDatamineHandler.version);
-        if (scrpeResult.isErr()) return scrpeResult;
+        if (scrpeResult.isErr()) return Err(scrpeResult.error[0]);
         const { version, vehicles } = scrpeResult.value;
         ScrpeDatamineHandler.version = version;
         await this.vehicleRepo.save(vehicles);
