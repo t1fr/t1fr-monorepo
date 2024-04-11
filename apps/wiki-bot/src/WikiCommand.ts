@@ -1,6 +1,6 @@
 import { Inject, Injectable, UseInterceptors } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
-import { FindById, FindByIdResult, ScapeDatamine } from "@t1fr/backend/wiki";
+import { DomainError, FindById, FindByIdResult, ScapeDatamine } from "@t1fr/backend/wiki";
 import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 import { range } from "lodash";
 import { Context, createCommandGroupDecorator, NumberOption, Options, SlashCommandContext, StringOption, Subcommand } from "necord";
@@ -96,8 +96,8 @@ export class WikiCommand {
     @Subcommand({ name: "sync", description: "同步載具資料庫" })
     async syncDatabase(@Context() [interaction]: SlashCommandContext) {
         await interaction.deferReply();
-        await this.commandBus.execute(new ScapeDatamine());
-        await interaction.followUp("已同步載具資料庫");
+        const result = await this.commandBus.execute<ScapeDatamine, Result<number, DomainError>>(new ScapeDatamine());
+        await interaction.followUp(result.isOk() ? `已同步載具資料庫，更新 ${result.value} 筆載具` : result.error);
     }
 
     @UseInterceptors(WikiAutocompleteInterceptor)
