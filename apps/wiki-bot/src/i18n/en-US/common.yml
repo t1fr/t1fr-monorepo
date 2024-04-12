@@ -1,6 +1,6 @@
 autocomplete: "{name} {country} Rank {rank}"
 description:
-  intro: "{name} is a Rank {rank} {operator} {type} in {country} tech tree"
+  intro: "{name} is a Rank {rank} {operator} {mainClass} in {country} {type} tech tree"
   event: "It is one of **{event} Event reward**"
   gift: "It is a gift vehicle can obtain from other source or has been phased out**"
   store: "You can by it in **[Gaijin Store]({url})**"

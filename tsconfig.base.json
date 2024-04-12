@@ -19,6 +19,7 @@
             "@t1fr/backend/backup": ["libs/backend/backup/src/index.ts"],
             "@t1fr/backend/configs": ["libs/backend/configs/src/index.ts"],
             "@t1fr/backend/ddd-types": ["libs/backend/ddd-types/src/index.ts"],
+            "@t1fr/backend/i18n": ["libs/backend/i18n/src/index.ts"],
             "@t1fr/backend/member-manage": ["libs/backend/member-manage/src/index.ts"],
             "@t1fr/backend/sqb-analysis": ["libs/backend/sqb-analysis/src/index.ts"],
             "@t1fr/backend/sqb-schedule": ["libs/backend/sqb-schedule/src/index.ts"],

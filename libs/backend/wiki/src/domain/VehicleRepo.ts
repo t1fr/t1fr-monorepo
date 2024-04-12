@@ -1,6 +1,6 @@
 import { Inject } from "@nestjs/common";
 import { Result } from "ts-results-es";
-import { DomainError } from "./DomainError";
+import { DomainError } from "./DomainErrorType";
 import { Vehicle } from "./model";
 
 export const VehicleRepo = () => Inject(VehicleRepo);
