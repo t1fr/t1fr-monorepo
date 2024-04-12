@@ -1,7 +1,7 @@
 import { HttpService } from "@nestjs/axios";
 import { Inject, Injectable, Provider } from "@nestjs/common";
 import { Adapter } from "@t1fr/backend/ddd-types";
-import { chain, union } from "lodash";
+import { chain, partition, union } from "lodash";
 import { Err, Ok, Result } from "ts-results-es";
 import {
     BattleRating,
@@ -61,19 +61,19 @@ export class AxiosVehicleApiRepo implements VehicleApiRepo, Adapter<Vehicle, Veh
 
         const obtainSource = obtainFrom ?? (squad ? ObtainSource.Squad : ObtainSource.Techtree);
         const unsureClasses = union([normal_type], extended_type);
-        const vehicleClasses = unsureClasses.filter(isValidVehicleClass);
+        const [validClasses, invalidClasses] = partition(unsureClasses, isValidVehicleClass);
         const operator = operator_country ?? country;
         const [arcade, realistic, simulator] = br.map(parseFloat);
 
-        if (!isValidCountry(country)) return Err(DomainError.UnknownVehicleCountry);
-        if (!isValidCountry(operator)) return Err(DomainError.UnknownVehicleCountry);
-        if (!isValidType(type)) return Err(DomainError.UnknownVehicleType);
-        if (!isValidObtainSource(obtainSource)) return Err(DomainError.UnknownVehicleObtainWay);
-        if (vehicleClasses.length < unsureClasses.length) return Err(DomainError.UnknownVehicleClass);
+        if (!isValidCountry(country)) return Err(new DomainError("UnknownVehicleCountry", country));
+        if (!isValidCountry(operator)) return Err(new DomainError("UnknownVehicleCountry", operator));
+        if (!isValidType(type)) return Err(new DomainError("UnknownVehicleType", type));
+        if (!isValidObtainSource(obtainSource)) return Err(new DomainError("UnknownVehicleObtainWay", obtainSource));
+        if (invalidClasses.length > 0) return Err(new DomainError("UnknownVehicleClass", invalidClasses.join(",")));
 
         return BattleRating.create({ arcade, realistic, simulator })
             .andThen(battleRating => Vehicle.create({
-                ...other, country, type, id, name, operator, goldPrice, vehicleClasses, obtainSource, battleRating,
+                ...other, country, type, id, name, operator, goldPrice, vehicleClasses: validClasses, obtainSource, battleRating,
             }));
     }
 }

@@ -5,6 +5,7 @@ country_usa: USA
 country_usa_modern: USA
 country_china: China
 country_ussr: USSR
+country_lithuania: Lithuania
 country_germany: Germany
 country_japan: Japan
 country_france: France
@@ -53,3 +54,4 @@ country_switzerland: Switzerland
 country_finland: Finland
 country_turkey: Turkey
 country_romania: Romania
+country_hungary_modern: Hungary

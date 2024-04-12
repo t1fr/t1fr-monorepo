@@ -1,1 +1,1 @@
-export * from "./lib/backend-member-manage.module";
+export * from "./MemberManageModule";

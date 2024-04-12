@@ -1,6 +1,6 @@
 autocomplete: "{name} {country} {rank} 階"
 description:
-  intro: "{name} 是位於{country}科技樹 {rank} 階的{operator}{type}"
+  intro: "{name} 是位於{country}{type}科技樹 {rank} 階的{operator}{mainClass}"
   event: "為 **{event} 的獎勵載具之一**"
   gift: "是禮品載具，可從其他地方獲得或已絕版"
   store: "你可以在 **[Gaijin 商城]({url})** 購買"

@@ -1,7 +1,7 @@
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
-import { FindById, FindByIdResult } from "./FindById";
 import { Ok, Result } from "ts-results-es";
 import { VehicleRepo } from "../../domain";
+import { FindById, FindByIdResult } from "./FindById";
 
 @QueryHandler(FindById)
 export class FindByIdHandler implements IQueryHandler<FindById, Result<FindByIdResult, string>> {
@@ -12,7 +12,7 @@ export class FindByIdHandler implements IQueryHandler<FindById, Result<FindByIdR
 
     async execute(query: FindById): Promise<Result<FindByIdResult, string>> {
         const result = await this.vehicleRepo.findById(query.data.id);
-        if (result.isErr()) return result;
+        if (result.isErr()) return result.mapErr(it => it.toString());
         const vehicle = result.value;
         const { type, name, rank, country, battleRating, obtainSource, operator, vehicleClasses, event, goldPrice } = vehicle.props;
         return Ok({

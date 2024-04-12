@@ -1,10 +1,10 @@
 import { Inject, Injectable, OnApplicationBootstrap } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
 import { Cron, CronExpression } from "@nestjs/schedule";
+import { AdvancedI18nService } from "@t1fr/backend/i18n";
 import { ListEnumableField, Search, SearchResult } from "@t1fr/backend/wiki";
 import { ApplicationCommandOptionChoiceData, AutocompleteInteraction } from "discord.js";
 import { AutocompleteInterceptor } from "necord";
-import { I18nService } from "nestjs-i18n";
 import { Result } from "ts-results-es";
 
 @Injectable()
@@ -14,7 +14,7 @@ export class WikiAutocompleteInterceptor extends AutocompleteInterceptor impleme
     private readonly queryBus: QueryBus;
 
     @Inject()
-    private readonly i18nService: I18nService;
+    private readonly i18nService: AdvancedI18nService;
 
 
     private readonly options = { "countries": [], "ranks": [], "classes": [] };
@@ -33,7 +33,7 @@ export class WikiAutocompleteInterceptor extends AutocompleteInterceptor impleme
     }
 
     private translateAutocomplete({ name, country, rank }: SearchResult["vehicles"][number], locale: string) {
-        return this.i18nService.t("common.autocomplete", { args: { name: name, country: this.translateCountry(country, locale), rank: rank }, lang: locale });
+        return this.i18nService.t("common.autocomplete", { interpolate: { country: `country.${country}` }, args: { name: name, rank: rank }, lang: locale });
     }
 
     private translateCountry(country: string, locale: string) {

@@ -5,9 +5,12 @@ export const Country = {
     Sweden: "country_sweden",
     Italy: "country_italy",
     USA: "country_usa",
+    ModernUSA: "country_usa_modern",
     China: "country_china",
     USSR: "country_ussr",
     Germany: "country_germany",
+    Lithuania: "country_lithuania",
+    WeimarGermany: "country_germany_weimar_republic",
     Japan: "country_japan",
     France: "country_france",
     Israel: "country_israel",
@@ -55,6 +58,7 @@ export const Country = {
     Finland: "country_finland",
     Turkey: "country_turkey",
     Romania: "country_romania",
+    ModernHungary: "country_hungary_modern"
 } as const;
 
 export type Country = Enum<typeof Country>;

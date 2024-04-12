@@ -1,10 +1,10 @@
 import { Inject, Injectable, UseInterceptors } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
-import { DomainError, FindById, FindByIdResult, ScapeDatamine } from "@t1fr/backend/wiki";
+import { AdvancedI18nService } from "@t1fr/backend/i18n";
+import { FindById, FindByIdResult, ScapeDatamine } from "@t1fr/backend/wiki";
 import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 import { range } from "lodash";
 import { Context, createCommandGroupDecorator, NumberOption, Options, SlashCommandContext, StringOption, Subcommand } from "necord";
-import { I18nService } from "nestjs-i18n";
 import { Result } from "ts-results-es";
 import { WikiAutocompleteInterceptor } from "./WikiAutocomplete";
 
@@ -63,41 +63,38 @@ export class WikiCommand {
     private readonly queryBus: QueryBus;
 
     @Inject()
-    private readonly i18nService: I18nService;
-
-    private getTranslation(set: "country" | "class" | "event" | "common.description", key: string, locale: string, args?: Record<string, string>) {
-        return this.i18nService.t(`${set}.${key}`, { lang: locale, args });
-    }
+    private readonly i18nService: AdvancedI18nService;
 
     private isFromT1fr(interaction: ChatInputCommandInteraction) {
         return interaction.guild.id === "1046623840710705152";
     }
 
-    private generateDescription(vehicle: FindByIdResult["vehicle"], locale: string, promoteSquad: boolean) {
-        const { name, country, operator, classes, rank, event, obtainSource, storeUrl, marketplaceUrl, goldPrice } = vehicle;
-        const localizedCountry = this.getTranslation("country", country, locale);
-        const localizedOperator = this.getTranslation("country", operator, locale);
-        const localizedType = this.getTranslation("class", classes[0], locale).toLocaleLowerCase();
-        const description = [this.getTranslation("common.description", "intro", locale, {
-            name, country: localizedCountry, rank: `${rank}`, operator: localizedOperator, type: localizedType,
+    private generateDescription(vehicle: FindByIdResult["vehicle"], lang: string, promoteSquad: boolean) {
+        const { name, country, operator, classes, rank, event, type, obtainSource, storeUrl, marketplaceUrl, goldPrice } = vehicle;
+        const localizedMainClass = this.i18nService.t(`class.${classes[0]}`, { lang }).toLocaleLowerCase();
+        const localizedType = this.i18nService.t(`class.${type}`, { lang }).toLocaleLowerCase();
+        const description = [this.i18nService.t("common.description.intro", {
+            lang,
+            args: { type: localizedType, name, rank, mainClass: localizedMainClass },
+            interpolate: Object.assign({ country: `country.${country}` }, operator === country ? undefined : { operator: `country.${operator}` }),
         })];
-        if (event) {
-            const localizedEvent = this.getTranslation("event", event, locale);
-            description.push(this.getTranslation("common.description", "event", locale, { event: localizedEvent }));
-        }
-        if (obtainSource === "gift" && !event) description.push(this.getTranslation("common.description", "gift", locale));
-        else if (obtainSource === "store") description.push(this.getTranslation("common.description", "store", locale, { url: storeUrl }));
-        else if (obtainSource === "marketplace") description.push(this.getTranslation("common.description", "marketplace", locale, { url: marketplaceUrl }));
-        else if (obtainSource === "gold") description.push(this.getTranslation("common.description", "gold", locale, { price: `${goldPrice}` }));
-        else if (obtainSource === "squad") description.push(this.getTranslation("common.description", promoteSquad ? "squadWithPromotion" : "squad", locale));
+        if (event) description.push(this.i18nService.t("common.description.event", { lang, interpolate: { event: `event.${event}` } }));
+        if (obtainSource === "gift" && !event) description.push(this.i18nService.t("common.description.gift", { lang }));
+        else if (obtainSource === "store") description.push(this.i18nService.t("common.description.store", { lang, args: { url: storeUrl } }));
+        else if (obtainSource === "marketplace") description.push(this.i18nService.t("common.description.marketplace", {
+            lang,
+            args: { url: marketplaceUrl },
+        }));
+        else if (obtainSource === "gold") description.push(this.i18nService.t("common.description.gold", { lang: lang, args: { price: goldPrice } }));
+        else if (obtainSource === "squad") description.push(this.i18nService.t(`common.description.${promoteSquad ? "squadWithPromotion" : "squad"}`, { lang: lang }));
         return description.join("\n");
     }
 
     @Subcommand({ name: "sync", description: "同步載具資料庫" })
     async syncDatabase(@Context() [interaction]: SlashCommandContext) {
         await interaction.deferReply();
-        const result = await this.commandBus.execute<ScapeDatamine, Result<number, DomainError>>(new ScapeDatamine());
-        await interaction.followUp(result.isOk() ? `已同步載具資料庫，更新 ${result.value} 筆載具` : result.error);
+        const result = await this.commandBus.execute<ScapeDatamine, Result<number, string>>(new ScapeDatamine());
+        await interaction.followUp(result.isOk() ? `已同步載具資料庫，更新 ${result.value} 筆載具` : `錯誤  : ${result.error}`);
     }
 
     @UseInterceptors(WikiAutocompleteInterceptor)
@@ -111,18 +108,18 @@ export class WikiCommand {
         const result = await this.queryBus.execute<FindById, Result<FindByIdResult, string>>(new FindById({ id: query }));
         if (result.isErr()) return interaction.followUp(result.error);
         const vehicle = result.value.vehicle;
-        const locale = interaction.locale;
+        const lang = interaction.locale;
         const { arcade, realistic, simulator } = vehicle.battleRating;
         const embed = new EmbedBuilder({
-            author: { name: vehicle.classes.slice(1).map(it => this.getTranslation("class", it, locale)).join(" ") },
+            author: { name: vehicle.classes.slice(1).map(it => this.i18nService.t(`class.${it}`, { lang })).join(" ") },
             title: vehicle.name,
             url: vehicle.wikiUrl,
-            description: this.generateDescription(vehicle, locale, this.isFromT1fr(interaction)),
+            description: this.generateDescription(vehicle, lang, this.isFromT1fr(interaction)),
             image: { url: vehicle.thumbnailUrl },
             fields: [
-                { name: this.getTranslation("common.description", "arcade", locale), value: arcade.toFixed(1), inline: true },
-                { name: this.getTranslation("common.description", "realistic", locale), value: realistic.toFixed(1), inline: true },
-                { name: this.getTranslation("common.description", "simulator", locale), value: simulator.toFixed(1), inline: true },
+                { name: this.i18nService.t("common.description.arcade", { lang }), value: arcade.toFixed(1), inline: true },
+                { name: this.i18nService.t("common.description.realistic", { lang }), value: realistic.toFixed(1), inline: true },
+                { name: this.i18nService.t("common.description.simulator", { lang }), value: simulator.toFixed(1), inline: true },
             ],
             thumbnail: { url: vehicle.imageUrl },
         });

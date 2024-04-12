@@ -16,7 +16,7 @@ export class ScrpeDatamineHandler implements ICommandHandler<ScapeDatamine> {
 
     async execute() {
         const scrpeResult = await this.apiRepo.fromDatamine(ScrpeDatamineHandler.version);
-        if (scrpeResult.isErr()) return Err(scrpeResult.error[0]);
+        if (scrpeResult.isErr()) return Err(scrpeResult.error.map(it => it.toString()));
         const { version, vehicles } = scrpeResult.value;
         ScrpeDatamineHandler.version = version;
         await this.vehicleRepo.save(vehicles);
