@@ -12,6 +12,10 @@ export class BattleRating extends ValueObject<BattleRatingProps> {
         return Ok(new BattleRating(props));
     }
 
+    static rebuild(props: BattleRatingProps) {
+        return new BattleRating(props);
+    }
+
     toObject() {
         return { ...this.props };
     }

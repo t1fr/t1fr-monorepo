@@ -1,6 +1,22 @@
-export abstract class AbstractDomainError<T extends Readonly<Record<string, string>>> {
-    constructor(protected readonly type: keyof T, protected readonly message?: string) {
+type DomainErrorProps = {
+    message: string;
+    error?: unknown;
+}
+
+export abstract class DomainError {
+    protected constructor(private readonly props: DomainErrorProps) {
     }
 
-    abstract toString(): string;
+    toString(): string {
+        return `Error ${this.props.error ?? ""}: ${this.props.message}`;
+    }
 }
+
+export namespace AppError {
+    export class UnexpectedError extends DomainError {
+        constructor(err: unknown) {
+            super({ message: "Unexpected error occured", error: err });
+        }
+    }
+}
+

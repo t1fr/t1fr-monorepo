@@ -1,12 +1,12 @@
 import { Injectable, Provider } from "@nestjs/common";
-import { Adapter } from "@t1fr/backend/ddd-types";
+import { AppError, DomainError } from "@t1fr/backend/ddd-types";
 import { castArray } from "lodash";
 import { Err, Ok, Result } from "ts-results-es";
-import { BattleRating, DomainError, EnumFields, FindByNameOptions, SearchCriteria, Vehicle, VehicleRepo } from "../domain";
+import { BattleRating, EnumFields, FindByNameOptions, FindVehicleByIdError, SearchCriteria, Vehicle, VehicleRepo } from "../domain";
 import { InjectVehicleModel, VehicleModel, VehicleSchema } from "./VehicleSchema";
 
 @Injectable()
-export class MongoVehicleRepo implements VehicleRepo, Adapter<Vehicle, VehicleSchema, DomainError> {
+export class MongoVehicleRepo implements VehicleRepo {
 
     @InjectVehicleModel()
     private readonly vehicleModel!: VehicleModel;
@@ -23,38 +23,39 @@ export class MongoVehicleRepo implements VehicleRepo, Adapter<Vehicle, VehicleSc
         });
         const action = random ? aggregate.sample(limit) : aggregate.limit(limit);
         const docs = await action;
-        return Ok(docs.map(this.restore)
-            .filter((result): result is Ok<Vehicle> => result.isOk())
-            .map(result => result.value));
+        return Ok(docs.map(this.restore));
     }
 
     async findById(id: string): Promise<Result<Vehicle, DomainError>> {
         const doc = await this.vehicleModel.findOne({ _id: id }).lean();
-        if (!doc) return Err(new DomainError("NotFoundVehicle", id));
-        return this.restore(doc);
+        if (!doc) return Err(new FindVehicleByIdError.VehicleNotFoundError(id));
+        return Ok(this.restore(doc));
     }
 
-    async save(data: Vehicle | Vehicle[]): Promise<Result<void, DomainError>> {
+    async save(data: Vehicle | Vehicle[]): Promise<Result<number, DomainError>> {
         const writeModels = castArray(data)
             .map(this.persist)
-            .filter((result): result is Ok<VehicleSchema> => result.isOk())
             .map(result => {
-                const { _id, ...other } = result.value;
+                const { _id, ...other } = result;
                 return { updateOne: { filter: { _id }, update: other, upsert: true } };
             });
-        await this.vehicleModel.bulkWrite(writeModels).catch(console.error);
-        return Ok.EMPTY;
+        try {
+            const writeResult = await this.vehicleModel.bulkWrite(writeModels);
+            return Ok(writeResult.upsertedCount);
+        } catch (e) {
+            return Err(new AppError.UnexpectedError(e));
+        }
     }
 
-    persist(model: Vehicle): Result<VehicleSchema, DomainError> {
+    persist(model: Vehicle): VehicleSchema {
         const { id, battleRating, ...other } = model.props;
-        return Ok({ _id: id, battleRating: battleRating.props, ...other });
+        return { _id: id, battleRating: battleRating.props, ...other };
     }
 
-    restore(model: VehicleSchema): Result<Vehicle, DomainError> {
+    restore(model: VehicleSchema): Vehicle {
         const { battleRating, _id: id, ...other } = model;
-        const battleRatingModel = BattleRating.create(battleRating).value;
-        return Vehicle.create({ ...other, id, battleRating: battleRatingModel });
+        const battleRatingModel = BattleRating.rebuild(battleRating);
+        return Vehicle.rebuild({ ...other, id, battleRating: battleRatingModel });
     }
 
     async listEnumField(field: EnumFields): Promise<Result<string[], DomainError>> {

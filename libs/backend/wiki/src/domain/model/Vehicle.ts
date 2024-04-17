@@ -1,11 +1,11 @@
 import { ValueObject } from "@t1fr/backend/ddd-types";
+import { Ok } from "ts-results-es";
 import { BattleRating } from "./BattleRating";
 import { Country } from "./Country";
-import { Type } from "./Type";
-import { ObtainSource } from "./ObtainSource";
-import { Ok } from "ts-results-es";
-import { VehicleClass } from "./VehicleClass";
 import { FlagImageMap } from "./FlagImageMap";
+import { ObtainSource } from "./ObtainSource";
+import { Type } from "./Type";
+import { VehicleClass } from "./VehicleClass";
 
 type VehicleProps = {
     id: string;
@@ -27,6 +27,10 @@ type VehicleProps = {
 export class Vehicle extends ValueObject<VehicleProps> {
     static create(props: VehicleProps) {
         return Ok(new Vehicle(props));
+    }
+
+    static rebuild(props: VehicleProps) {
+        return new Vehicle(props);
     }
 
     get wikiUrl() {

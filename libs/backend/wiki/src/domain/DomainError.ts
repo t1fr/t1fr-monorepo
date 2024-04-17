@@ -1,21 +1,56 @@
-import { AbstractDomainError } from "@t1fr/backend/ddd-types";
+import { DomainError } from "@t1fr/backend/ddd-types";
 
-export const DomainErrorType = {
-    NotFoundVehicle: "Cannot find vehicle by provided name",
-    UnknownVehicleObtainWay: "Cannot map vehicle obtain from string",
-    UnknownVehicleType: "Unknown vehicle type",
-    UnknownVehicleCountry: "Unknown vehicle country",
-    UnknownVehicleClass: "Unknown vehicle class",
-    NoDatamineJsonResponse: "Datamine JSON no response",
-    VersionNotChange: "Version is not changed",
-};
+export namespace ScrapeVehicleError {
+    export class UnknownVehicleTypeError extends DomainError {
+        constructor(type: string) {
+            super({ message: `unknown vehicle type: ${type}` });
+        }
+    }
+
+    export class UnknownVehicleObtainWayError extends DomainError {
+        constructor(obtainSource: string) {
+            super({ message: `unknown vehicle obtain source: ${obtainSource}` });
+        }
+    }
+
+    export class UnknownVehicleClassError extends DomainError {
+        constructor(vehicleClass: string[]) {
+            super({ message: `unknown vehicle class: ${vehicleClass.join(", ")}` });
+        }
+    }
 
 
-export class DomainError extends AbstractDomainError<typeof DomainErrorType> {
-    static NoDatamineJsonResponse = new DomainError("NoDatamineJsonResponse");
-    static VersionNotChange = new DomainError("VersionNotChange");
+    export class UnknownVehicleCountryError extends DomainError {
+        constructor(country: string) {
+            super({ message: `unknown vehicle country: ${country}` });
+        }
+    }
 
-    toString() {
-        return `Error[${this.type}]: ${DomainErrorType[this.type]}, ${this.message}`;
+    export class NoJsonResponseError extends DomainError {
+        constructor() {
+            super({ message: `datamine JSON no response` });
+        }
+    }
+
+
+    export class VersionNotChangeError extends DomainError {
+        constructor(version: string) {
+            super({ message: `version is not changed, current: ${version}` });
+        }
+    }
+
+    export class UnknownPropertyKeyError extends DomainError {
+        constructor(errors: (UnknownVehicleTypeError | UnknownVehicleClassError | UnknownVehicleCountryError | UnknownVehicleObtainWayError)[]) {
+            super({ message: errors.map(error => error.toString()).join("\n") });
+        }
+    }
+
+}
+
+export namespace FindVehicleByIdError {
+    export class VehicleNotFoundError extends DomainError {
+        constructor(id: string) {
+            super({ message: `Cannot find vehicle by provided id: ${id}` });
+        }
     }
 }
