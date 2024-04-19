@@ -1,4 +1,4 @@
-import { Enum, isEnum } from "@t1fr/backend/ddd-types";
+import { Enum } from "@t1fr/backend/ddd-types";
 
 export const ObtainSource = {
     Gift: "gift",
@@ -11,4 +11,3 @@ export const ObtainSource = {
 
 
 export type ObtainSource = Enum<typeof ObtainSource>
-export const isValidObtainSource = isEnum(ObtainSource);

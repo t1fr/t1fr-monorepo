@@ -8,7 +8,7 @@ import { Result } from "ts-results-es";
 export class CronTask implements OnApplicationBootstrap {
 
     @Inject()
-    private readonly commandBus: CommandBus;
+    private readonly commandBus!: CommandBus;
 
     private readonly logger = new Logger(CronTask.name);
 
@@ -20,6 +20,6 @@ export class CronTask implements OnApplicationBootstrap {
     }
 
     async onApplicationBootstrap() {
-        setTimeout(() => this.syncDatabase(), 20000);
+        setTimeout(() => this.syncDatabase(), 10000);
     }
 }

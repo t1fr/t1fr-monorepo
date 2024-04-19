@@ -1,6 +1,5 @@
-import { Inject, Injectable, OnApplicationBootstrap } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
-import { Cron, CronExpression } from "@nestjs/schedule";
 import { AdvancedI18nService } from "@t1fr/backend/i18n";
 import { ListEnumableField, Search, SearchResult } from "@t1fr/backend/wiki";
 import { ApplicationCommandOptionChoiceData, AutocompleteInteraction } from "discord.js";
@@ -8,29 +7,14 @@ import { AutocompleteInterceptor } from "necord";
 import { Result } from "ts-results-es";
 
 @Injectable()
-export class WikiAutocompleteInterceptor extends AutocompleteInterceptor implements OnApplicationBootstrap {
+export class WikiAutocompleteInterceptor extends AutocompleteInterceptor {
 
     @Inject()
-    private readonly queryBus: QueryBus;
+    private readonly queryBus!: QueryBus;
 
     @Inject()
-    private readonly i18nService: AdvancedI18nService;
+    private readonly i18nService!: AdvancedI18nService;
 
-
-    private readonly options = { "countries": [], "ranks": [], "classes": [] };
-
-    @Cron(CronExpression.EVERY_DAY_AT_8AM)
-    async refreshOptions() {
-        const [countries, ranks, classes] = await Promise.all([
-            this.queryBus.execute<ListEnumableField, string[]>(new ListEnumableField("country")),
-            this.queryBus.execute<ListEnumableField, string[]>(new ListEnumableField("rank")),
-            this.queryBus.execute<ListEnumableField, string[]>(new ListEnumableField("vehicleClasses")),
-        ]);
-
-        this.options.countries = countries;
-        this.options.ranks = ranks;
-        this.options.classes = classes;
-    }
 
     private translateAutocomplete({ name, country, rank }: SearchResult["vehicles"][number], locale: string) {
         return this.i18nService.t("common.autocomplete", { interpolate: { country: `country.${country}` }, args: { name: name, rank: rank }, lang: locale });
@@ -44,7 +28,7 @@ export class WikiAutocompleteInterceptor extends AutocompleteInterceptor impleme
         return this.i18nService.t(`class.${vehicleClass}`, { lang: locale });
     }
 
-    private toOptions(items: string[], transformer: (it: string) => string, search?: string): ApplicationCommandOptionChoiceData[] {
+    private toOptions(items: string[], transformer: (it: string) => string, search: string | null): ApplicationCommandOptionChoiceData[] {
         return items.map(it => ({ name: transformer(it), value: it }))
             .filter(it => search ? it.name.includes(search) : true)
             .slice(0, 25);
@@ -53,8 +37,8 @@ export class WikiAutocompleteInterceptor extends AutocompleteInterceptor impleme
 
     async transformOptions(interaction: AutocompleteInteraction) {
         const focused = interaction.options.getFocused(true);
-        const country = interaction.options.getString("country", false);
         const query = interaction.options.getString("query", true).trim();
+        const country = interaction.options.getString("country", false);
         const rank = interaction.options.getNumber("rank", false);
         const vehicleClass = interaction.options.getString("class", false);
         const locale = interaction.locale;
@@ -66,15 +50,14 @@ export class WikiAutocompleteInterceptor extends AutocompleteInterceptor impleme
                 value: vehicle.id,
             })));
         } else if (focused.name === "country") {
-            return interaction.respond(this.toOptions(this.options.countries, it => this.translateCountry(it, locale), country));
+            const options = await this.queryBus.execute<ListEnumableField, string[]>(new ListEnumableField("country"));
+            return interaction.respond(this.toOptions(options, it => this.translateCountry(it, locale), country));
         } else if (focused.name === "rank") {
-            return interaction.respond(this.toOptions(this.options.ranks, it => it, `${rank}`));
+            const options = await this.queryBus.execute<ListEnumableField, string[]>(new ListEnumableField("rank"));
+            return interaction.respond(this.toOptions(options, it => it, `${rank}`));
         } else if (focused.name === "class") {
-            return interaction.respond(this.toOptions(this.options.classes, it => this.translateClass(it, locale), vehicleClass));
+            const options = await this.queryBus.execute<ListEnumableField, string[]>(new ListEnumableField("vehicleClasses"));
+            return interaction.respond(this.toOptions(options, it => this.translateClass(it, locale), vehicleClass));
         }
-    }
-
-    async onApplicationBootstrap() {
-        await this.refreshOptions();
     }
 }

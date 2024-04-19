@@ -1,7 +1,7 @@
 import { Inject, Injectable, UseInterceptors } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { AdvancedI18nService } from "@t1fr/backend/i18n";
-import { FindById, FindByIdResult, ScapeDatamine } from "@t1fr/backend/wiki";
+import { FindById, FindByIdOutput, ScapeDatamine } from "@t1fr/backend/wiki";
 import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 import { range } from "lodash";
 import { Context, createCommandGroupDecorator, NumberOption, Options, SlashCommandContext, StringOption, Subcommand } from "necord";
@@ -25,7 +25,7 @@ export class SearchVehicleOption {
         description: "search query",
         description_localizations: { "zh-TW": "搜尋詞" },
     })
-    query: string;
+    query!: string;
     @NumberOption({
         name: "rank",
         name_localizations: { "zh-TW": "階級" },
@@ -33,7 +33,7 @@ export class SearchVehicleOption {
         description: "rank",
         description_localizations: { "zh-TW": "階級" },
     })
-    rank: number;
+    rank!: number | null;
     @StringOption({
         name: "country",
         name_localizations: { "zh-TW": "國家" },
@@ -41,7 +41,7 @@ export class SearchVehicleOption {
         description: "country",
         description_localizations: { "zh-TW": "國家" },
     })
-    country: string;
+    country!: string | null;
     @StringOption({
         name: "class",
         name_localizations: { "zh-TW": "類型" },
@@ -49,7 +49,7 @@ export class SearchVehicleOption {
         description: "class",
         description_localizations: { "zh-TW": "類型" },
     })
-    vehicleClass: string;
+    vehicleClass!: string | null;
 }
 
 @WikiCommandGroup()
@@ -57,20 +57,20 @@ export class SearchVehicleOption {
 export class WikiCommand {
 
     @Inject()
-    private readonly commandBus: CommandBus;
+    private readonly commandBus!: CommandBus;
 
     @Inject()
-    private readonly queryBus: QueryBus;
+    private readonly queryBus!: QueryBus;
 
     @Inject()
-    private readonly i18nService: AdvancedI18nService;
+    private readonly i18nService!: AdvancedI18nService;
 
     private isFromT1fr(interaction: ChatInputCommandInteraction) {
-        return interaction.guild.id === "1046623840710705152";
+        return interaction.guild?.id === "1046623840710705152";
     }
 
-    private generateDescription(vehicle: FindByIdResult["vehicle"], lang: string, promoteSquad: boolean) {
-        const { name, country, operator, classes, rank, event, type, obtainSource, storeUrl, marketplaceUrl, goldPrice } = vehicle;
+    private generateDescription(vehicle: FindByIdOutput["vehicle"], lang: string, promoteSquad: boolean) {
+        const { name, country, operator, classes, rank, type, obtainSource } = vehicle;
         const localizedMainClass = this.i18nService.t(`class.${classes[0]}`, { lang }).toLocaleLowerCase();
         const localizedType = this.i18nService.t(`class.${type}`, { lang }).toLocaleLowerCase();
         const description = [this.i18nService.t("common.description.intro", {
@@ -78,15 +78,20 @@ export class WikiCommand {
             args: { type: localizedType, name, rank, mainClass: localizedMainClass },
             interpolate: Object.assign({ country: `country.${country}` }, operator === country ? undefined : { operator: `country.${operator}` }),
         })];
-        if (event) description.push(this.i18nService.t("common.description.event", { lang, interpolate: { event: `event.${event}` } }));
-        if (obtainSource === "gift" && !event) description.push(this.i18nService.t("common.description.gift", { lang }));
-        else if (obtainSource === "store") description.push(this.i18nService.t("common.description.store", { lang, args: { url: storeUrl } }));
-        else if (obtainSource === "marketplace") description.push(this.i18nService.t("common.description.marketplace", {
-            lang,
-            args: { url: marketplaceUrl },
-        }));
-        else if (obtainSource === "gold") description.push(this.i18nService.t("common.description.gold", { lang: lang, args: { price: goldPrice } }));
-        else if (obtainSource === "squad") description.push(this.i18nService.t(`common.description.${promoteSquad ? "squadWithPromotion" : "squad"}`, { lang: lang }));
+
+        if (obtainSource === "gift") {
+            if (vehicle.event) this.i18nService.t("common.description.event", { lang, interpolate: { event: `event.${vehicle.event}` } });
+            this.i18nService.t("common.description.gift", { lang });
+        } else if (obtainSource === "store")
+            description.push(this.i18nService.t("common.description.store", { lang, args: { url: vehicle.storeUrl } }));
+        else if (obtainSource === "marketplace") {
+            if (vehicle.event) this.i18nService.t("common.description.event", { lang, interpolate: { event: `event.${vehicle.event}` } });
+            description.push(this.i18nService.t("common.description.marketplace", { lang, args: { url: vehicle.marketplaceUrl } }));
+        } else if (obtainSource === "gold") {
+            if (vehicle.event) this.i18nService.t("common.description.event", { lang, interpolate: { event: `event.${vehicle.event}` } });
+            description.push(this.i18nService.t("common.description.gold", { lang: lang, args: { price: vehicle.goldPrice } }));
+        } else if (obtainSource === "squad")
+            description.push(this.i18nService.t(`common.description.${promoteSquad ? "squadWithPromotion" : "squad"}`, { lang: lang }));
         return description.join("\n");
     }
 
@@ -105,7 +110,7 @@ export class WikiCommand {
     })
     async searchVehicle(@Context() [interaction]: SlashCommandContext, @Options() { query }: SearchVehicleOption) {
         await interaction.deferReply();
-        const result = await this.queryBus.execute<FindById, Result<FindByIdResult, string>>(new FindById({ id: query }));
+        const result = await this.queryBus.execute<FindById, Result<FindByIdOutput, string>>(new FindById({ id: query }));
         if (result.isErr()) return interaction.followUp(result.error);
         const vehicle = result.value.vehicle;
         const lang = interaction.locale;

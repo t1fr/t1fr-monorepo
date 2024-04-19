@@ -2,8 +2,8 @@ import { Query } from "@t1fr/backend/ddd-types";
 
 type SearchData = {
     name: string;
-    country?: string;
-    rank?: number;
+    country: string | null;
+    rank: number | null;
     limit: number;
 }
 

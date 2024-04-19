@@ -2,7 +2,7 @@ import { AbstractMongooseOptionsFactory, ConfigParam, Configurable, MongooseConf
 
 export class VehicleMongooseOptionsFactory extends AbstractMongooseOptionsFactory {
   @Configurable()
-  getOptions(@ConfigParam("database.mongo.wiki") config?: MongooseConfig): MongooseConfig {
+  getOptions(@ConfigParam("database.mongo.wiki") config?: MongooseConfig): MongooseConfig | undefined{
     return config;
   }
 }

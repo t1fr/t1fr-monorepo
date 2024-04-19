@@ -1,6 +1,7 @@
 import { Logger } from "@nestjs/common";
 import { MongooseModuleOptions, MongooseOptionsFactory } from "@nestjs/mongoose";
 import { castArray, zip } from "lodash";
+import { Error } from "mongoose";
 
 export interface MongooseConfig extends Omit<MongooseModuleOptions, "user" | "uri" | "pass" | "dbName"> {
     host: string | string[];
@@ -14,7 +15,7 @@ export abstract class AbstractMongooseOptionsFactory implements MongooseOptionsF
 
     private static logger = new Logger(AbstractMongooseOptionsFactory.name);
 
-    protected abstract getOptions(config?: MongooseConfig): MongooseConfig ;
+    protected abstract getOptions(config?: MongooseConfig): MongooseConfig | undefined;
 
     protected static convertConfig(config: MongooseConfig): MongooseModuleOptions {
         const { host, port, password, username, database, ...other } = config;
@@ -37,7 +38,9 @@ export abstract class AbstractMongooseOptionsFactory implements MongooseOptionsF
     }
 
     createMongooseOptions(): Promise<MongooseModuleOptions> | MongooseModuleOptions {
-        return AbstractMongooseOptionsFactory.convertConfig(this.getOptions());
+        const options = this.getOptions();
+        if (!options) throw new Error("Cannot get mongoose options");
+        return AbstractMongooseOptionsFactory.convertConfig(options);
     }
 }
 
