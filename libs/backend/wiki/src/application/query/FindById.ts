@@ -1,15 +1,15 @@
 import { Query } from "@t1fr/backend/ddd-types";
 import { ObtainSource } from "../../domain";
 
-type FindByIdData = {
+type FindByIdInput = {
     id: string;
 }
 
-export interface FindByIdResult {
+export interface FindByIdOutput {
     vehicle: {
         battleRating: { arcade: number, realistic: number, simulator: number }
         name: string;
-        wikiUrl: string;
+        wikiUrl: string | undefined;
         country: string;
         rank: number;
         operator: string;
@@ -17,14 +17,24 @@ export interface FindByIdResult {
         thumbnailUrl: string;
         type: string;
         classes: string[];
-        obtainSource: ObtainSource;
-        storeUrl?: string;
-        marketplaceUrl?: string;
-        goldPrice?: number;
+    } & ({
+        obtainSource: typeof ObtainSource.Gold;
+        goldPrice: number;
         event?: string;
-    };
+    } | {
+        obtainSource: typeof ObtainSource.Store;
+        storeUrl: string;
+    } | {
+        obtainSource: typeof ObtainSource.Marketplace;
+        marketplaceUrl: string;
+        event?: string;
+    } | {
+        obtainSource: typeof ObtainSource.Gift;
+        event?: string;
+    } | {
+        obtainSource: typeof ObtainSource.Squad | typeof ObtainSource.Techtree;
+    });
 }
 
-export class FindById extends Query<FindByIdData> {
-
+export class FindById extends Query<FindByIdInput> {
 }

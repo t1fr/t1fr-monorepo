@@ -14,8 +14,8 @@ export abstract class DomainError {
 
 export namespace AppError {
     export class UnexpectedError extends DomainError {
-        constructor(err: unknown) {
-            super({ message: "Unexpected error occured", error: err });
+        static create(err: unknown) {
+            return new UnexpectedError({ message: "Unexpected error occured", error: err });
         }
     }
 }

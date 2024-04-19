@@ -11,16 +11,19 @@ export class MongoVehicleRepo implements VehicleRepo {
     @InjectVehicleModel()
     private readonly vehicleModel!: VehicleModel;
 
-    async searchByName(name: string, criteria: SearchCriteria, options?: FindByNameOptions | undefined): Promise<Result<Vehicle[], DomainError>> {
+    async searchByName(criteria: SearchCriteria, options?: FindByNameOptions | undefined): Promise<Result<Vehicle[], DomainError>> {
         const limit = options?.limit ?? 25;
-        const random = name.length === 0;
-        const aggregate = this.vehicleModel.aggregate<VehicleSchema>().match({
-            $and: [
-                criteria.rank ? { rank: criteria.rank } : {},
-                criteria.country ? { $or: [{ country: criteria.country }, { operator: criteria.country }] } : {},
-                name.length === 0 ? {} : { $text: { $caseSensitive: false, $search: name } },
-            ],
-        });
+        const random = criteria.name.length === 0;
+
+        const sanitizeSearchCriteria = (criteria: SearchCriteria) => {
+            const filter = [];
+            if (criteria.rank) filter.push({ rank: criteria.rank });
+            if (criteria.country) filter.push({ $or: [{ country: criteria.country }, { operator: criteria.country }] });
+            if (criteria.name.length !== 0) filter.push({ $text: { $caseSensitive: false, $search: criteria.name } });
+            return filter.length ? { $and: filter } : {};
+        };
+
+        const aggregate = this.vehicleModel.aggregate<VehicleSchema>().match(sanitizeSearchCriteria(criteria));
         const action = random ? aggregate.sample(limit) : aggregate.limit(limit);
         const docs = await action;
         return Ok(docs.map(this.restore));
@@ -41,9 +44,9 @@ export class MongoVehicleRepo implements VehicleRepo {
             });
         try {
             const writeResult = await this.vehicleModel.bulkWrite(writeModels);
-            return Ok(writeResult.upsertedCount);
+            return Ok(writeResult.matchedCount);
         } catch (e) {
-            return Err(new AppError.UnexpectedError(e));
+            return Err(AppError.UnexpectedError.create(e));
         }
     }
 

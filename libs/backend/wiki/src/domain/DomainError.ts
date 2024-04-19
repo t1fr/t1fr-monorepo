@@ -39,9 +39,9 @@ export namespace ScrapeVehicleError {
         }
     }
 
-    export class UnknownPropertyKeyError extends DomainError {
-        constructor(errors: (UnknownVehicleTypeError | UnknownVehicleClassError | UnknownVehicleCountryError | UnknownVehicleObtainWayError)[]) {
-            super({ message: errors.map(error => error.toString()).join("\n") });
+    export class ParseDataError extends DomainError {
+        constructor(message: string) {
+            super({ message });
         }
     }
 

@@ -11,7 +11,7 @@ export class SearchHandler implements IQueryHandler<Search, Result<SearchResult,
 
     async execute(query: Search): Promise<Result<SearchResult, string>> {
         const { name, limit, country, rank } = query.data;
-        const searchResult = await this.vehicleRepo.searchByName(name, { country, rank }, { limit });
+        const searchResult = await this.vehicleRepo.searchByName({ name, country, rank }, { limit });
         if (searchResult.isErr()) return searchResult.mapErr(it => it.toString());
         const vehicles = searchResult.value;
         return Ok({
