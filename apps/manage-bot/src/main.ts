@@ -1,15 +1,11 @@
+import { Logger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import dayjs from "dayjs";
-import customParse from "dayjs/plugin/customParseFormat";
-import utc from "dayjs/plugin/utc";
-import { AppModule } from "./app.module";
-
-dayjs.extend(customParse);
-dayjs.extend(utc);
-
+import { AppModule } from "./AppModule";
 
 async function bootstrap() {
-  await NestFactory.createApplicationContext(AppModule);
+    const app = await NestFactory.createApplicationContext(AppModule);
+    app.init();
+    Logger.log(`🚀 Discord Bot is running`);
 }
 
 bootstrap();

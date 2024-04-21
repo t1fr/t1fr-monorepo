@@ -1,2 +1,3 @@
 export * from "./MemberManageModule";
-// uid: '(?<uid>\d+)'
+export * from "./application";
+export { MEMBER_MANAGE_MONGOOSE_CONNECTION_TOKEN } from "./infrastructure";

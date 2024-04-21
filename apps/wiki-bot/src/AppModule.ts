@@ -7,7 +7,7 @@ import { AdvancedI18nModule } from "@t1fr/backend/i18n";
 import { WikiModule } from "@t1fr/backend/wiki";
 import { NecordModule } from "necord";
 import { AcceptLanguageResolver, I18nYamlLoader } from "nestjs-i18n";
-import * as path from "path";
+import { join } from "path";
 import { CronTask } from "./CronTask";
 import { VehicleMongooseOptionsFactory, WikiBotNecordOptionsFactory } from "./factory";
 import { WikiAutocompleteInterceptor } from "./WikiAutocomplete";
@@ -18,7 +18,7 @@ import { WikiCommand } from "./WikiCommand";
         ConfigsModule.forRoot(),
         AdvancedI18nModule.forRoot({
             fallbackLanguage: "en-US",
-            loaderOptions: { path: path.join(__dirname, "/i18n/"), watch: true },
+            loaderOptions: { path: join(__dirname, "/i18n/"), watch: true },
             loader: I18nYamlLoader,
             resolvers: [AcceptLanguageResolver],
         }),

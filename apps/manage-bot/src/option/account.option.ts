@@ -3,18 +3,18 @@ import { AccountType, AccountTypes } from "@t1fr/legacy/management";
 
 export class SetAccountTypeOption {
   @StringOption({ name: "account-id", description: "戰雷 ID", required: true, autocomplete: true })
-  accountId: string;
+  accountId!: string;
 
   @StringOption({ name: "account-type", description: "帳號類型", required: true, choices: AccountTypes.map(type => ({ name: type, value: type })) })
-  accountType: AccountType;
+  accountType!: AccountType;
 }
 
 export class SetOwnershipOption {
   @StringOption({ name: "account-id", description: "戰雷 ID", required: true, autocomplete: true })
-  accountId: string;
+  accountId!: string;
 
   @StringOption({ name: "member", description: "擁有者 DC 帳號", required: true, autocomplete: true })
-  memberDiscordId: string;
+  memberDiscordId!: string;
 }
 
 export class CalculateRewardPointOption {
