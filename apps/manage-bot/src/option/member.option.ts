@@ -14,5 +14,5 @@ export class JoinOption {
 		required: true,
 		choices: arrayToChoices(["休閒隊員", "聯隊戰隊員", "轉聯隊戰隊員", "轉休閒隊員"]),
 	})
-	type: string;
+	type!: string;
 }

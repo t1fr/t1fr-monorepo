@@ -6,16 +6,21 @@ import { AccountType } from "./AccountType";
 import { InvalidAccountTypeCountError } from "./DomainError";
 import { MemberType } from "./MemberType";
 
-
-interface MemberProps {
+interface RequiredMemberProps {
     type: MemberType;
     accounts: Account[];
     isSponsor: boolean;
+}
+
+interface NonBussinessMemberProps {
     nickname?: string;
     isOfficer?: boolean;
-    isLeave?: boolean;
+    onVacation?: boolean;
     avatarUrl?: string;
 }
+
+
+type MemberProps = Required<RequiredMemberProps> & Partial<NonBussinessMemberProps>
 
 type MemberCreateOptions = Pick<MemberProps, "type" | "nickname" | "isOfficer" | "avatarUrl">
 type TypeChangePolicy = (account: Account) => Result<void, DomainError>;
@@ -25,7 +30,7 @@ export class MemberId extends EntityId<string> {
 
 export class Member extends AggregateRoot<MemberId, MemberProps> {
     static create(id: MemberId, options: MemberCreateOptions) {
-        return Ok(new Member(id, { ...options, isLeave: false, accounts: [], isSponsor: false }));
+        return Ok(new Member(id, { ...options, accounts: [], isSponsor: false }));
     }
 
     static rebuild(id: MemberId, options: MemberProps) {
@@ -93,6 +98,9 @@ export class Member extends AggregateRoot<MemberId, MemberProps> {
 
     get accounts() {
         return this.props.accounts;
+    }
+
+    disband() {
     }
 }
 

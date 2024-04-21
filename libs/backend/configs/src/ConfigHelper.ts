@@ -25,17 +25,28 @@ export class ConfigHelper {
         return filenames;
     }
 
+    private static getConfigKey(filename: string) {
+        const extension = extname(filename);
+        return basename(filename, extension).split(".")[0];
+    }
+
+    private static mergeConfig(current: Record<string, unknown>, append: unknown) {
+        return mergeWith(current, append, (a, b) => isArray(b) ? b : undefined);
+    }
+
+    static appendConfig(append: Record<string, unknown>) {
+        Object.assign(this.Config, append);
+    }
+
     static loadGlob(options: ConfigsModuleOptions) {
         const filenames = this.getFilenames(options.configDir);
         const configs = filenames.reduce((record, filename) => {
             if (options.logging) this.logger.verbose(`載入 ${filename}`);
-            const extension = extname(filename);
-            const baseFilename = basename(filename, extension).split(".")[0];
+            const key = this.getConfigKey(filename);
             const content = readFileSync(filename, { encoding: "utf8" });
             const configObject = load(content, { json: true });
-            return mergeWith(record, { [baseFilename]: configObject }, (a, b) => isArray(b) ? b : undefined);
+            return this.mergeConfig(record, { [key]: configObject });
         }, {});
         Object.assign(this.Config, configs);
-        if (options.logging) this.logger.verbose(JSON.stringify(this.Config));
     }
 }

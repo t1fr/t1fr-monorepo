@@ -1,4 +1,4 @@
-import { isEqual } from "lodash";
+import { isEqual, mapValues } from "lodash";
 
 interface LiteralObject {
     [index: string]: unknown;

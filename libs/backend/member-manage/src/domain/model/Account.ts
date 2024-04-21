@@ -11,10 +11,10 @@ export interface AccountProps {
     joinDate?: Date;
 }
 
-export class AccountId extends EntityId<number> {
+export class AccountId extends EntityId<string> {
 }
 
-type CreateAccountOptions = Omit<AccountProps, "type">
+export type CreateAccountOptions = Omit<AccountProps, "type">
 
 export class Account extends Entity<AccountId, AccountProps> {
     static create(id: AccountId, props: CreateAccountOptions) {
@@ -37,5 +37,21 @@ export class Account extends Entity<AccountId, AccountProps> {
         if ((value === AccountType.C_PublicMain || value === AccountType.D_SemipublicMain) && this.props.type !== AccountType.S_SqbMain) return Err(ViolateAccountTypeRuleError.create(value));
         this.props.type = value;
         return Ok.EMPTY;
+    }
+
+    get name() {
+        return this.props.name;
+    }
+
+    get personalRating() {
+        return this.props.personalRating;
+    }
+
+    get joinDate() {
+        return this.props.joinDate;
+    }
+
+    get activity() {
+        return this.props.activity;
     }
 }

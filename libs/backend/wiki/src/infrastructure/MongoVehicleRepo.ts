@@ -1,5 +1,5 @@
 import { Injectable, Provider } from "@nestjs/common";
-import { AppError, DomainError } from "@t1fr/backend/ddd-types";
+import { DomainError, UnexpectedError } from "@t1fr/backend/ddd-types";
 import { castArray } from "lodash";
 import { Err, Ok, Result } from "ts-results-es";
 import { BattleRating, EnumFields, FindByNameOptions, FindVehicleByIdError, SearchCriteria, Vehicle, VehicleRepo } from "../domain";
@@ -46,7 +46,7 @@ export class MongoVehicleRepo implements VehicleRepo {
             const writeResult = await this.vehicleModel.bulkWrite(writeModels);
             return Ok(writeResult.matchedCount);
         } catch (e) {
-            return Err(AppError.UnexpectedError.create(e));
+            return Err(UnexpectedError.create(e));
         }
     }
 
