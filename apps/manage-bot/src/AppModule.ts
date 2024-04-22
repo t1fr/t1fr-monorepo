@@ -1,13 +1,15 @@
 import { HttpModule } from "@nestjs/axios";
-import { Module } from "@nestjs/common";
+import { Module, Provider } from "@nestjs/common";
 import { CqrsModule } from "@nestjs/cqrs";
 import { MongooseModule } from "@nestjs/mongoose";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ConfigsModule } from "@t1fr/backend/configs";
 import { MEMBER_MANAGE_MONGOOSE_CONNECTION_TOKEN, MemberManageModule } from "@t1fr/backend/member-manage";
+import { union } from "lodash";
 import { NecordModule } from "necord";
-import { AccountCommand } from "./command";
+import { DiscordCommands } from "./command";
 import { ManageBotNecordOptionsFactory, ManageMongooseOptionsFactory } from "./factory";
+import { DiscordClientService } from "./service";
 
 
 @Module({
@@ -20,10 +22,7 @@ import { ManageBotNecordOptionsFactory, ManageMongooseOptionsFactory } from "./f
         MongooseModule.forRootAsync({ useClass: ManageMongooseOptionsFactory, connectionName: MEMBER_MANAGE_MONGOOSE_CONNECTION_TOKEN }),
         MemberManageModule,
     ],
-    providers: [
-        AccountCommand,
-        // MemberCommand, MemberUserCommand, DiscordListener, ScheduleCommand, PointCommand
-    ],
+    providers: union<Provider>(DiscordCommands, [DiscordClientService]),
 
 })
 export class AppModule {

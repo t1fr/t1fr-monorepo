@@ -1,5 +1,7 @@
-export * from './point.command';
-export * from './member.command';
-export * from './AccountCommand';
-export * from './schedule.command';
-export * from './member.user.command';
+import { AccountCommand } from "./AccountCommand";
+import { MemberCommand } from "./MemberCommand";
+
+export const DiscordCommands = [
+    AccountCommand,
+    MemberCommand,
+];

@@ -10,6 +10,7 @@ interface RequiredMemberProps {
     type: MemberType;
     accounts: Account[];
     isSponsor: boolean;
+    isLeave: boolean;
 }
 
 interface NonBussinessMemberProps {
@@ -22,7 +23,7 @@ interface NonBussinessMemberProps {
 
 type MemberProps = Required<RequiredMemberProps> & Partial<NonBussinessMemberProps>
 
-type MemberCreateOptions = Pick<MemberProps, "type" | "nickname" | "isOfficer" | "avatarUrl">
+type MemberCreateOptions = Pick<MemberProps, "type" | "nickname" | "isOfficer" | "avatarUrl" | "isLeave">
 type TypeChangePolicy = (account: Account) => Result<void, DomainError>;
 
 export class MemberId extends EntityId<string> {
@@ -47,6 +48,14 @@ export class Member extends AggregateRoot<MemberId, MemberProps> {
             return Ok.EMPTY;
         },
     };
+
+    updateInfo(info: NonBussinessMemberProps) {
+        if (info.isOfficer) this.props.isOfficer = info.isOfficer;
+        if (info.onVacation) this.props.onVacation = info.onVacation;
+        if (info.avatarUrl) this.props.avatarUrl = info.avatarUrl;
+        if (info.nickname) this.props.nickname = info.nickname;
+        return Ok.EMPTY;
+    }
 
     changeType(value: MemberType) {
         if (this.props.type === value) return Ok.EMPTY;
@@ -100,7 +109,28 @@ export class Member extends AggregateRoot<MemberId, MemberProps> {
         return this.props.accounts;
     }
 
+    get isLeave() {
+        return this.props.isLeave;
+    }
+
+    get nickname() {
+        return this.props.nickname;
+    }
+
+    get isOfficer() {
+        return this.props.isOfficer;
+    }
+
+    get onVacation() {
+        return this.props.onVacation;
+    }
+
+    get avatarUrl() {
+        return this.props.avatarUrl;
+    }
+
     disband() {
+        this.props.isLeave = true;
     }
 }
 
