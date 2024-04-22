@@ -1,6 +1,6 @@
 import { Logger, Provider } from "@nestjs/common";
 import { PromisePool } from "@supercharge/promise-pool";
-import { ConfigParam, Configurable } from "@t1fr/backend/configs";
+import { Configuration } from "@t1fr/backend/configs";
 import { UnexpectedError, ZodParseError } from "@t1fr/backend/ddd-types";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
@@ -44,18 +44,19 @@ export class WebscraperAccountDatasouce implements AccountDataSource {
         return htmlId?.match(/player-(?<uid>\d+)/)?.groups?.["uid"] ?? null;
     }
 
+    @Configuration("app.gaijin")
+    private readonly credential!: { username: string, password: string };
 
-    @Configurable()
-    private async login(page: Page, @ConfigParam("app.gaijin") credential?: { username: string, password: string }) {
-        if (!credential) throw Error("credential undefined");
+
+    private async login(page: Page) {
         await page.goto("https://login.gaijin.net/en/sso/login")
             .then(() => page.waitForXPath("//*[@id=\"__container\"]/div[2]/div[1]/form/div[3]/button", { timeout: 3000 }))
             .then(() => page.$x("//*[@id=\"email\"]"))
             .then(([element]) => element.focus())
-            .then(() => page.keyboard.type(credential.username))
+            .then(() => page.keyboard.type(this.credential.username))
             .then(() => page.$x("//*[@id=\"password\"]"))
             .then(([element]) => element.focus())
-            .then(() => page.keyboard.type(credential.password))
+            .then(() => page.keyboard.type(this.credential.password))
             .then(() => page.click("xpath=//*[@id=\"__container\"]/div[2]/div[1]/form/div[3]/button"))
             .then(() => page.waitForNavigation())
             .catch(reason => this.logger.error(reason));

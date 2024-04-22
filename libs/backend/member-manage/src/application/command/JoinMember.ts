@@ -1,9 +1,11 @@
 import { Command, DomainError } from "@t1fr/backend/ddd-types";
 import { Result } from "ts-results-es";
 import { z } from "zod";
+import { MemberType } from "../../domain";
 
 export const JoinMemberInput = z.object({
     discordId: z.string().min(1),
+    type: z.nativeEnum(MemberType),
     nickname: z.string().min(1),
     avatarUrl: z.string(),
 });

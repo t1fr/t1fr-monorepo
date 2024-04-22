@@ -13,4 +13,4 @@ type UpdateMemberTypeInput = z.infer<typeof UpdateMemberTypeInput>
 export class UpdateMemberType extends Command<UpdateMemberTypeInput> {
 }
 
-export type UpdateMemberInfoOutput = Result<{ nickname: string, message: string; }, DomainError>
+export type UpdateMemberTypeOutput = Result<{ nickname: string, message: string; }, DomainError>

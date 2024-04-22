@@ -9,7 +9,7 @@ export class AccountSchema {
     @Prop({ index: true, unique: true })
     gaijinId!: string;
 
-    @Prop({ index: true })
+    @Prop({ index: true, unique: true })
     name!: string;
 
     @Prop({ type: String })

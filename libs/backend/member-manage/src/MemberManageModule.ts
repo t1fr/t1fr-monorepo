@@ -8,7 +8,7 @@ import { AccountModelDef, MEMBER_MANAGE_MONGOOSE_CONNECTION_TOKEN, MemberManageI
 
 @Module({
     imports: [
-        PuppeteerModule.forRoot({ headless: false, args: ["--disable-notifications"], plugins: [StealthPlugin()] }),
+        PuppeteerModule.forRoot({ headless: "new", args: ["--disable-notifications"], plugins: [StealthPlugin()] }),
         MongooseModule.forFeature([MemberModelDef, AccountModelDef], MEMBER_MANAGE_MONGOOSE_CONNECTION_TOKEN),
     ],
     providers: union(MemberManageCommandHandler, MemberManageInfraProvider),

@@ -7,3 +7,4 @@ export * from "./Adapter";
 export * from "./Query";
 export * from "./Enum";
 export * from "./DomainError";
+export * from "./UtilityTypes";

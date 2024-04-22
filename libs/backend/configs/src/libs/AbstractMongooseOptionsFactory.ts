@@ -15,7 +15,7 @@ export abstract class AbstractMongooseOptionsFactory implements MongooseOptionsF
 
     private static logger = new Logger(AbstractMongooseOptionsFactory.name);
 
-    protected abstract getOptions(config?: MongooseConfig): MongooseConfig | undefined;
+    protected readonly abstract config: MongooseConfig;
 
     protected static convertConfig(config: MongooseConfig): MongooseModuleOptions {
         const { host, port, password, username, database, ...other } = config;
@@ -38,9 +38,8 @@ export abstract class AbstractMongooseOptionsFactory implements MongooseOptionsF
     }
 
     createMongooseOptions(): Promise<MongooseModuleOptions> | MongooseModuleOptions {
-        const options = this.getOptions();
-        if (!options) throw new Error("Cannot get mongoose options");
-        return AbstractMongooseOptionsFactory.convertConfig(options);
+        if (!this.config) throw new Error("Cannot get mongoose options");
+        return AbstractMongooseOptionsFactory.convertConfig(this.config);
     }
 }
 

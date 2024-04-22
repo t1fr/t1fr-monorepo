@@ -19,6 +19,9 @@ export class MemberSchema {
     isOfficer!: boolean;
 
     @Prop({ default: false })
+    isSponsor!: boolean;
+
+    @Prop({ default: false })
     onVacation!: boolean;
 
     @Prop()

@@ -5,14 +5,12 @@ import { Account, AccountId, Member, MemberId } from "../model";
 
 export const MemberRepo = () => Inject(MemberRepo);
 
-export type ValueOrArray<I, O> = I extends unknown[] ? O[] : O
-
 export type MemberRepoResult<T> = AsyncResult<T, DomainError>
 
 export type SaveAccountsResult = { inserted: number, deleted: number, modified: number }
 
 export interface MemberRepo {
-    save<T extends Member | Member[]>(data: T): MemberRepoResult<ValueOrArray<T, Member>>;
+    save<T extends Member | Member[]>(data: T): MemberRepoResult<void>;
 
     findMemberHaveAccount(accountId: AccountId): MemberRepoResult<Member>;
 
