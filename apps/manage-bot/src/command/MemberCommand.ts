@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
-import { GuildMember, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+import { GuildMember, ModalBuilder, TextInputStyle } from "discord.js";
 import { Context, createCommandGroupDecorator, Ctx, Modal, ModalContext, ModalParam, Options, SlashCommand, SlashCommandContext, Subcommand } from "necord";
 import { Channel } from "../constant";
 import { JoinOption } from "../option";
@@ -20,10 +20,10 @@ export class MemberCommand {
     private readonly commandBus!: CommandBus;
 
     static ChangeNicknameModal = new ModalBuilder({
-        components: configLayout([
-            new TextInputBuilder({ customId: "name", label: "暱稱", style: TextInputStyle.Short }),
-            new TextInputBuilder({ customId: "game-id", label: "遊戲 ID", style: TextInputStyle.Short, required: true }),
-        ]),
+        components: configLayout(
+            { customId: "name", label: "暱稱", style: TextInputStyle.Short },
+            { customId: "game-id", label: "遊戲 ID", style: TextInputStyle.Short, required: true },
+        ),
         customId: "nickname",
         title: "更改伺服器個人暱稱",
     });
@@ -41,12 +41,12 @@ export class MemberCommand {
         await interaction.reply({ content: "已更改暱稱", ephemeral: true });
     }
 
-    static JoinModal = new ModalBuilder({
-        components: configLayout([
-            new TextInputBuilder({ customId: "game-id", label: "遊戲 ID", style: TextInputStyle.Short, required: true }),
-            new TextInputBuilder({ customId: "level", label: "遊戲等級", style: TextInputStyle.Short, required: true }),
-            new TextInputBuilder({ customId: "accept", label: "已閱讀並同意入隊須知", placeholder: "是 / 否", style: TextInputStyle.Short, required: true }),
-        ]),
+    private static JoinModal = new ModalBuilder({
+        components: configLayout(
+            { customId: "game-id", label: "遊戲 ID", style: TextInputStyle.Short, required: true },
+            { customId: "level", label: "遊戲等級", style: TextInputStyle.Short, required: true },
+            { customId: "accept", label: "已閱讀並同意入隊須知", placeholder: "是 / 否", style: TextInputStyle.Short, required: true },
+        ),
         title: "申請加入 T1FR",
     });
 
