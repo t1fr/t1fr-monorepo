@@ -62,9 +62,6 @@ dependencies:
   express:
     specifier: ^4.19.2
     version: 4.19.2
-  flatten-anything:
-    specifier: ^3.0.5
-    version: 3.0.5
   glob:
     specifier: ^10.3.12
     version: 10.3.12
@@ -5664,14 +5661,6 @@ packages:
     dependencies:
       to-regex-range: 5.0.1
 
-  /filter-anything@3.0.7:
-    resolution: {integrity: sha512-t2pgu8OiqvmlZPxmf/iIBmGUhkzry7M/WieYJ63YffCw3+rlNnIY7ZDVtf/n3iqVfN0iwLogAIP/EGm8hCsYGg==}
-    engines: {node: '>=12.13'}
-    dependencies:
-      is-what: 4.1.16
-      ts-toolbelt: 9.6.0
-    dev: false
-
   /finalhandler@1.2.0:
     resolution: {integrity: sha512-5uXcUVftlQMFnWC9qu/svkWv3GTd2PfUhK/3PLkYNAe7FbqJMt3515HaxE6eRL74GdsriiwujiawdaB1BpEISg==}
     engines: {node: '>= 0.8'}
@@ -5735,14 +5724,6 @@ packages:
   /flatted@3.3.1:
     resolution: {integrity: sha512-X8cqMLLie7KsNUDSdzeN8FYK9rEt4Dt67OsG/DNGnYTSDBG4uFAJFBnUeiV+zCVAvwFy56IjM9sH51jVaEhNxw==}
     dev: true
-
-  /flatten-anything@3.0.5:
-    resolution: {integrity: sha512-1KccKXVhW4lhEjCz4QOGMb5lEfIUbWV6t/N9XbVrDiOV8MS5kv0zkB33cPqth3CjKuy9YjniWpn0ABz3+Bw2OA==}
-    engines: {node: '>=12.13'}
-    dependencies:
-      filter-anything: 3.0.7
-      is-what: 4.1.16
-    dev: false
 
   /follow-redirects@1.15.6:
     resolution: {integrity: sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==}
@@ -6379,11 +6360,6 @@ packages:
   /is-what@3.14.1:
     resolution: {integrity: sha512-sNxgpk9793nzSs7bA6JQJGeIuRBQhAaNGG77kzYQgMkrID+lS6SlK07K5LaptscDlSaIgH+GPFzf+d75FVxozA==}
     dev: true
-
-  /is-what@4.1.16:
-    resolution: {integrity: sha512-ZhMwEosbFJkA0YhFnNDgTM4ZxDRsS6HqTo7qsZM08fehyRYIYa0yHu5R6mgo1n/8MgaPBXiPimPD77baVFYg+A==}
-    engines: {node: '>=12.13'}
-    dev: false
 
   /is-wsl@2.2.0:
     resolution: {integrity: sha512-fKzAra0rGJUUBwGBgNkHZuToZcn+TtXHpeCgmkMJMMYx1sQDYaCSyjJBSCa2nH1DGm7s3n1oBnohoVTBaN7Lww==}
@@ -9703,10 +9679,6 @@ packages:
 
   /ts-results-es@4.1.0:
     resolution: {integrity: sha512-7V37C/Zzx2K2U48fpC7jiQc5aDFZJoGD6sQ6EZgeoHqdTTIHy8yVB8+oXZx268hz9qJa0oUCrc1OAyPJH5Q8MQ==}
-    dev: false
-
-  /ts-toolbelt@9.6.0:
-    resolution: {integrity: sha512-nsZd8ZeNUzukXPlJmTBwUAuABDe/9qtVDelJeT/qW0ow3ZS3BsQJtNkan1802aM9Uf68/Y8ljw86Hu0h5IUW3w==}
     dev: false
 
   /tsconfig-paths-webpack-plugin@4.0.0:

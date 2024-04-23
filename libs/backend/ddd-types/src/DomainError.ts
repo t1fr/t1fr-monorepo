@@ -17,7 +17,7 @@ export abstract class DomainError {
     }
 
     toString(): string {
-        return `Error[${this.props.context.name}]${this.message}\n${new Error().stack}`;
+        return `${this.props.context.name}${this.message}`;
     }
 }
 

@@ -2,7 +2,7 @@ import { Injectable, UseInterceptors } from "@nestjs/common";
 import { PointService, PointType, Summary } from "@t1fr/legacy/management";
 import { EmbedBuilder } from "discord.js";
 import { Context, createCommandGroupDecorator, Options, SlashCommand, SlashCommandContext, Subcommand } from "necord";
-import { UserAutocompleteInterceptor } from "../autocomplete";
+import { AccountAutocompleteInterceptor } from "../autocomplete";
 import { AwardData, MemberInfoOption, SeasonSummary } from "../option";
 import { selectToFields } from "../utlity";
 
@@ -26,7 +26,7 @@ export class PointCommand {
         }
     }
 
-    @UseInterceptors(UserAutocompleteInterceptor)
+    @UseInterceptors(AccountAutocompleteInterceptor)
     @SlashCommand({ name: "info", description: "顯示特定成員的資訊、擁有帳號、各項點數" })
     async showInfo(@Context() [interaction]: SlashCommandContext, @Options() { member }: MemberInfoOption) {
         await interaction.deferReply();
@@ -55,7 +55,7 @@ export class PointCommand {
     }
 
     @Subcommand({ name: "award", description: "更改成員獎勵積分" })
-    @UseInterceptors(UserAutocompleteInterceptor)
+    @UseInterceptors(AccountAutocompleteInterceptor)
     async award(@Context() [interaction]: SlashCommandContext, @Options() parameters: AwardData) {
         const delta = parameters.delta;
         if (delta === 0) return interaction.reply({ content: "沒有變化，忽略" });

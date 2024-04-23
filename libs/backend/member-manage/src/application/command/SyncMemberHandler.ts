@@ -21,7 +21,7 @@ export class SyncMemberHandler implements ICommandHandler<SyncMember, SyncMember
 
         for (const { discordId, ...other } of data) {
             const id = new MemberId(discordId);
-            const findByIdOrError = await this.memberRepo.findById(id).promise;
+            const findByIdOrError = await this.memberRepo.findMemberById(id).promise;
             if (findByIdOrError.isErr()) {
                 const createMemberOrError = Member.create(new MemberId(discordId), { ...other, isLeave: false });
                 if (createMemberOrError.isOk()) members.push(createMemberOrError.value);

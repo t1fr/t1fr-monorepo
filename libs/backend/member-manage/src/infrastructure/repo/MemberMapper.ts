@@ -9,8 +9,7 @@ export type AccountDoc = Undefinedable<AccountSchema, "personalRating" | "name" 
 export class AccountMapper {
     static fromMongo(doc: AccountSchema): Account {
         const id = new AccountId(doc.gaijinId);
-        const { type } = doc;
-        return Account.rebuild(id, { type });
+        return Account.rebuild(id, doc);
     }
 
     static toMongo(memberId: MemberId, account: Account): AccountDoc {
@@ -30,7 +29,16 @@ export class MemberMapper {
     static fromMongo(doc: MemberSchema): Member {
         const id = new MemberId(doc.discordId);
         const accounts = doc.accounts.map(account => AccountMapper.fromMongo(account));
-        return Member.rebuild(id, { type: doc.type, accounts: accounts, isSponsor: doc.isSponsor, isLeave: doc.isLeave });
+        return Member.rebuild(id, {
+            type: doc.type,
+            accounts: accounts,
+            isSponsor: doc.isSponsor,
+            isLeave: doc.isLeave,
+            nickname: doc.nickname,
+            avatarUrl: doc.avatarUrl,
+            onVacation: doc.onVacation,
+            isOfficer: doc.isOfficer,
+        });
     }
 
     static toMongo(member: Member): { doc: MemberDoc, accounts: AccountDoc[] } {

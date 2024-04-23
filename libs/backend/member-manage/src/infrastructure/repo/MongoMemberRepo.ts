@@ -3,11 +3,26 @@ import { UnexpectedError } from "@t1fr/backend/ddd-types";
 import { castArray, isUndefined, omitBy } from "lodash";
 import { AnyBulkWriteOperation } from "mongoose";
 import { AsyncResult, Err, Ok } from "ts-results-es";
-import { Account, AccountId, Member, MemberId, MemberNotFoundError, MemberRepo, MemberRepoResult, SaveAccountsResult } from "../../domain";
+import {
+    Account,
+    AccountId,
+    AccountNotFoundError,
+    FindAccountByIdResult,
+    Member,
+    MemberId,
+    MemberNotFoundError,
+    MemberRepo,
+    MemberRepoResult,
+    NonRequiredAccountProps,
+    SaveAccountsResult,
+    SearchAccountByNameResult,
+} from "../../domain";
 import { AccountModel, AccountSchema, InjectAccountModel, InjectMemberModel, MemberModel } from "../mongoose";
-import { AccountDoc, MemberDoc, MemberMapper } from "./MemberMapper";
+import { AccountDoc, AccountMapper, MemberDoc, MemberMapper } from "./MemberMapper";
 
 class MongoMemberRepo implements MemberRepo {
+
+
     @InjectAccountModel()
     private readonly accountModel!: AccountModel;
 
@@ -45,7 +60,7 @@ class MongoMemberRepo implements MemberRepo {
         throw new Error("Method not implemented.");
     }
 
-    findById(memberId: MemberId): MemberRepoResult<Member> {
+    findMemberById(memberId: MemberId): MemberRepoResult<Member> {
         const promise = this.memberModel.findOne({ discordId: memberId.value })
             .populate("accounts")
             .lean()
@@ -92,6 +107,37 @@ class MongoMemberRepo implements MemberRepo {
 
     findUnlinkedAccounts(): MemberRepoResult<Account[]> {
         throw new Error("Method not implemented.");
+    }
+
+    findAccountById(accountId: AccountId, selection?: (keyof NonRequiredAccountProps)[]): MemberRepoResult<FindAccountByIdResult> {
+        const promise = this.accountModel.findOne({ gaijinId: accountId.value })
+            .lean()
+            .then(async doc => {
+                if (doc === null) return Err(AccountNotFoundError.create(accountId));
+                const account = AccountMapper.fromMongo(doc);
+                const ok = Ok({ account: account });
+                if (doc.ownerId === null) return ok;
+                const findMemberOrError = await this.findMemberById(new MemberId(doc.ownerId)).promise;
+                if (findMemberOrError.isOk()) return Ok({ account: account, member: findMemberOrError.value });
+                if (findMemberOrError.error instanceof MemberNotFoundError) return ok;
+                return findMemberOrError;
+            })
+            .catch(reason => Err(UnexpectedError.create(reason)));
+        return new AsyncResult(promise);
+    }
+
+    searchAccountByName(name: string): MemberRepoResult<SearchAccountByNameResult> {
+        const promise = this.accountModel
+            .find(
+                name.length
+                    ? { name: { $regex: RegExp(name, "i") } }
+                    : {},
+                { name: true, gaijinId: true },
+            )
+            .lean()
+            .then(docs => Ok(docs.map(it => ({ id: it.gaijinId, name: it.name }))));
+
+        return new AsyncResult(promise);
     }
 }
 

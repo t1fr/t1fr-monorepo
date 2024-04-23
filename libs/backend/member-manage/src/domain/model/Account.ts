@@ -3,13 +3,18 @@ import { Err, Ok } from "ts-results-es";
 import { AccountType } from "./AccountType";
 import { ViolateAccountTypeRuleError } from "./DomainError";
 
-export interface AccountProps {
+export interface RequiredAccountProps {
     type: AccountType | null;
-    name?: string;
-    personalRating?: number;
-    activity?: number;
-    joinDate?: Date;
 }
+
+export interface NonRequiredAccountProps {
+    name: string;
+    personalRating: number;
+    activity: number;
+    joinDate: Date;
+}
+
+export type AccountProps = Required<RequiredAccountProps> & Partial<NonRequiredAccountProps>
 
 export class AccountId extends EntityId<string> {
 }
