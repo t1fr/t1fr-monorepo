@@ -1,9 +1,9 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
-import { lastValueFrom } from "rxjs";
-import { Snowflake } from "discord.js";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { MemberService } from "@t1fr/legacy/management";
+import { Snowflake } from "discord.js";
+import { lastValueFrom } from "rxjs";
 
 @Injectable()
 export class AuthService {

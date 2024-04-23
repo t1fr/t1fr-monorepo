@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Post, Query, UseGuards } from "@nestjs/common";
-import { JwtGuard, OfficerGuard } from "./guards";
 import { PageParam, PointService, PointType, PointTypes } from "@t1fr/legacy/management";
+import { JwtGuard, OfficerGuard } from "../guard";
 
 @Controller("point-logs")
 @UseGuards(JwtGuard, OfficerGuard)

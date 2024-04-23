@@ -1,7 +1,7 @@
 import { Controller, Get, UseGuards } from "@nestjs/common";
 import { ApiResponse } from "@nestjs/swagger";
 import { MemberService } from "@t1fr/legacy/management";
-import { JwtGuard, OfficerGuard } from "./guards";
+import { JwtGuard, OfficerGuard } from "../guard";
 
 @Controller("members")
 export class MemberController {

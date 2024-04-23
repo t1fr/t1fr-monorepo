@@ -1,7 +1,7 @@
-import {Body, Controller, Get, Param, Patch, UseGuards} from "@nestjs/common";
-import {ApiResponse} from "@nestjs/swagger";
-import {AccountListData, AccountUpdateData, AccountService} from "@t1fr/legacy/management";
-import {JwtGuard, OfficerGuard} from "./guards";
+import { Body, Controller, Get, Param, Patch, UseGuards } from "@nestjs/common";
+import { ApiResponse } from "@nestjs/swagger";
+import { AccountListData, AccountService, AccountUpdateData } from "@t1fr/legacy/management";
+import { JwtGuard, OfficerGuard } from "../guard";
 
 @Controller("accounts")
 export class AccountController {
