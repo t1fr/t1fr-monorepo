@@ -1,9 +1,9 @@
 import { Controller, Delete, Get, Post, Query, Res, UseGuards } from "@nestjs/common";
-import { CookieOptions, Response } from "express";
-import { AuthService } from "./auth.service";
-import { JwtGuard } from "./guards";
-import { User } from "./decorators";
 import { Member } from "@t1fr/legacy/management";
+import { CookieOptions, Response } from "express";
+import { User } from "../decorator";
+import { JwtGuard } from "../guard";
+import { AuthService } from "../service/AuthService";
 
 @Controller("auth")
 export class AuthController {

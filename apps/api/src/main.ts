@@ -1,14 +1,14 @@
-import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module";
-import { ConfigService } from "@nestjs/config";
-import dayjs from "dayjs";
-import customParse from "dayjs/plugin/customParseFormat";
-import utc from "dayjs/plugin/utc";
 import { CustomOrigin } from "@nestjs/common/interfaces/external/cors-options.interface";
+import { ConfigService } from "@nestjs/config";
+import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import cookieParser from "cookie-parser";
+import dayjs from "dayjs";
+import customParse from "dayjs/plugin/customParseFormat";
+import utc from "dayjs/plugin/utc";
 import * as process from "process";
+import { AppModule } from "./AppModule";
 
 dayjs.extend(customParse);
 dayjs.extend(utc);
