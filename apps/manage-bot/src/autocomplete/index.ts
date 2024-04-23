@@ -1,1 +1,1 @@
-export * from './user.autocomplete';
+export * from './AccountAutocompleteInterceptor';

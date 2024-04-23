@@ -1,7 +1,17 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, UseInterceptors } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
-import { ScrapeAccount, ScrapeAccountOutput } from "@t1fr/backend/member-manage";
-import { Context, createCommandGroupDecorator, SlashCommandContext, Subcommand } from "necord";
+import {
+    AssignAccountOwner,
+    AssignAccountOwnerResult,
+    InvalidAccountTypeCountError,
+    MemberNotFoundError,
+    ScrapeAccount,
+    ScrapeAccountOutput,
+} from "@t1fr/backend/member-manage";
+import { MessageFlagsBitField } from "discord.js";
+import { Context, createCommandGroupDecorator, Options, SlashCommandContext, Subcommand } from "necord";
+import { AccountAutocompleteInterceptor } from "../autocomplete";
+import { SetOwnershipOption } from "../option";
 
 const AccountCommandGroup = createCommandGroupDecorator({ name: "account", description: "管理聯隊內的 WT 帳號" });
 
@@ -25,20 +35,25 @@ export class AccountCommand {
             .mapErr(error => interaction.followUp(error.toString()));
     }
 
-    //
-    // @Subcommand({ name: "set-owner", description: "指定擁有者" })
-    // @UseInterceptors(UserAutocompleteInterceptor)
-    // private async setOwner(@Context() [interaction]: SlashCommandContext, @Options() { accountId, memberDiscordId }: SetOwnershipOption) {
-    // 	try {
-    // 		const account = await this.accountService.updateAccount(accountId, { owner: memberDiscordId });
-    // 		interaction.reply({
-    // 			content: `已成功設置帳號 ${account.id} 的擁有者為 <@${account.owner}>`,
-    // 			options: { flags: [MessageFlagsBitField.Flags.SuppressNotifications] },
-    // 		});
-    // 	} catch (error) {
-    // 		interaction.reply({ content: error.toString() });
-    // 	}
-    // }
+
+    @Subcommand({ name: "set-owner", description: "指定擁有者" })
+    @UseInterceptors(AccountAutocompleteInterceptor)
+    private async setOwner(@Context() [interaction]: SlashCommandContext, @Options() { accountId, guildMember }: SetOwnershipOption) {
+        const result = await this.commandBus
+            .execute<AssignAccountOwner, AssignAccountOwnerResult>(
+                new AssignAccountOwner({ accountId: accountId, memberId: guildMember.id }));
+        return result
+            .map(({ accountName }) => interaction.reply({
+                content: `已成功設置帳號 ${accountName} 的擁有者為 <@${guildMember.id}>`,
+                options: { flags: [MessageFlagsBitField.Flags.SuppressNotifications] },
+            }))
+            .mapErr((error) => {
+                if (error instanceof InvalidAccountTypeCountError) interaction.reply({ content: `<@${error.memberId.value}> ${error.toString()}` });
+                else if (error instanceof MemberNotFoundError) interaction.reply(`<@${error.memberId}> 目前非隊員`);
+                else interaction.reply(error.toString());
+            });
+    }
+
     //
     // @UseInterceptors(UserAutocompleteInterceptor)
     // @Subcommand({ name: "set-type", description: "設定帳號類型" })
