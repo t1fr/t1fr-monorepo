@@ -12,7 +12,6 @@ export class ConfigsModule {
     static forRoot(options?: Partial<ConfigsModuleOptions>): DynamicModule {
         const definedOptions = Object.assign({ configDir: "./config" }, options);
         ConfigHelper.loadGlob(definedOptions);
-        if (definedOptions.addition) ConfigHelper.appendConfig(definedOptions.addition);
         if (definedOptions.logging) this.logger.verbose(ConfigHelper.Config);
         return {
             module: ConfigsModule,

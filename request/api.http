@@ -1,0 +1,13 @@
+### 獲取遊戲帳號列表
+// @no-log
+GET {{baseUrl}}/accounts
+
+### 獲取目前隊員列表
+// @no-log
+GET {{baseUrl}}/members
+
+
+### 重新獲取與當前 cookie jwt token 相關的成員資訊
+// @no-log
+POST {{baseUrl}}/auth/verify
+

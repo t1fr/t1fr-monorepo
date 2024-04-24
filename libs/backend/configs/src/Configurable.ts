@@ -3,6 +3,7 @@ import { ConfigHelper } from "./ConfigHelper";
 
 export function Configuration(configKey: string, fallback?: unknown): PropertyDecorator {
     return (target, propertyKey) => {
+        ConfigHelper.setKey(configKey);
         const propertyType = Reflect.getMetadata("design:type", target, propertyKey);
         Object.defineProperty(target, propertyKey, {
             get: () => {

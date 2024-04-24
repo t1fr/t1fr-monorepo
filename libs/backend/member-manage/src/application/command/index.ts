@@ -9,6 +9,7 @@ export * from "./DisbandMember";
 export * from "./UpdateMemberInfo";
 export * from "./UpdateMemberType";
 export * from "./AssignAccountOwner";
+export * from "./SetAccountType";
 
 export const MemberManageCommandHandler = [
     ScrapeAccountHandler,

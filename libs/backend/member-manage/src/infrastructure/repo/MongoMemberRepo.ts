@@ -15,7 +15,6 @@ import {
     MemberRepoResult,
     NonRequiredAccountProps,
     SaveAccountsResult,
-    SearchAccountByNameResult,
 } from "../../domain";
 import { AccountModel, AccountSchema, InjectAccountModel, InjectMemberModel, MemberModel } from "../mongoose";
 import { AccountDoc, AccountMapper, MemberDoc, MemberMapper } from "./MemberMapper";
@@ -123,20 +122,6 @@ class MongoMemberRepo implements MemberRepo {
                 return findMemberOrError;
             })
             .catch(reason => Err(UnexpectedError.create(reason)));
-        return new AsyncResult(promise);
-    }
-
-    searchAccountByName(name: string): MemberRepoResult<SearchAccountByNameResult> {
-        const promise = this.accountModel
-            .find(
-                name.length
-                    ? { name: { $regex: RegExp(name, "i") } }
-                    : {},
-                { name: true, gaijinId: true },
-            )
-            .lean()
-            .then(docs => Ok(docs.map(it => ({ id: it.gaijinId, name: it.name }))));
-
         return new AsyncResult(promise);
     }
 }

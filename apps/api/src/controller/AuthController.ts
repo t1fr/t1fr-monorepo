@@ -1,37 +1,39 @@
-import { Controller, Delete, Get, Post, Query, Res, UseGuards } from "@nestjs/common";
-import { Member } from "@t1fr/legacy/management";
+import { Body, Controller, Delete, Headers, Inject, Post, Res, UseGuards } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { Configuration } from "@t1fr/backend/configs";
 import { CookieOptions, Response } from "express";
-import { User } from "../decorator";
+import { UserToken } from "../decorator";
 import { JwtGuard } from "../guard";
-import { AuthService } from "../service/AuthService";
+import { AuthService } from "../service";
+import { User } from "../types";
 
 @Controller("auth")
 export class AuthController {
-	constructor(private readonly authService: AuthService) {}
+    @Inject()
+    private readonly jwtService!: JwtService;
 
-	static cookieOptions: CookieOptions = { httpOnly: true, path: "/", sameSite: "strict", maxAge: 1800 * 1000 };
+    @Inject()
+    private readonly authService!: AuthService;
 
-	@Get("redirect")
-	async redirect(@Res({ passthrough: true }) response: Response, @Query("code") code?: string, @Query("state") state?: string) {
-		const redirect = state ? Buffer.from(state, "base64").toString("ascii") : "/";
-		const isLocalhost = new URL(redirect).hostname === "localhost";
-		try {
-			const token = await this.authService.login(isLocalhost, code);
-			response.cookie("token", token, { ...AuthController.cookieOptions, domain: isLocalhost ? "localhost" : "t1fr.club" });
-			response.redirect(redirect);
-		} catch (error) {
-			response.redirect(`${redirect}?error=${error.message}`);
-		}
-	}
+    @Configuration("app.cookie")
+    private readonly cookieOptions!: CookieOptions;
 
-	@UseGuards(JwtGuard)
-	@Post("verify")
-	async verify(@User() user: Member) {
-		return user;
-	}
+    @Post("login")
+    async login(@Res({ passthrough: true }) response: Response, @Headers("referer") referer: string, @Body("code") code: string | undefined) {
+        const user = await this.authService.login(referer, code);
+        const token = await this.jwtService.signAsync(user.data);
+        response.cookie("token", token, this.cookieOptions);
+        return user.data;
+    }
 
-	@Delete()
-	async logout(@Res({ passthrough: true }) response: Response) {
-		response.cookie("token", "", { ...AuthController.cookieOptions, maxAge: 0 });
-	}
+    @UseGuards(JwtGuard)
+    @Post("verify")
+    async verify(@UserToken() user: User) {
+        return user.data;
+    }
+
+    @Delete()
+    async logout(@Res({ passthrough: true }) response: Response) {
+        response.cookie("token", "", { ...this.cookieOptions, maxAge: 0 });
+    }
 }

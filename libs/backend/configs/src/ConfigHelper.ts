@@ -10,6 +10,9 @@ import { ConfigsModuleOptions } from "./ConfigsModuleOptions";
 
 export class ConfigHelper {
     static Config: ConfigObject = {};
+
+    private static keys = new Array<string>();
+
     private static logger = new Logger(ConfigHelper.name);
 
     private static getFilenames(configDir: string) {
@@ -34,10 +37,6 @@ export class ConfigHelper {
         return mergeWith(current, append, (a, b) => isArray(b) ? b : undefined);
     }
 
-    static appendConfig(append: Record<string, unknown>) {
-        Object.assign(this.Config, append);
-    }
-
     static loadGlob(options: ConfigsModuleOptions) {
         const filenames = this.getFilenames(options.configDir);
         const configs = filenames.reduce((record, filename) => {
@@ -48,5 +47,9 @@ export class ConfigHelper {
             return this.mergeConfig(record, { [key]: configObject });
         }, {});
         Object.assign(this.Config, configs);
+    }
+
+    static setKey(key: string) {
+        this.keys.push(key);
     }
 }
