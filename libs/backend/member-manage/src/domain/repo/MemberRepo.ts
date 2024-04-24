@@ -11,8 +11,6 @@ export type SaveAccountsResult = { inserted: number, deleted: number, modified: 
 
 export  type FindAccountByIdResult = { owner?: Member, account: Account }
 
-export type SearchAccountByNameResult = { id: string, name: string }[];
-
 export interface MemberRepo {
 
     save<T extends Member | Member[]>(data: T): MemberRepoResult<void>;
@@ -30,6 +28,4 @@ export interface MemberRepo {
     findUnlinkedAccounts(): MemberRepoResult<Account[]>;
 
     findAccountById(accountId: AccountId, selection?: (keyof NonRequiredAccountProps)[]): MemberRepoResult<FindAccountByIdResult>;
-
-    searchAccountByName(name: string): MemberRepoResult<SearchAccountByNameResult>;
 }

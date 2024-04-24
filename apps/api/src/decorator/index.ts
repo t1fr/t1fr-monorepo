@@ -1,1 +1,1 @@
-export * from "./UserDecorator";
+export * from "./UserToken";

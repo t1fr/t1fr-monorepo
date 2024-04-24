@@ -4,5 +4,4 @@ export interface ConfigsModuleOptions {
      */
     configDir: string;
     logging?: true;
-    addition?: Record<string, unknown>;
 }

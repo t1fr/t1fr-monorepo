@@ -31,11 +31,14 @@ export class MemberSchema {
     type!: MemberType;
 
     accounts!: AccountSchema[];
+
+    accountCount?: number;
 }
 
 const memberSchema = SchemaFactory.createForClass(MemberSchema);
 
 memberSchema.virtual("accounts", { ref: AccountSchemaRefToken, localField: "discordId", foreignField: "ownerId" });
+memberSchema.virtual("accountCount", { ref: AccountSchemaRefToken, localField: "discordId", foreignField: "ownerId", count: true });
 
 export const MemberModelDef: ModelDefinition = { name: MemberSchemaRefToken, schema: memberSchema };
 
