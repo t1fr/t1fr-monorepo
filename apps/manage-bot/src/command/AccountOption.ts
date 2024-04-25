@@ -1,5 +1,5 @@
 import { AccountType, AccountTypes } from "@t1fr/legacy/management";
-import { GuildMember, User } from "discord.js";
+import { GuildMember } from "discord.js";
 import { BooleanOption, MemberOption, StringOption } from "necord";
 
 export class SetAccountTypeOption {

@@ -1,12 +1,10 @@
 import { Inject } from "@nestjs/common";
-import { DomainError } from "@t1fr/backend/ddd-types";
-import { Result } from "ts-results-es";
+import { AsyncActionResult } from "@t1fr/backend/ddd-types";
 import { Vehicle } from "./model";
 
-export type ScapeDataMineResult = Result<{ vehicles: Vehicle[], version: string }, DomainError>
+export const VehicleApiRepo = () => Inject(VehicleApiRepo);
 
 export interface VehicleApiRepo {
-    fromDatamine(currentVersion: string): Promise<ScapeDataMineResult>;
+    fromDatamine(currentVersion: string): AsyncActionResult<{ vehicles: Vehicle[], version: string }>;
 }
 
-export const VehicleApiRepo = () => Inject(VehicleApiRepo);

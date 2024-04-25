@@ -1,5 +1,5 @@
 import { Provider } from "@nestjs/common";
-import { UnexpectedError } from "@t1fr/backend/ddd-types";
+import { AsyncActionResult, UnexpectedError } from "@t1fr/backend/ddd-types";
 import { castArray, isUndefined, omitBy } from "lodash";
 import { AnyBulkWriteOperation } from "mongoose";
 import { AsyncResult, Err, Ok } from "ts-results-es";
@@ -12,7 +12,6 @@ import {
     MemberId,
     MemberNotFoundError,
     MemberRepo,
-    MemberRepoResult,
     NonRequiredAccountProps,
     SaveAccountsResult,
 } from "../../domain";
@@ -28,10 +27,11 @@ class MongoMemberRepo implements MemberRepo {
     @InjectMemberModel()
     private readonly memberModel!: MemberModel;
 
-    save<T extends Member | Member[]>(data: T): MemberRepoResult<void> {
+    save<T extends Member | Member[]>(data: T): AsyncActionResult<MemberId[]> {
         const memberDocs = new Array<MemberDoc>();
         const accountDocs = new Array<AccountDoc>();
-        castArray(data).forEach(member => {
+        const models = castArray(data);
+        models.forEach(member => {
             const { doc, accounts } = MemberMapper.toMongo(member);
             memberDocs.push(doc);
             accountDocs.push(...accounts);
@@ -45,21 +45,21 @@ class MongoMemberRepo implements MemberRepo {
                 updateOne: { filter: { gaijinId }, update: { $set: other } },
             }))),
         ])
-            .then(() => Ok.EMPTY)
+            .then(() => Ok(models.map(it => it.id)))
             .catch(reason => Err(UnexpectedError.create(reason)));
 
         return new AsyncResult(promise);
     }
 
-    findMemberHaveAccount(accountId: AccountId): MemberRepoResult<Member> {
+    findMemberHaveAccount(accountId: AccountId): AsyncActionResult<Member> {
         throw new Error("Method not implemented.");
     }
 
-    find(): MemberRepoResult<Member[]> {
+    find(): AsyncActionResult<Member[]> {
         throw new Error("Method not implemented.");
     }
 
-    findMemberById(memberId: MemberId): MemberRepoResult<Member> {
+    findMemberById(memberId: MemberId): AsyncActionResult<Member> {
         const promise = this.memberModel.findOne({ discordId: memberId.value })
             .populate("accounts")
             .lean()
@@ -68,7 +68,7 @@ class MongoMemberRepo implements MemberRepo {
         return new AsyncResult(promise);
     }
 
-    dumpAccounts(): MemberRepoResult<Account[]> {
+    dumpAccounts(): AsyncActionResult<Account[]> {
         const promise = this.accountModel.find()
             .lean()
             .then(accounts => accounts.map(account => Account.rebuild(new AccountId(account.gaijinId), {
@@ -79,7 +79,7 @@ class MongoMemberRepo implements MemberRepo {
         return new AsyncResult(promise);
     }
 
-    saveAccounts(accounts: Account[]): MemberRepoResult<SaveAccountsResult> {
+    saveAccounts(accounts: Account[]): AsyncActionResult<SaveAccountsResult> {
         const ids = accounts.map(it => it.id.value);
         const updateOnes = accounts.map<AnyBulkWriteOperation<AccountSchema>>(it => ({
             updateOne: {
@@ -100,15 +100,16 @@ class MongoMemberRepo implements MemberRepo {
                 inserted: bulkWriteResult.insertedCount + bulkWriteResult.upsertedCount,
                 modified: bulkWriteResult.modifiedCount,
                 deleted: bulkWriteResult.deletedCount,
+                ids: accounts.map(it => it.id),
             }));
         return new AsyncResult(promise);
     }
 
-    findUnlinkedAccounts(): MemberRepoResult<Account[]> {
+    findUnlinkedAccounts(): AsyncActionResult<Account[]> {
         throw new Error("Method not implemented.");
     }
 
-    findAccountById(accountId: AccountId, selection?: (keyof NonRequiredAccountProps)[]): MemberRepoResult<FindAccountByIdResult> {
+    findAccountById(accountId: AccountId, selection?: (keyof NonRequiredAccountProps)[]): AsyncActionResult<FindAccountByIdResult> {
         const promise = this.accountModel.findOne({ gaijinId: accountId.value })
             .lean()
             .then(async doc => {

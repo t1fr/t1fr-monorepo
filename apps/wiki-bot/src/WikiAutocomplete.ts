@@ -1,10 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
 import { AdvancedI18nService } from "@t1fr/backend/i18n";
-import { ListEnumableField, Search, SearchResult } from "@t1fr/backend/wiki";
+import { ListEnumableField, Search, SearchOutput } from "@t1fr/backend/wiki";
 import { ApplicationCommandOptionChoiceData, AutocompleteInteraction } from "discord.js";
 import { AutocompleteInterceptor } from "necord";
-import { Result } from "ts-results-es";
 
 @Injectable()
 export class WikiAutocompleteInterceptor extends AutocompleteInterceptor {
@@ -16,7 +15,7 @@ export class WikiAutocompleteInterceptor extends AutocompleteInterceptor {
     private readonly i18nService!: AdvancedI18nService;
 
 
-    private translateAutocomplete({ name, country, rank }: SearchResult["vehicles"][number], locale: string) {
+    private translateAutocomplete({ name, country, rank }: SearchOutput["vehicles"][number], locale: string) {
         return this.i18nService.t("common.autocomplete", { interpolate: { country: `country.${country}` }, args: { name: name, rank: rank }, lang: locale });
     }
 
@@ -43,21 +42,24 @@ export class WikiAutocompleteInterceptor extends AutocompleteInterceptor {
         const vehicleClass = interaction.options.getString("class", false);
         const locale = interaction.locale;
         if (focused.name === "query") {
-            const result = await this.queryBus.execute<Search, Result<SearchResult, string>>(new Search({ name: query, limit: 25, rank, country }));
+            const result = await this.queryBus.execute(new Search({ name: query, limit: 25, rank, country }));
             if (result.isErr()) return interaction.respond([]);
             else interaction.respond(result.value.vehicles.map<ApplicationCommandOptionChoiceData>(vehicle => ({
                 name: this.translateAutocomplete(vehicle, locale),
                 value: vehicle.id,
             })));
         } else if (focused.name === "country") {
-            const options = await this.queryBus.execute<ListEnumableField, string[]>(new ListEnumableField("country"));
-            return interaction.respond(this.toOptions(options, it => this.translateCountry(it, locale), country));
+            const result = await this.queryBus.execute(new ListEnumableField("country"));
+            if (result.isErr()) return interaction.respond([]);
+            return interaction.respond(this.toOptions(result.value, it => this.translateCountry(it, locale), country));
         } else if (focused.name === "rank") {
-            const options = await this.queryBus.execute<ListEnumableField, string[]>(new ListEnumableField("rank"));
-            return interaction.respond(this.toOptions(options, it => it, `${rank}`));
+            const result = await this.queryBus.execute(new ListEnumableField("rank"));
+            if (result.isErr()) return interaction.respond([]);
+            return interaction.respond(this.toOptions(result.value, it => it, `${rank}`));
         } else if (focused.name === "class") {
-            const options = await this.queryBus.execute<ListEnumableField, string[]>(new ListEnumableField("vehicleClasses"));
-            return interaction.respond(this.toOptions(options, it => this.translateClass(it, locale), vehicleClass));
+            const result = await this.queryBus.execute(new ListEnumableField("vehicleClasses"));
+            if (result.isErr()) return interaction.respond([]);
+            return interaction.respond(this.toOptions(result.value, it => this.translateClass(it, locale), vehicleClass));
         }
     }
 }

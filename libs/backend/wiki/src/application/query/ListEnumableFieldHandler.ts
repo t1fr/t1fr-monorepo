@@ -1,14 +1,17 @@
-import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
+import { IInferredQueryHandler } from "@nestjs-architects/typed-cqrs";
+import { QueryHandler } from "@nestjs/cqrs";
 import { VehicleRepo } from "../../domain";
-import { ListEnumableField, ListEnumableFieldResult } from "./ListEnumableField";
+import { ListEnumableField } from "./ListEnumableField";
 
 @QueryHandler(ListEnumableField)
-export class ListEnumableFieldHandler implements IQueryHandler<ListEnumableField, ListEnumableFieldResult> {
+export class ListEnumableFieldHandler implements IInferredQueryHandler<ListEnumableField> {
     @VehicleRepo()
     private readonly vehicleRepo!: VehicleRepo;
 
     async execute(query: ListEnumableField) {
-        const result = await this.vehicleRepo.listEnumField(query.data);
-        return result.isOk() ? result.value : [];
+        return query.parse()
+            .toAsyncResult()
+            .andThen(field => this.vehicleRepo.listEnumField(field))
+            .promise;
     }
 }

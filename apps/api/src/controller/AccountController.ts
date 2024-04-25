@@ -27,7 +27,7 @@ export class AccountController {
     @UseGuards(JwtGuard, OfficerGuard)
     async updateAccount(@Param("id") id: string, @Body() data: UpdateAccountDTO, @Res() response: Response) {
         if (data.type !== undefined && data.ownerId !== undefined) throw new BadRequestException("不可同時設定帳號類型與擁有者");
-        if (data.type !== undefined) return await this.commandBus.execute(new SetAccountType({}));
+        if (data.type !== undefined) return await this.commandBus.execute(new SetAccountType({ id: id, type: data.type }));
         if (data.ownerId !== undefined) return await this.commandBus.execute(new AssignAccountOwner({ accountId: id, memberId: data.ownerId }));
 
         return response.status(HttpStatus.NO_CONTENT);

@@ -1,18 +1,18 @@
-import { Command, DomainError } from "@t1fr/backend/ddd-types";
-import { Result } from "ts-results-es";
+import { Command } from "@t1fr/backend/ddd-types";
 import { z } from "zod";
 import { MemberType } from "../../domain";
 
-export const JoinMemberInput = z.object({
-    discordId: z.string().min(1),
-    type: z.nativeEnum(MemberType),
-    nickname: z.string().min(1),
-    avatarUrl: z.string(),
-});
+export class JoinMember extends Command<JoinMember, JoinMemberOutput> {
+    override get schema() {
+        return JoinMember.schema;
+    }
 
-type JoinMemberInput = z.infer<typeof JoinMemberInput>
-
-export class JoinMember extends Command<JoinMemberInput> {
+    private static schema = z.object({
+        discordId: z.string().min(1),
+        type: z.nativeEnum(MemberType),
+        nickname: z.string().min(1),
+        avatarUrl: z.string(),
+    });
 }
 
-export type JoinMemberOutput = Result<{ message: string }, DomainError>
+export type JoinMemberOutput = { id: string, message: string }

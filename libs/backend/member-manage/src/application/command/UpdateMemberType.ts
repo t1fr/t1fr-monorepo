@@ -1,16 +1,16 @@
-import { Command, DomainError } from "@t1fr/backend/ddd-types";
-import { Result } from "ts-results-es";
+import { Command } from "@t1fr/backend/ddd-types";
 import { z } from "zod";
 import { MemberType } from "../../domain";
 
-export const UpdateMemberTypeInput = z.object({
-    discordId: z.string().min(1),
-    type: z.nativeEnum(MemberType),
-});
+export class UpdateMemberType extends Command<UpdateMemberType, UpdateMemberTypeOutput> {
+    override get schema() {
+        return UpdateMemberType.schema;
+    }
 
-type UpdateMemberTypeInput = z.infer<typeof UpdateMemberTypeInput>
-
-export class UpdateMemberType extends Command<UpdateMemberTypeInput> {
+    private static schema = z.object({
+        discordId: z.string().min(1),
+        type: z.nativeEnum(MemberType),
+    });
 }
 
-export type UpdateMemberTypeOutput = Result<{ nickname: string, message: string; }, DomainError>
+export type UpdateMemberTypeOutput = { id: string, message: string; }

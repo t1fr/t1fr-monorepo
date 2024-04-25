@@ -1,20 +1,21 @@
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { DomainError, ZodParseError } from "@t1fr/backend/ddd-types";
+import { IInferredCommandHandler } from "@nestjs-architects/typed-cqrs";
+import { CommandHandler } from "@nestjs/cqrs";
+import { DomainError } from "@t1fr/backend/ddd-types";
 import { Err, Result } from "ts-results-es";
 import { Member, MemberId, MemberRepo } from "../../domain";
-import { SyncMember, SyncMemberInput, SyncMemberOutput } from "./SyncMember";
+import { SyncMember } from "./SyncMember";
 
 @CommandHandler(SyncMember)
-export class SyncMemberHandler implements ICommandHandler<SyncMember, SyncMemberOutput> {
+export class SyncMemberHandler implements IInferredCommandHandler<SyncMember> {
 
     @MemberRepo()
     private readonly memberRepo!: MemberRepo;
 
-    async execute(command: SyncMember): Promise<SyncMemberOutput> {
-        const parseOrError = SyncMemberInput.safeParse(command.data);
-        if (!parseOrError.success) return Err(ZodParseError.create(parseOrError.error));
+    async execute(command: SyncMember) {
+        const parseOrError = command.parse();
+        if (parseOrError.isErr()) return parseOrError;
 
-        const data = parseOrError.data;
+        const data = parseOrError.value;
 
         const errors = new Array<Err<DomainError>>;
         const members = [];
@@ -36,7 +37,7 @@ export class SyncMemberHandler implements ICommandHandler<SyncMember, SyncMember
 
         return this.memberRepo
             .save(members)
-            .map(() => ({ errors: errors.map(it => it.error) }))
+            .map((ids) => ({ ids: ids.map(it => it.value), errors: errors.map(it => it.error) }))
             .promise;
     }
 

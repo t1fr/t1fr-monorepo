@@ -1,11 +1,10 @@
 import { Inject, Injectable, UseInterceptors } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { AdvancedI18nService } from "@t1fr/backend/i18n";
-import { FindById, FindByIdOutput, ScapeDatamine } from "@t1fr/backend/wiki";
+import { FindById, FindByIdOutput, ScrapeDatamine } from "@t1fr/backend/wiki";
 import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 import { range } from "lodash";
 import { Context, createCommandGroupDecorator, NumberOption, Options, SlashCommandContext, StringOption, Subcommand } from "necord";
-import { Result } from "ts-results-es";
 import { WikiAutocompleteInterceptor } from "./WikiAutocomplete";
 
 const WikiCommandGroup = createCommandGroupDecorator({
@@ -98,8 +97,8 @@ export class WikiCommand {
     @Subcommand({ name: "sync", description: "同步載具資料庫" })
     async syncDatabase(@Context() [interaction]: SlashCommandContext) {
         await interaction.deferReply();
-        const result = await this.commandBus.execute<ScapeDatamine, Result<number, string>>(new ScapeDatamine());
-        await interaction.followUp(result.isOk() ? `已同步載具資料庫，更新 ${result.value} 筆載具` : `錯誤  : ${result.error}`);
+        const result = await this.commandBus.execute(new ScrapeDatamine());
+        await interaction.followUp(result.mapOrElse(error => `錯誤: ${error.toString()}`, value => `已同步載具資料庫，更新 ${value} 筆載具`));
     }
 
     @UseInterceptors(WikiAutocompleteInterceptor)
@@ -110,8 +109,9 @@ export class WikiCommand {
     })
     async searchVehicle(@Context() [interaction]: SlashCommandContext, @Options() { query }: SearchVehicleOption) {
         await interaction.deferReply();
-        const result = await this.queryBus.execute<FindById, Result<FindByIdOutput, string>>(new FindById({ id: query }));
-        if (result.isErr()) return interaction.followUp(result.error);
+        const result = await this.queryBus.execute(new FindById({ id: query }));
+        if (result.isErr()) return interaction.followUp(result.error.toString());
+
         const vehicle = result.value.vehicle;
         const lang = interaction.locale;
         const { arcade, realistic, simulator } = vehicle.battleRating;

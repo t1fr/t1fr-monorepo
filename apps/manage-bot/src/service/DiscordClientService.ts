@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { Configuration } from "@t1fr/backend/configs";
-import { SyncMember, SyncMemberInput, SyncMemberOutput } from "@t1fr/backend/member-manage";
+import { SyncMember } from "@t1fr/backend/member-manage";
 import { Client, escapeMarkdown, GuildMember, TextChannel } from "discord.js";
 
 type PostApplicationData = { discordId: string, gameId: string, level: string, type: string }
@@ -31,7 +31,7 @@ export class DiscordClientService {
     private readonly relaxRoleId!: string;
 
 
-    private TransformDiscordMemberToSyncData(member: GuildMember): SyncMemberInput[number] {
+    private TransformDiscordMemberToSyncData(member: GuildMember): ConstructorParameters<typeof SyncMember>[0][number] {
         const roles = member.roles.cache;
         return {
             discordId: member.id,
@@ -66,8 +66,8 @@ export class DiscordClientService {
             .filter(member => member.roles.cache.hasAny(this.sqbRoleId, this.relaxRoleId))
             .map(member => this.TransformDiscordMemberToSyncData(member));
 
-        const result = await this.commandBus.execute<SyncMember, SyncMemberOutput>(new SyncMember(syncData));
-        return result.map(({ errors }) => ({ success: syncData.length, errors }));
+        const result = await this.commandBus.execute(new SyncMember(syncData));
+        return result.map(({ ids, errors }) => ({ success: ids.length, errors }));
     }
 
 }

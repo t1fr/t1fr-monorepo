@@ -1,7 +1,7 @@
-import {CommandHandler, ICommandHandler} from "@nestjs/cqrs";
-import {Season, SeasonRepo, Section} from "../../domain";
-import {Err, Result} from "ts-results-es";
-import {NewSeasonFromText} from "./NewSeasonFromText";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { Err, Result } from "ts-results-es";
+import { Season, SeasonRepo, Section } from "../../domain";
+import { NewSeasonFromText } from "./NewSeasonFromText";
 
 @CommandHandler(NewSeasonFromText)
 export class NewSeasonFromTextHandler implements ICommandHandler<NewSeasonFromText> {
@@ -12,8 +12,10 @@ export class NewSeasonFromTextHandler implements ICommandHandler<NewSeasonFromTe
     private readonly matcher = /(\d*\.\d*)\s*\((\d*\.\d*).*?(\d*\.\d*)\)/;
     private readonly seperator = "\n";
 
-    async execute({ data }: NewSeasonFromText) {
-        const { text, year } = data;
+    async execute(command: NewSeasonFromText) {
+        const parseOrError = command.parse();
+        if (parseOrError.isErr()) return parseOrError;
+        const { text, year } = parseOrError.value;
         const sectionParseResult = Result.all(
             ...text
                 .split(this.seperator)

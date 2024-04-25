@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@nestjs-architects/typed-cqrs':
+    specifier: 1.1.2-alpha.0
+    version: 1.1.2-alpha.0
   '@nestjs/axios':
     specifier: ^3.0.2
     version: 3.0.2(@nestjs/common@10.3.8)(axios@1.6.8)(rxjs@7.8.1)
@@ -2028,6 +2031,10 @@ packages:
     resolution: {integrity: sha512-XLNOMH66KhJzUJNwT/qlMnS4WsNDWD5ASdyaSH3EtK+F4r/CFGa3jT4GNi4mfOitGvWXtdLgQJkQjxSVrio+jA==}
     dependencies:
       sparse-bitfield: 3.0.3
+    dev: false
+
+  /@nestjs-architects/typed-cqrs@1.1.2-alpha.0:
+    resolution: {integrity: sha512-QjiZcnhgMsyWveDysG7zf2Jk4FUvBHv3/PNspTeQG846xdlVcDx5HcZMpt/1/dsiPQcE5u2018NlzkuIucE0MQ==}
     dev: false
 
   /@nestjs/axios@3.0.2(@nestjs/common@10.3.8)(axios@1.6.8)(rxjs@7.8.1):

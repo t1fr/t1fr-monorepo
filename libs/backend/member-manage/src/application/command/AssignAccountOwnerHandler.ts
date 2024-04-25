@@ -1,19 +1,19 @@
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { ZodParseError } from "@t1fr/backend/ddd-types";
-import { Err, Ok } from "ts-results-es";
+import { IInferredCommandHandler } from "@nestjs-architects/typed-cqrs";
+import { CommandHandler } from "@nestjs/cqrs";
+import { Ok } from "ts-results-es";
 import { AccountId, MemberId, MemberRepo } from "../../domain";
-import { AssignAccountOwner, AssignAccountOwnerInput, AssignAccountOwnerResult } from "./AssignAccountOwner";
+import { AssignAccountOwner } from "./AssignAccountOwner";
 
 @CommandHandler(AssignAccountOwner)
-export class AssignAccountOwnerHandler implements ICommandHandler<AssignAccountOwner, AssignAccountOwnerResult> {
+export class AssignAccountOwnerHandler implements IInferredCommandHandler<AssignAccountOwner> {
     @MemberRepo()
     private readonly memberRepo!: MemberRepo;
 
-    async execute(command: AssignAccountOwner): Promise<AssignAccountOwnerResult> {
-        const parseResult = AssignAccountOwnerInput.safeParse(command.data);
-        if (!parseResult.success) return Err(ZodParseError.create(parseResult.error));
-        const memberId = new MemberId(parseResult.data.memberId);
-        const accountId = new AccountId(parseResult.data.accountId);
+    async execute(command: AssignAccountOwner) {
+        const parseOrError = command.parse();
+        if (parseOrError.isErr()) return parseOrError;
+        const memberId = new MemberId(parseOrError.value.memberId);
+        const accountId = new AccountId(parseOrError.value.accountId);
 
         const findMemberOrError = await this.memberRepo.findMemberById(memberId).promise;
 
@@ -22,7 +22,7 @@ export class AssignAccountOwnerHandler implements ICommandHandler<AssignAccountO
         const newOwner = findMemberOrError.value;
 
         const assignedAccount = newOwner.findAccount(accountId);
-        if (assignedAccount) return Ok({ accountName: assignedAccount.name ?? "" });
+        if (assignedAccount) return Ok({ newOwnerId: newOwner.id.value, account: { id: accountId.value, name: assignedAccount.name ?? "" } });
         const findAccountOrError = await this.memberRepo.findAccountById(accountId).promise;
 
         if (findAccountOrError.isErr()) return findAccountOrError;
@@ -36,7 +36,7 @@ export class AssignAccountOwnerHandler implements ICommandHandler<AssignAccountO
                 if (oldOwner) this.memberRepo.save(oldOwner);
                 this.memberRepo.save(newOwner);
             })
-            .map(() => ({ accountName: account.name ?? "" }));
+            .map(() => ({ newOwnerId: memberId.value, account: { id: accountId.value, name: account.name ?? "", oldOwnerId: oldOwner?.id.value } }));
     }
 
 }

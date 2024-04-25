@@ -1,9 +1,10 @@
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { IInferredCommandHandler } from "@nestjs-architects/typed-cqrs";
+import { CommandHandler } from "@nestjs/cqrs";
 import { AccountDataSource, MemberRepo } from "../../domain";
-import { ScrapeAccount, ScrapeAccountOutput } from "./ScrapeAccount";
+import { ScrapeAccount } from "./ScrapeAccount";
 
 @CommandHandler(ScrapeAccount)
-export class ScrapeAccountHandler implements ICommandHandler<ScrapeAccount, ScrapeAccountOutput> {
+export class ScrapeAccountHandler implements IInferredCommandHandler<ScrapeAccount> {
 
     @AccountDataSource()
     private readonly accountDataSource!: AccountDataSource;
@@ -11,7 +12,7 @@ export class ScrapeAccountHandler implements ICommandHandler<ScrapeAccount, Scra
     @MemberRepo()
     private readonly memberRepo!: MemberRepo;
 
-    execute(): Promise<ScrapeAccountOutput> {
+    execute() {
         return this.memberRepo.dumpAccounts()
             .andThen(accounts => this.accountDataSource.fetch(accounts))
             .andThen(accounts => this.memberRepo.saveAccounts(accounts))
@@ -19,9 +20,7 @@ export class ScrapeAccountHandler implements ICommandHandler<ScrapeAccount, Scra
                 inserted: info.inserted,
                 deleted: info.deleted,
                 modified: info.modified,
-                insertedIds: [],
-                deletedIds: [],
-                modifiedIds: [],
+                ids: info.ids.map(it => it.value),
             }))
             .promise;
     }

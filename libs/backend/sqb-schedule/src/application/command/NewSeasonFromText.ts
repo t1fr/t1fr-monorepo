@@ -1,7 +1,15 @@
 import { Command } from "@t1fr/backend/ddd-types";
+import { z } from "zod";
 
-type ParseScheduleData = { year: number, text: string }
 
-export class NewSeasonFromText extends Command<ParseScheduleData> {
+export class NewSeasonFromText extends Command<NewSeasonFromText> {
+    override get schema() {
+        return NewSeasonFromText.schema;
+    }
+
+    private static schema = z.object({
+        year: z.coerce.number(),
+        text: z.string(),
+    });
 }
 
