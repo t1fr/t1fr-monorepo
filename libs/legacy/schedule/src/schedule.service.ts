@@ -1,17 +1,17 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { Cron, CronExpression } from "@nestjs/schedule";
-import { ChannelType, Client } from "discord.js";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import dayjs from "dayjs";
-import * as process from "process";
 import { HttpService } from "@nestjs/axios";
-import Range from "lodash/range";
-import { Season, Section } from "./season.schema";
-import { LeaderboardData } from "./leaderboard.data";
+import { Injectable, Logger } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Cron, CronExpression } from "@nestjs/schedule";
 import { GithubService } from "@t1fr/backend/backup";
 import "dayjs/plugin/utc";
+import dayjs from "dayjs";
+import { ChannelType, Client } from "discord.js";
+import Range from "lodash/range";
+import { Model } from "mongoose";
+import * as process from "process";
 import { ConnectionName } from "./constant";
+import { LeaderboardData } from "./leaderboard.data";
+import { Season, Section } from "./season.schema";
 
 @Injectable()
 export class ScheduleService {
@@ -182,8 +182,4 @@ export class ScheduleService {
     }
 }
 
-const digitFullwidthMap: Record<string, string> = { "0": "０", "1": "１", "2": "２", "3": "３", "4": "４", "5": "５", "6": "６", "7": "７", "8": "８", "9": "９" };
 
-function digitToFullwidth(digit: string) {
-    return digitFullwidthMap[digit];
-}

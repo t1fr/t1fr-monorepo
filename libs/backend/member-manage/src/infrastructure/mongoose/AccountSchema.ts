@@ -1,7 +1,7 @@
 import { InjectModel, ModelDefinition, Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { AccountType } from "../../domain";
-import { AccountSchemaRefToken, MEMBER_MANAGE_MONGOOSE_CONNECTION_TOKEN, MemberSchemaRefToken } from "./connection";
+import { AccountSchemaRefToken, MemberManageMongooseConnection, MemberSchemaRefToken } from "./connection";
 import type { MemberSchema } from "./MemberSchema";
 
 @Schema({ collection: "accounts", versionKey: false, timestamps: { updatedAt: true, createdAt: false } })
@@ -38,4 +38,4 @@ export const AccountModelDef: ModelDefinition = { name: AccountSchemaRefToken, s
 
 export type AccountModel = Model<AccountSchema>
 
-export const InjectAccountModel = () => InjectModel(AccountSchemaRefToken, MEMBER_MANAGE_MONGOOSE_CONNECTION_TOKEN);
+export const InjectAccountModel = () => InjectModel(AccountSchemaRefToken, MemberManageMongooseConnection);

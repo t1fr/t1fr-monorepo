@@ -1,32 +1,35 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
+import { UpdateMemberInfo } from "@t1fr/backend/member-manage";
 import { Context, ContextOf, On, Once } from "necord";
-import { MemberService } from "@t1fr/legacy/management";
+import * as process from "node:process";
 
 @Injectable()
 export class DiscordListener {
-	private readonly logger = new Logger(DiscordListener.name);
+    private readonly logger = new Logger(DiscordListener.name);
 
-	constructor(private memberRepo: MemberService) {}
+    @Inject()
+    private readonly commandBus!: CommandBus;
 
-	@Once("ready")
-	public onReady(@Context() [client]: ContextOf<"ready">) {
-		if (client.user && client.application) this.logger.log(`Ready! Logged in as ${client.user.tag}`);
-	}
+    @Once("ready")
+    public onReady(@Context() [client]: ContextOf<"ready">) {
+        if (client.user && client.application) this.logger.log(`Ready! Logged in as ${client.user.tag}`);
+    }
 
-	@On("debug")
-	onDebug(@Context() [message]: ContextOf<"debug">) {
-		this.logger.debug(message);
-	}
+    @On("debug")
+    onDebug(@Context() [message]: ContextOf<"debug">) {
+        if (process.env["NODE_ENV"] !== "production") this.logger.debug(message);
+    }
 
-	@On("guildMemberNicknameUpdate")
-	async onGuildMemberNicknameUpdate(@Context() [member, , newNickname]: ContextOf<"guildMemberNicknameUpdate">) {
-		await this.memberRepo.update(member.id, { nickname: newNickname });
-	}
+    @On("guildMemberNicknameUpdate")
+    async onGuildMemberNicknameUpdate(@Context() [member, , newNickname]: ContextOf<"guildMemberNicknameUpdate">) {
+        await this.commandBus.execute(new UpdateMemberInfo({ discordId: member.id, nickname: newNickname }));
+    }
 
-	@On("voiceChannelJoin")
-	async onVoiceChannelJoin(@Context() [member, channel]: ContextOf<"voiceChannelJoin">) {
-		if (member.id !== "963984439027855460") return;
-		const ouo = channel.members.find(value => value.id === "287556741808259075");
-		await ouo?.voice.disconnect("緊急避難");
-	}
+    @On("voiceChannelJoin")
+    async onVoiceChannelJoin(@Context() [member, channel]: ContextOf<"voiceChannelJoin">) {
+        if (member.id !== "963984439027855460") return;
+        const ouo = channel.members.find(value => value.id === "287556741808259075");
+        await ouo?.voice.disconnect("緊急避難");
+    }
 }

@@ -1,14 +1,14 @@
 import { Inject } from "@nestjs/common";
-import { DomainError } from "@t1fr/backend/ddd-types";
-import { AsyncResult } from "ts-results-es";
+import { AsyncActionResult } from "@t1fr/backend/ddd-types";
 import { Season, SeasonId } from "./model/Season";
 
 export const SeasonRepo = () => Inject(SeasonRepo);
 
-export type SeasonRepoResult<T> = AsyncResult<T, DomainError>
 
 export interface SeasonRepo {
-    save(season: Season): SeasonRepoResult<void>;
+    save(season: Season): AsyncActionResult<SeasonId>;
 
-    findById(id: SeasonId): SeasonRepoResult<Season>;
+    findById(id: SeasonId): AsyncActionResult<Season>;
+
+    findLatestSeason(): AsyncActionResult<Season>;
 }

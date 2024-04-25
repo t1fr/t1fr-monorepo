@@ -1,5 +1,4 @@
-import { IInferredCommandHandler } from "@nestjs-architects/typed-cqrs";
-import { CommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
 import { VehicleApiRepo, VehicleRepo } from "../../domain";
 import { ScrapeDatamine } from "./ScrapeDatamine";
 

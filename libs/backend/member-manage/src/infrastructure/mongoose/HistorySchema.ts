@@ -1,8 +1,8 @@
 import { InjectModel, ModelDefinition, Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { AccountType, MemberType } from "../../domain";
 import { Model } from "mongoose";
+import { AccountType, MemberType } from "../../domain";
 import { AccountSchema } from "./AccountSchema";
-import { MEMBER_MANAGE_MONGOOSE_CONNECTION_TOKEN } from "./connection";
+import { MemberManageMongooseConnection } from "./connection";
 import { MemberSchema } from "./MemberSchema";
 
 class AccountData implements Pick<AccountSchema, "type" | "personalRating" | "name" | "activity" | "joinDate" | "ownerId"> {
@@ -40,4 +40,4 @@ export const historyModelDef: ModelDefinition = { name: HistorySchema.name, sche
 
 export type HistoryModel = Model<HistorySchema>
 
-export const InjectHistoryModel = () => InjectModel(HistorySchema.name, MEMBER_MANAGE_MONGOOSE_CONNECTION_TOKEN);
+export const InjectHistoryModel = () => InjectModel(HistorySchema.name, MemberManageMongooseConnection);
