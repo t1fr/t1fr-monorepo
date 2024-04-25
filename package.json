@@ -5,6 +5,7 @@
   "scripts": {},
   "private": true,
   "dependencies": {
+    "@nestjs-architects/typed-cqrs": "1.1.2-alpha.0",
     "@nestjs/axios": "^3.0.2",
     "@nestjs/common": "^10.0.2",
     "@nestjs/config": "^3.2.2",

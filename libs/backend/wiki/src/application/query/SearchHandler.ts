@@ -1,26 +1,26 @@
-import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
-import { Ok, Result } from "ts-results-es";
+import { IInferredQueryHandler } from "@nestjs-architects/typed-cqrs";
+import { QueryHandler } from "@nestjs/cqrs";
 import { VehicleRepo } from "../../domain";
-import { Search, SearchResult } from "./Search";
+import { Search } from "./Search";
 
 @QueryHandler(Search)
-export class SearchHandler implements IQueryHandler<Search, Result<SearchResult, string>> {
+export class SearchHandler implements IInferredQueryHandler<Search> {
 
     @VehicleRepo()
     private readonly vehicleRepo!: VehicleRepo;
 
-    async execute(query: Search): Promise<Result<SearchResult, string>> {
-        const { name, limit, country, rank } = query.data;
-        const searchResult = await this.vehicleRepo.searchByName({ name, country, rank }, { limit });
-        if (searchResult.isErr()) return searchResult.mapErr(it => it.toString());
-        const vehicles = searchResult.value;
-        return Ok({
-            vehicles: vehicles.map(vehicle => ({
-                id: vehicle.props.id,
-                name: vehicle.props.name,
-                rank: vehicle.props.rank,
-                country: vehicle.props.country,
-            })),
-        });
+    async execute(query: Search) {
+        return query.parse()
+            .toAsyncResult()
+            .andThen(({ name, limit, country, rank }) => this.vehicleRepo.searchByName({ name, country, rank }, { limit }))
+            .map(vehicles => ({
+                vehicles: vehicles.map(vehicle => ({
+                    id: vehicle.props.id,
+                    name: vehicle.props.name,
+                    rank: vehicle.props.rank,
+                    country: vehicle.props.country,
+                })),
+            }))
+            .promise;
     }
 }

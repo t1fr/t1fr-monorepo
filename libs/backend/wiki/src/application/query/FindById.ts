@@ -1,9 +1,6 @@
 import { Query } from "@t1fr/backend/ddd-types";
+import { z } from "zod";
 import { ObtainSource } from "../../domain";
-
-type FindByIdInput = {
-    id: string;
-}
 
 export interface FindByIdOutput {
     vehicle: {
@@ -36,5 +33,12 @@ export interface FindByIdOutput {
     });
 }
 
-export class FindById extends Query<FindByIdInput> {
+export class FindById extends Query<FindById, FindByIdOutput> {
+    override get schema() {
+        return FindById.schema;
+    }
+
+    private static schema = z.object({
+        id: z.string(),
+    });
 }

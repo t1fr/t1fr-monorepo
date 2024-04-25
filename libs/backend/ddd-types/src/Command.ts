@@ -1,15 +1,38 @@
-import { ICommand } from "@nestjs/cqrs";
-import { Result } from "ts-results-es";
-import { DomainError } from "./DomainError";
+import { Command as TypedCommand, Query as TypedQuery } from "@nestjs-architects/typed-cqrs";
+import { Err, Ok, Result } from "ts-results-es";
+import { z } from "zod";
+import { DomainError, ZodParseError } from "./DomainError";
 
-export abstract class Command<T = unknown> implements ICommand {
-    readonly data: Readonly<T> = null as T;
+type HaveZodSchema = { schema: z.ZodType }
+type ToUnknown<T> =
+    T extends Date ? unknown
+        : T extends object ? { [key in keyof T]: unknown }
+            : unknown
 
-    constructor(data: T) {
-        this.data = Object.freeze(data);
+export abstract class Command<T extends HaveZodSchema, R> extends TypedCommand<Result<R, DomainError>> {
+    constructor(private readonly data: ToUnknown<z.infer<T["schema"]>>) {
+        super();
     }
+
+    parse(): Result<z.infer<T["schema"]>, ZodParseError> {
+        const parseOrError = this.schema.safeParse(this.data);
+        if (parseOrError.success) return Ok(parseOrError.data);
+        return Err(ZodParseError.create(parseOrError.error));
+    }
+
+    abstract get schema(): T["schema"];
 }
 
+export abstract class Query<T extends HaveZodSchema, R> extends TypedQuery<Result<R, DomainError>> {
+    constructor(private readonly data: ToUnknown<z.infer<T["schema"]>>) {
+        super();
+    }
 
-export type CommandOutput<T> = Result<T, DomainError>
+    parse(): Result<z.infer<T["schema"]>, ZodParseError> {
+        const parseOrError = this.schema.safeParse(this.data);
+        if (parseOrError.success) return Ok(parseOrError.data);
+        return Err(ZodParseError.create(parseOrError.error));
+    }
 
+    abstract get schema(): T["schema"];
+}

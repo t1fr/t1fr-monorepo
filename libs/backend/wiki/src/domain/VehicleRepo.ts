@@ -1,6 +1,5 @@
 import { Inject } from "@nestjs/common";
-import { DomainError } from "@t1fr/backend/ddd-types";
-import { Result } from "ts-results-es";
+import { AsyncActionResult } from "@t1fr/backend/ddd-types";
 import { Vehicle } from "./model";
 
 export const VehicleRepo = () => Inject(VehicleRepo);
@@ -15,14 +14,15 @@ export type SearchCriteria = {
     country: string | null
 }
 
-export type EnumFields = Extract<keyof Vehicle["props"], "country" | "rank" | "vehicleClasses">;
+export const EnumFields = ["country", "rank", "class"] as const;
+export type  EnumField = typeof EnumFields[number]
 
 export interface VehicleRepo {
-    save(data: Vehicle | Vehicle[]): Promise<Result<number, DomainError>>;
+    save(data: Vehicle | Vehicle[]): AsyncActionResult<number>;
 
-    searchByName(criteria: SearchCriteria, options?: FindByNameOptions): Promise<Result<Vehicle[], DomainError>>;
+    searchByName(criteria: SearchCriteria, options?: FindByNameOptions): AsyncActionResult<Vehicle[]>;
 
-    findById(id: string): Promise<Result<Vehicle, DomainError>>;
+    findById(id: string): AsyncActionResult<Vehicle>;
 
-    listEnumField(field: EnumFields): Promise<Result<string[], DomainError>>;
+    listEnumField(field: EnumField): AsyncActionResult<string[]>;
 }

@@ -1,31 +1,29 @@
 import { Inject } from "@nestjs/common";
-import { DomainError } from "@t1fr/backend/ddd-types";
-import { AsyncResult } from "ts-results-es";
+import { AsyncActionResult } from "@t1fr/backend/ddd-types";
 import { Account, AccountId, Member, MemberId, NonRequiredAccountProps } from "../model";
 
 export const MemberRepo = () => Inject(MemberRepo);
 
-export type MemberRepoResult<T> = AsyncResult<T, DomainError>
 
-export type SaveAccountsResult = { inserted: number, deleted: number, modified: number }
+export type SaveAccountsResult = { inserted: number, deleted: number, modified: number, ids: AccountId[] }
 
 export  type FindAccountByIdResult = { owner?: Member, account: Account }
 
 export interface MemberRepo {
 
-    save<T extends Member | Member[]>(data: T): MemberRepoResult<void>;
+    save<T extends Member | Member[]>(data: T): AsyncActionResult<MemberId[]>;
 
-    findMemberHaveAccount(accountId: AccountId): MemberRepoResult<Member>;
+    findMemberHaveAccount(accountId: AccountId): AsyncActionResult<Member>;
 
-    find(): MemberRepoResult<Member[]>;
+    find(): AsyncActionResult<Member[]>;
 
-    findMemberById(memberId: MemberId): MemberRepoResult<Member>;
+    findMemberById(memberId: MemberId): AsyncActionResult<Member>;
 
-    dumpAccounts(): MemberRepoResult<Account[]>;
+    dumpAccounts(): AsyncActionResult<Account[]>;
 
-    saveAccounts(accounts: Account[]): MemberRepoResult<SaveAccountsResult>;
+    saveAccounts(accounts: Account[]): AsyncActionResult<SaveAccountsResult>;
 
-    findUnlinkedAccounts(): MemberRepoResult<Account[]>;
+    findUnlinkedAccounts(): AsyncActionResult<Account[]>;
 
-    findAccountById(accountId: AccountId, selection?: (keyof NonRequiredAccountProps)[]): MemberRepoResult<FindAccountByIdResult>;
+    findAccountById(accountId: AccountId, selection?: (keyof NonRequiredAccountProps)[]): AsyncActionResult<FindAccountByIdResult>;
 }

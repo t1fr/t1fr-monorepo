@@ -1,10 +1,14 @@
-import { Season, SeasonId } from "./model/Season";
 import { Inject } from "@nestjs/common";
-import { Ok, Result } from "ts-results-es";
+import { DomainError } from "@t1fr/backend/ddd-types";
+import { AsyncResult } from "ts-results-es";
+import { Season, SeasonId } from "./model/Season";
 
 export const SeasonRepo = () => Inject(SeasonRepo);
 
+export type SeasonRepoResult<T> = AsyncResult<T, DomainError>
+
 export interface SeasonRepo {
-	save(season: Season): Promise<Ok<void>>;
-	findById(id: SeasonId): Promise<Result<Season, "NOT_FOUND">>;
+    save(season: Season): SeasonRepoResult<void>;
+
+    findById(id: SeasonId): SeasonRepoResult<Season>;
 }

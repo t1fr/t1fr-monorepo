@@ -1,13 +1,6 @@
 import { Inject, Injectable, UseInterceptors } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
-import {
-    AssignAccountOwner,
-    AssignAccountOwnerResult,
-    InvalidAccountTypeCountError,
-    MemberNotFoundError,
-    ScrapeAccount,
-    ScrapeAccountOutput,
-} from "@t1fr/backend/member-manage";
+import { AssignAccountOwner, InvalidAccountTypeCountError, MemberNotFoundError, ScrapeAccount } from "@t1fr/backend/member-manage";
 import { MessageFlagsBitField } from "discord.js";
 import { Context, createCommandGroupDecorator, Options, SlashCommandContext, Subcommand } from "necord";
 import { AccountAutocompleteInterceptor } from "../autocomplete";
@@ -24,7 +17,7 @@ export class AccountCommand {
     @Subcommand({ name: "sync", description: "從網頁上爬帳號資料" })
     private async sync(@Context() [interaction]: SlashCommandContext) {
         await interaction.deferReply();
-        const result = await this.commandBus.execute<ScrapeAccount, ScrapeAccountOutput>(new ScrapeAccount());
+        const result = await this.commandBus.execute(new ScrapeAccount());
         result
             .map(info => interaction.followUp([
                 "同步聯隊遊戲帳號完畢",
@@ -39,14 +32,19 @@ export class AccountCommand {
     @Subcommand({ name: "set-owner", description: "指定擁有者" })
     @UseInterceptors(AccountAutocompleteInterceptor)
     private async setOwner(@Context() [interaction]: SlashCommandContext, @Options() { accountId, guildMember }: SetOwnershipOption) {
-        const result = await this.commandBus
-            .execute<AssignAccountOwner, AssignAccountOwnerResult>(
-                new AssignAccountOwner({ accountId: accountId, memberId: guildMember.id }));
+        const result = await this.commandBus.execute(new AssignAccountOwner({ accountId: accountId, memberId: guildMember.id }));
         return result
-            .map(({ accountName }) => interaction.reply({
-                content: `已成功設置帳號 ${accountName} 的擁有者為 <@${guildMember.id}>`,
-                options: { flags: [MessageFlagsBitField.Flags.SuppressNotifications] },
-            }))
+            .map(({ account, newOwnerId, oldOwnerId }) => {
+                const content = oldOwnerId
+                    ? `已成功將帳號 ${account.name} 的從 ${oldOwnerId} 轉移給 <@${newOwnerId}>`
+                    : `已成功設置帳號 ${account.name} 的擁有者為 <@${newOwnerId}>`;
+
+                interaction.reply({
+                    content: content,
+                    options: { flags: [MessageFlagsBitField.Flags.SuppressNotifications] },
+                });
+
+            })
             .mapErr((error) => {
                 if (error instanceof InvalidAccountTypeCountError) interaction.reply({ content: `<@${error.memberId.value}> ${error.toString()}` });
                 else if (error instanceof MemberNotFoundError) interaction.reply(`<@${error.memberId}> 目前非隊員`);

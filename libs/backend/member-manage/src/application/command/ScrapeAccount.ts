@@ -1,18 +1,22 @@
-import { Command, DomainError } from "@t1fr/backend/ddd-types";
-import { Result } from "ts-results-es";
+import { Command } from "@t1fr/backend/ddd-types";
+import { z } from "zod";
 
-export class ScrapeAccount extends Command {
+export class ScrapeAccount extends Command<ScrapeAccount, ScrapeAccountOutput> {
     constructor() {
-        super({});
+        super(undefined);
     }
+
+    override get schema() {
+        return ScrapeAccount.schema;
+    }
+
+    private static schema = z.undefined();
 }
 
-export type ScrapeAccountOutput = Result<{
+export type ScrapeAccountOutput = {
     inserted: number;
     deleted: number;
     modified: number;
 
-    insertedIds: string[];
-    deletedIds: string[];
-    modifiedIds: string[];
-}, DomainError>
+    ids: string[];
+}
