@@ -1,10 +1,12 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { CommandBus } from "@nestjs/cqrs";
-import { NewSeasonFromText } from "@t1fr/backend/sqb-schedule";
+import { CommandBus, QueryBus } from "@nestjs/cqrs";
+import { FindCurrentSeason, NewSeasonFromText } from "@t1fr/backend/sqb-schedule";
 import { ModalBuilder, TextInputStyle } from "discord.js";
-import { Context, createCommandGroupDecorator, Ctx, Modal, ModalContext, SlashCommandContext, Subcommand } from "necord";
+import { Context, createCommandGroupDecorator, Ctx, Modal, ModalContext, Options, SlashCommandContext, Subcommand } from "necord";
 import { DiscordClientService } from "../service";
+import { SeasonToTableHelper } from "../service/SeasonToTableHelper";
 import { configLayout } from "../utlity";
+import { SqbScheduleDisplayOption } from "./SqbOption";
 
 const SqbCommandDecorator = createCommandGroupDecorator({ name: "sqb", description: "管理聯隊戰行程" });
 
@@ -17,6 +19,9 @@ export class SqbCommand {
 
     @Inject()
     private readonly commandBus!: CommandBus;
+
+    @Inject()
+    private readonly queryBus!: QueryBus;
 
     private static InputScheduleModelId = "set-schedule";
 
@@ -35,19 +40,27 @@ export class SqbCommand {
     }
 
     @Subcommand({ name: "publish", description: "更新顯示用頻道名稱" })
-    async onUpdateBulletin(@Context() [interaction]: SlashCommandContext) {
-        const result = await this.discordClientService.updateBulletin();
-        if (result.isOk()) interaction.reply("已更新成功");
-        else interaction.reply(result.error);
+    async updateSqbChannelName(@Context() [interaction]: SlashCommandContext) {
+        const result = await this.discordClientService.updateSqbChannelName();
+        const content = result.mapOrElse(_error => _error, () => "已更新成功");
+        interaction.reply(content);
     }
 
     @Subcommand({ name: "display", description: "顯示日程表" })
-    async display(@Context() [interaction]: SlashCommandContext) {
-        // const markdownTable = await this.battleService.getCurrentSeasonTable();
-        // const channel = interaction.guild?.channels.resolve(Channel.聯隊戰公告);
-        // const content = [`<@&${DiscordRole.推播.聯隊戰}>`, markdownTable].join("\n");
-        // const message = channel?.isTextBased() ? await channel.send({ content }) : null;
-        // await interaction.reply({ content: `日程表發布${message ? "成功" : "失敗"}`, ephemeral: true });
+    async display(@Context() [interaction]: SlashCommandContext, @Options() { inplace, notification }: SqbScheduleDisplayOption) {
+        await interaction.deferReply();
+
+        const result = await this.queryBus.execute(new FindCurrentSeason());
+
+        if (result.isErr()) return interaction.followUp({ content: result.error.toString(), ephemeral: true });
+        const table = SeasonToTableHelper.convert(result.value, notification ?? false);
+
+        if (inplace) return interaction.followUp(table);
+
+        const postResult = await this.discordClientService.postTableToSqbBulletin(table);
+        const content = postResult.mapOrElse(error => `日程表發布失敗 ${error}`, () => "日程表發布成功");
+
+        interaction.reply({ content, ephemeral: true });
     }
 
     @Subcommand({ name: "snapshot", description: "快照當前聯隊狀態進入賽季紀錄" })
@@ -64,8 +77,11 @@ export class SqbCommand {
         const scheduleText = interaction.fields.getTextInputValue("text");
 
         const result = await this.commandBus.execute(new NewSeasonFromText({ year, text: scheduleText }));
+        const content = result.mapOrElse(
+            error => `儲存賽季失敗： ${error.toString()}`,
+            ({ year, seasonIndex }) => `已成功建立 ${year} 年第 ${seasonIndex} 賽季`,
+        );
 
-        if (result.isOk()) interaction.followUp({ content: `已成功建立 ${result.value.year} 年第 ${result.value.seasonIndex} 賽季` });
-        else interaction.followUp({ content: `儲存賽季失敗： ${result.error.toString()}` });
+        interaction.followUp(content);
     }
 }
