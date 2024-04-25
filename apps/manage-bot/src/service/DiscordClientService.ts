@@ -4,7 +4,7 @@ import { Configuration } from "@t1fr/backend/configs";
 import { SyncMember } from "@t1fr/backend/member-manage";
 import { FindCurrentSection } from "@t1fr/backend/sqb-schedule";
 import { ChannelType, Client, escapeMarkdown, GuildMember, TextChannel } from "discord.js";
-import { Err, Result } from "ts-results-es";
+import { Err, Ok, Result } from "ts-results-es";
 import { DigitFullWidthHelper } from "./DigitFullWidthHelper";
 
 type PostApplicationData = { discordId: string, gameId: string, level: string, type: string }
@@ -76,12 +76,7 @@ export class DiscordClientService {
         return result.map(({ ids, errors }) => ({ success: ids.length, errors }));
     }
 
-    private updateBulletinFallback() {
-        const messages = { category: "聯隊戰", announcement: "今日分房：新賽季" };
-
-    }
-
-    async updateBulletin(): Promise<Result<void, string>> {
+    async updateSqbChannelName(): Promise<Result<void, string>> {
         const category = this.client.channels.resolve("1046624503276515339");
         const channel = this.client.channels.resolve("1047751571708051486");
 
@@ -103,4 +98,14 @@ export class DiscordClientService {
             })
             .promise;
     }
+
+    async postTableToSqbBulletin(table: string): Promise<Result<void, string>> {
+        const channel = this.client.channels.resolve("1046644902630522900");
+        if (!(channel && channel.type === ChannelType.GuildText)) return Err("聯隊戰公告頻道獲取失敗");
+
+        if (!channel.isTextBased()) return Err("聯隊戰公告頻道非文字頻道");
+
+        return channel.send(table).then(() => Ok.EMPTY).catch(reason => Err(`${reason}`));
+    }
+
 }
