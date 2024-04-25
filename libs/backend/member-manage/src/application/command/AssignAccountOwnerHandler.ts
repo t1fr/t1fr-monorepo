@@ -1,5 +1,4 @@
-import { IInferredCommandHandler } from "@nestjs-architects/typed-cqrs";
-import { CommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
 import { Ok } from "ts-results-es";
 import { AccountId, MemberId, MemberRepo } from "../../domain";
 import { AssignAccountOwner } from "./AssignAccountOwner";

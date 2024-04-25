@@ -1,8 +1,6 @@
-import { PointEvent, PointType, PointTypes, RewardPointCategories, RewardPointCategory } from "@t1fr/legacy/management";
 import { BooleanOption, NumberOption, StringOption } from "necord";
-import { arrayToChoices } from "../utlity";
 
-export class AwardData implements Omit<PointEvent, "type" | "date"> {
+export class AwardData {
     @StringOption({ name: "member", description: "擁有者 DC 帳號", required: true, autocomplete: true })
     member!: string;
 
@@ -13,9 +11,8 @@ export class AwardData implements Omit<PointEvent, "type" | "date"> {
         name: "category",
         description: "分類",
         required: true,
-        choices: arrayToChoices(RewardPointCategories),
     })
-    category!: RewardPointCategory;
+    category!: string;
 
     @StringOption({ name: "reason", description: "原因" })
     comment!: string;
@@ -27,8 +24,8 @@ export class MemberInfoOption {
 }
 
 export class SeasonSummary {
-    @StringOption({ name: "type", description: "積分類型", choices: arrayToChoices(PointTypes), required: true })
-    type!: PointType;
+    @StringOption({ name: "type", description: "積分類型", required: true })
+    type!: string;
 
     @BooleanOption({ name: "write", description: "結果是否寫入資料庫" })
     writeInToDb!: boolean | null;

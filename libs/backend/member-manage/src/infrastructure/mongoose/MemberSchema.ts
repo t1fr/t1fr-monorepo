@@ -2,7 +2,7 @@ import { InjectModel, ModelDefinition, Prop, Schema, SchemaFactory } from "@nest
 import { Model } from "mongoose";
 import { MemberType } from "../../domain";
 import type { AccountSchema } from "./AccountSchema";
-import { AccountSchemaRefToken, MEMBER_MANAGE_MONGOOSE_CONNECTION_TOKEN, MemberSchemaRefToken } from "./connection";
+import { AccountSchemaRefToken, MemberManageMongooseConnection, MemberSchemaRefToken } from "./connection";
 
 @Schema({ collection: "members", versionKey: false, timestamps: true })
 export class MemberSchema {
@@ -44,4 +44,4 @@ export const MemberModelDef: ModelDefinition = { name: MemberSchemaRefToken, sch
 
 export type MemberModel = Model<MemberSchema>
 
-export const InjectMemberModel = () => InjectModel(MemberSchemaRefToken, MEMBER_MANAGE_MONGOOSE_CONNECTION_TOKEN);
+export const InjectMemberModel = () => InjectModel(MemberSchemaRefToken, MemberManageMongooseConnection);

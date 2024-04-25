@@ -1,5 +1,4 @@
-import { IInferredCommandHandler } from "@nestjs-architects/typed-cqrs";
-import { CommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
 import { DomainError } from "@t1fr/backend/ddd-types";
 import { Err, Result } from "ts-results-es";
 import { Member, MemberId, MemberRepo } from "../../domain";

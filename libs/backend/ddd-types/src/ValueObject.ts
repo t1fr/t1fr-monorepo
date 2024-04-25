@@ -1,4 +1,4 @@
-import { isEqual, mapValues } from "lodash";
+import { isEqual } from "lodash";
 
 interface LiteralObject {
     [index: string]: unknown;
@@ -18,7 +18,7 @@ function shallowObjectEqual(lhs: LiteralObject, rhs: LiteralObject) {
 }
 
 export abstract class ValueObject<Props extends object> {
-    props: Readonly<Props>;
+    readonly props: Readonly<Props>;
 
     protected constructor(props: Props) {
         this.props = Object.freeze(props);

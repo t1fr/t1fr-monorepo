@@ -1,5 +1,4 @@
-import { IInferredCommandHandler } from "@nestjs-architects/typed-cqrs";
-import { CommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
 import { AccountDataSource, MemberRepo } from "../../domain";
 import { ScrapeAccount } from "./ScrapeAccount";
 

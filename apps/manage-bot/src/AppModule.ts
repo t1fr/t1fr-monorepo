@@ -4,12 +4,13 @@ import { CqrsModule } from "@nestjs/cqrs";
 import { MongooseModule } from "@nestjs/mongoose";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ConfigsModule } from "@t1fr/backend/configs";
-import { MEMBER_MANAGE_MONGOOSE_CONNECTION_TOKEN, MemberManageModule } from "@t1fr/backend/member-manage";
-import { union } from "lodash";
+import { MemberManageModule, MemberManageMongooseConnection } from "@t1fr/backend/member-manage";
+import { SqbModule, SqbMongooseConnection } from "@t1fr/backend/sqb-schedule";
+import { concat } from "lodash";
 import { NecordModule } from "necord";
 import { AccountAutocompleteInterceptor } from "./autocomplete";
 import { DiscordCommands } from "./command";
-import { ManageBotNecordOptionsFactory, ManageMongooseOptionsFactory } from "./factory";
+import { ManageBotNecordOptionsFactory, ManageMongooseOptionsFactory, SqbMongooseOptionsFactory } from "./factory";
 import { DiscordClientService } from "./service";
 
 
@@ -20,10 +21,12 @@ import { DiscordClientService } from "./service";
         CqrsModule.forRoot(),
         { ...HttpModule.register({}), global: true },
         NecordModule.forRootAsync({ useClass: ManageBotNecordOptionsFactory }),
-        MongooseModule.forRootAsync({ useClass: ManageMongooseOptionsFactory, connectionName: MEMBER_MANAGE_MONGOOSE_CONNECTION_TOKEN }),
+        MongooseModule.forRootAsync({ useClass: ManageMongooseOptionsFactory, connectionName: MemberManageMongooseConnection }),
+        MongooseModule.forRootAsync({ useClass: SqbMongooseOptionsFactory, connectionName: SqbMongooseConnection }),
         MemberManageModule,
+        SqbModule,
     ],
-    providers: union<Provider>(DiscordCommands, [DiscordClientService, AccountAutocompleteInterceptor]),
+    providers: concat<Provider>(DiscordCommands, DiscordClientService, AccountAutocompleteInterceptor),
 
 })
 export class AppModule {
