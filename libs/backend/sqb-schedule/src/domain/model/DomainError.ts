@@ -1,5 +1,4 @@
 import { DomainError } from "@t1fr/backend/ddd-types";
-import { SeasonId } from "./Season";
 import { Section } from "./Section";
 
 export class SectionSpanError extends DomainError {
@@ -26,10 +25,19 @@ export class InvalidSectionFormatError extends DomainError {
 
 
 export class SeasonNotFoundError extends DomainError {
-    static create(seasonId: SeasonId) {
+    static create(year: number, seasonIndex: number) {
         return new SeasonNotFoundError({
             context: SeasonNotFoundError,
-            message: `無法找到 ${seasonId.value.year} 年第 ${seasonId.value.seasonIndex} 的賽季資訊`,
+            message: `無法找到 ${year} 年第 ${seasonIndex} 賽季的資訊`,
+        });
+    }
+}
+
+export class SectionNotFoundError extends DomainError {
+    static create(time: Date) {
+        return new SectionNotFoundError({
+            context: SectionNotFoundError,
+            message: `無法找到 ${time.toString()} 時的分房資訊`,
         });
     }
 }

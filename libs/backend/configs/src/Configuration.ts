@@ -5,7 +5,7 @@ export function Configuration(configKey: string, fallback?: unknown): PropertyDe
     return (target, propertyKey) => {
         ConfigHelper.setKey(configKey);
         const propertyType = Reflect.getMetadata("design:type", target, propertyKey);
-        Object.defineProperty(target, propertyKey, {
+        Reflect.defineProperty(target, propertyKey, {
             get: () => {
                 const value = get(ConfigHelper.Config, configKey);
                 switch (propertyType) {

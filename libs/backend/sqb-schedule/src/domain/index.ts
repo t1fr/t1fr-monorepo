@@ -1,2 +1,2 @@
-export * from "./SeasonRepo";
+export * from "./SectionRepo";
 export * from "./model";
