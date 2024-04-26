@@ -1,59 +1,33 @@
 {
-  "compileOnSave": false,
-  "compilerOptions": {
-    "rootDir": ".",
-    "sourceMap": true,
-    "declaration": true,
-    "strict": true,
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "target": "es2015",
-    "module": "esnext",
-    "lib": [
-      "es2020",
-      "dom"
-    ],
-    "skipLibCheck": true,
-    "skipDefaultLibCheck": true,
-    "esModuleInterop": true,
-    "baseUrl": ".",
-    "paths": {
-      "@t1fr/backend/backup": [
-        "libs/backend/backup/src/index.ts"
-      ],
-      "@t1fr/backend/configs": [
-        "libs/backend/configs/src/index.ts"
-      ],
-      "@t1fr/backend/ddd-types": [
-        "libs/backend/ddd-types/src/index.ts"
-      ],
-      "@t1fr/backend/i18n": [
-        "libs/backend/i18n/src/index.ts"
-      ],
-      "@t1fr/backend/member-manage": [
-        "libs/backend/member-manage/src/index.ts"
-      ],
-      "@t1fr/backend/sqb-analysis": [
-        "libs/backend/sqb-analysis/src/index.ts"
-      ],
-      "@t1fr/backend/sqb-schedule": [
-        "libs/backend/sqb-schedule/src/index.ts"
-      ],
-      "@t1fr/backend/wiki": [
-        "libs/backend/wiki/src/index.ts"
-      ],
-      "@t1fr/legacy/management": [
-        "libs/legacy/management/src/index.ts"
-      ],
-      "@t1fr/legacy/schedule": [
-        "libs/legacy/schedule/src/index.ts"
-      ]
-    }
-  },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+    "compileOnSave": false,
+    "compilerOptions": {
+        "rootDir": ".",
+        "sourceMap": true,
+        "declaration": true,
+        "strict": true,
+        "moduleResolution": "node",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "importHelpers": true,
+        "target": "es2015",
+        "module": "esnext",
+        "lib": ["es2020", "dom"],
+        "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
+        "esModuleInterop": true,
+        "baseUrl": ".",
+        "paths": {
+            "@t1fr/backend/backup": ["libs/backend/backup/src/index.ts"],
+            "@t1fr/backend/configs": ["libs/backend/configs/src/index.ts"],
+            "@t1fr/backend/ddd-types": ["libs/backend/ddd-types/src/index.ts"],
+            "@t1fr/backend/i18n": ["libs/backend/i18n/src/index.ts"],
+            "@t1fr/backend/member-manage": ["libs/backend/member-manage/src/index.ts"],
+            "@t1fr/backend/sqb": ["libs/backend/sqb/src/index.ts"],
+            "@t1fr/backend/sqb-analysis": ["libs/backend/sqb-analysis/src/index.ts"],
+            "@t1fr/backend/wiki": ["libs/backend/wiki/src/index.ts"],
+            "@t1fr/legacy/management": ["libs/legacy/management/src/index.ts"],
+            "@t1fr/legacy/schedule": ["libs/legacy/schedule/src/index.ts"]
+        }
+    },
+    "exclude": ["node_modules", "tmp"]
 }

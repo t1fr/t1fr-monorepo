@@ -1,4 +1,4 @@
-import { FindCurrentSeasonOutput } from "@t1fr/backend/sqb-schedule";
+import { FindCurrentSeasonOutput } from "@t1fr/backend/sqb";
 import dayjs from "dayjs";
 
 export class SeasonToTableHelper {
