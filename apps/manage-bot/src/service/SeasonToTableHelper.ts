@@ -2,7 +2,7 @@ import { FindCurrentSeasonOutput } from "@t1fr/backend/sqb-schedule";
 import dayjs from "dayjs";
 
 export class SeasonToTableHelper {
-    static convert({ year, seasonIndex, sections }: FindCurrentSeasonOutput, notification: boolean) {
+    static convert({ year, seasonIndex, sections }: FindCurrentSeasonOutput, notificationRole: string | null) {
         const startMonth = (seasonIndex - 1) * 2 + 1;
         const scheduleMessage = [
             `**${year} 年 ${startMonth} ~ ${startMonth + 1} 月**聯隊戰行程`,
@@ -12,7 +12,7 @@ export class SeasonToTableHelper {
             "├───────┼───────┼──────────┤",
         ];
 
-        if (notification) scheduleMessage.unshift("<@&1145364425658867754>");
+        if (notificationRole) scheduleMessage.unshift(`<@&${notificationRole}>`);
 
         const sectionRows = sections.map(section => {
             const startString = dayjs(section.from).format("MM/DD");

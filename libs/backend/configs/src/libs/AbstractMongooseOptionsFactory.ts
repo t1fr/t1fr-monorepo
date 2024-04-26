@@ -2,14 +2,18 @@ import { Logger } from "@nestjs/common";
 import { MongooseModuleOptions, MongooseOptionsFactory } from "@nestjs/mongoose";
 import { castArray, zip } from "lodash";
 import { Error } from "mongoose";
+import { z } from "zod";
 
-export interface MongooseConfig extends Omit<MongooseModuleOptions, "user" | "uri" | "pass" | "dbName"> {
-    host: string | string[];
-    password: string;
-    username: string;
-    port: string | string[];
-    database: string;
-}
+
+export const MongooseConfig = z.object({
+    host: z.string(),
+    password: z.string(),
+    username: z.string(),
+    port: z.coerce.number(),
+    database: z.string(),
+});
+
+export type MongooseConfig = z.infer<typeof MongooseConfig>
 
 export abstract class AbstractMongooseOptionsFactory implements MongooseOptionsFactory {
 

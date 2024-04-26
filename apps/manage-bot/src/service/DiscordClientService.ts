@@ -3,16 +3,12 @@ import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { Configuration } from "@t1fr/backend/configs";
 import { SyncMember } from "@t1fr/backend/member-manage";
 import { FindCurrentSection } from "@t1fr/backend/sqb-schedule";
-import { ChannelType, Client, escapeMarkdown, GuildMember, TextChannel } from "discord.js";
+import { ChannelType, Client, escapeMarkdown, GuildMember } from "discord.js";
 import { Err, Ok, Result } from "ts-results-es";
 import { DigitFullWidthHelper } from "./DigitFullWidthHelper";
+import { DiscordClientConfig } from "./DiscordClientConfig";
 
 type PostApplicationData = { discordId: string, gameId: string, level: string, type: string }
-
-
-class Test {
-    a!: string;
-}
 
 @Injectable()
 export class DiscordClientService {
@@ -25,37 +21,24 @@ export class DiscordClientService {
     @Inject()
     private readonly queryBus!: QueryBus;
 
-    @Configuration("bot.channels.recruitment")
-    private readonly recruitmentChannelId!: string;
-
-    @Configuration("bot.guilds.t1fr")
-    private readonly t1frGuildId!: string;
-
-    @Configuration("bot.roles.officer")
-    private readonly officerRoleId!: string;
-
-    @Configuration("bot.roles.sqb")
-    private readonly sqbRoleId!: string;
-
-    @Configuration("bot.roles.relax")
-    private readonly relaxRoleId!: string;
-
-    @Configuration("bot.roles.relax")
-    private readonly test!: Test;
+    @Configuration("bot.constants")
+    readonly constants!: DiscordClientConfig;
 
     private TransformDiscordMemberToSyncData(member: GuildMember): ConstructorParameters<typeof SyncMember>[0][number] {
         const roles = member.roles.cache;
         return {
             discordId: member.id,
             nickname: member.displayName,
-            isOfficer: roles.has(this.officerRoleId),
+            isOfficer: roles.has(this.constants.roles.officer),
             avatarUrl: member.displayAvatarURL({ forceStatic: true }),
-            type: roles.has(this.relaxRoleId) ? "relaxer" : "squad_fighter",
+            type: roles.has(this.constants.roles.relaxer) ? "relaxer" : "squad_fighter",
         };
     }
 
     async postApplication({ discordId, type, gameId, level }: PostApplicationData) {
-        const applyChannel = this.client.channels.resolve(this.recruitmentChannelId) as TextChannel;
+        const applyChannel = this.client.channels.resolve(this.constants.channels.recruitment.apply);
+        if (!applyChannel) return Err("獲取入隊申請頻道失敗");
+        if (!applyChannel.isTextBased()) return Err("入隊申請頻道非文字頻道，無法張貼入隊申請");
         const message = await applyChannel.send({
             content: [
                 `申請人： <@${discordId}>`,
@@ -65,17 +48,17 @@ export class DiscordClientService {
                 "已閱讀並同意入隊須知： 是",
             ].join("\n"),
         });
-        return message.url;
+        return Ok(message.url);
     }
 
     async syncMember() {
-        const guild = await this.client.guilds.fetch({ guild: this.t1frGuildId, cache: true });
-        if (!guild) throw Error(`不在 T1FR 伺服器 ${this.t1frGuildId}`);
+        const guild = await this.client.guilds.fetch({ guild: this.constants.guilds.t1fr, cache: true });
+        if (!guild) throw Error(`不在 T1FR 伺服器 ${this.constants.guilds.t1fr}`);
         const members = await guild.members.fetch();
         if (!members) throw Error(`無法獲取成員資料`);
 
         const syncData = members
-            .filter(member => member.roles.cache.hasAny(this.sqbRoleId, this.relaxRoleId))
+            .filter(member => member.roles.cache.hasAny(this.constants.roles.officer, this.constants.roles.relaxer))
             .map(member => this.TransformDiscordMemberToSyncData(member));
 
         const result = await this.commandBus.execute(new SyncMember(syncData));
@@ -83,8 +66,8 @@ export class DiscordClientService {
     }
 
     async updateSqbChannelName(): Promise<Result<void, string>> {
-        const category = this.client.channels.resolve("1046624503276515339");
-        const channel = this.client.channels.resolve("1047751571708051486");
+        const category = this.client.channels.resolve(this.constants.channels.sqb.category);
+        const channel = this.client.channels.resolve(this.constants.channels.sqb.battlerating);
 
         if (!(category && category.type === ChannelType.GuildCategory)) return Err("聯隊戰類別獲取失敗");
         if (!(channel && channel.type === ChannelType.GuildVoice)) return Err("聯隊戰分房公告頻道獲取失敗");
@@ -105,7 +88,7 @@ export class DiscordClientService {
     }
 
     async postTableToSqbBulletin(table: string): Promise<Result<void, string>> {
-        const channel = this.client.channels.resolve("1046644902630522900");
+        const channel = this.client.channels.resolve(this.constants.channels.sqb.announcement);
         if (!(channel && channel.type === ChannelType.GuildText)) return Err("聯隊戰公告頻道獲取失敗");
 
         if (!channel.isTextBased()) return Err("聯隊戰公告頻道非文字頻道");

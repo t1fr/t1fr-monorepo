@@ -15,7 +15,7 @@ export class AuthController {
     @Inject()
     private readonly authService!: AuthService;
 
-    @Configuration("app.cookie")
+    @Configuration("http.cookie")
     private readonly cookieOptions!: CookieOptions;
 
     @Post("login")

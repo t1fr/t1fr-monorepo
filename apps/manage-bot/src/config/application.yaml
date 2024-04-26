@@ -1,0 +1,38 @@
+database:
+    mongo:
+        manage:
+            username: t1fr_admin
+            password: ***REMOVED***
+            database: manage-test
+            host: 114.32.177.157
+            port: 38422
+        sqb:
+            username: t1fr_admin
+            password: ***REMOVED***
+            database: sqb-test
+            host: 114.32.177.157
+            port: 38422
+
+bot:
+    token: "***REMOVED***"
+    constants:
+        guilds:
+            t1fr: "1046623840710705152"
+        roles:
+            officer: "1046629416240955414"
+            fighter: "1046629026355228762"
+            relaxer: "1103384315599015987"
+            notification:
+                sqb: "1145364425658867754"
+        channels:
+            recruitment:
+                apply: "1046829250101117038"
+                notice: "1145362065813405776"
+            sqb:
+                category: "1046624503276515339"
+                battlerating: "1047751571708051486"
+                announcement: "1046644902630522900"
+
+gaijin:
+    username: "zvn2060@cloud.isu.edu.tw"
+    password: "***REMOVED***"

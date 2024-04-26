@@ -53,14 +53,14 @@ export class SqbCommand {
         const result = await this.queryBus.execute(new FindCurrentSeason());
 
         if (result.isErr()) return interaction.followUp({ content: result.error.toString(), ephemeral: true });
-        const table = SeasonToTableHelper.convert(result.value, notification ?? false);
+        const table = SeasonToTableHelper.convert(result.value, notification ? this.discordClientService.constants.roles.officer : null);
 
         if (inplace) return interaction.followUp(table);
 
         const postResult = await this.discordClientService.postTableToSqbBulletin(table);
         const content = postResult.mapOrElse(error => `日程表發布失敗 ${error}`, () => "日程表發布成功");
 
-        interaction.reply({ content, ephemeral: true });
+        interaction.followUp({ content, ephemeral: true });
     }
 
     @Subcommand({ name: "snapshot", description: "快照當前聯隊狀態進入賽季紀錄" })
