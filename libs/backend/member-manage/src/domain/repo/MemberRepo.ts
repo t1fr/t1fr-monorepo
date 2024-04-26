@@ -1,6 +1,6 @@
 import { Inject } from "@nestjs/common";
 import { AsyncActionResult } from "@t1fr/backend/ddd-types";
-import { Account, AccountId, Member, MemberId, NonRequiredAccountProps } from "../model";
+import { Account, AccountId, Member, MemberId } from "../model";
 
 export const MemberRepo = () => Inject(MemberRepo);
 
@@ -25,5 +25,5 @@ export interface MemberRepo {
 
     findUnlinkedAccounts(): AsyncActionResult<Account[]>;
 
-    findAccountById(accountId: AccountId, selection?: (keyof NonRequiredAccountProps)[]): AsyncActionResult<FindAccountByIdResult>;
+    findAccountById(accountId: AccountId): AsyncActionResult<FindAccountByIdResult>;
 }

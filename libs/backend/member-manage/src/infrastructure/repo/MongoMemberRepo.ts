@@ -1,5 +1,5 @@
 import { Provider } from "@nestjs/common";
-import { AsyncActionResult, UnexpectedError } from "@t1fr/backend/ddd-types";
+import { AsyncActionResult } from "@t1fr/backend/ddd-types";
 import { castArray, isUndefined, omitBy } from "lodash";
 import { AnyBulkWriteOperation } from "mongoose";
 import { AsyncResult, Err, Ok } from "ts-results-es";
@@ -12,7 +12,6 @@ import {
     MemberId,
     MemberNotFoundError,
     MemberRepo,
-    NonRequiredAccountProps,
     SaveAccountsResult,
 } from "../../domain";
 import { AccountModel, AccountSchema, InjectAccountModel, InjectMemberModel, MemberModel } from "../mongoose";
@@ -45,8 +44,7 @@ class MongoMemberRepo implements MemberRepo {
                 updateOne: { filter: { gaijinId }, update: { $set: other } },
             }))),
         ])
-            .then(() => Ok(models.map(it => it.id)))
-            .catch(reason => Err(UnexpectedError.create(reason)));
+            .then(() => Ok(models.map(it => it.id)));
 
         return new AsyncResult(promise);
     }
@@ -63,8 +61,7 @@ class MongoMemberRepo implements MemberRepo {
         const promise = this.memberModel.findOne({ discordId: memberId.value })
             .populate("accounts")
             .lean()
-            .then(doc => doc === null ? Err(MemberNotFoundError.create(memberId)) : Ok(MemberMapper.fromMongo(doc)))
-            .catch(reason => Err(UnexpectedError.create(reason)));
+            .then(doc => doc === null ? Err(MemberNotFoundError.create(memberId)) : Ok(MemberMapper.fromMongo(doc)));
         return new AsyncResult(promise);
     }
 
@@ -109,7 +106,7 @@ class MongoMemberRepo implements MemberRepo {
         throw new Error("Method not implemented.");
     }
 
-    findAccountById(accountId: AccountId, selection?: (keyof NonRequiredAccountProps)[]): AsyncActionResult<FindAccountByIdResult> {
+    findAccountById(accountId: AccountId): AsyncActionResult<FindAccountByIdResult> {
         const promise = this.accountModel.findOne({ gaijinId: accountId.value })
             .lean()
             .then(async doc => {
@@ -121,8 +118,7 @@ class MongoMemberRepo implements MemberRepo {
                 if (findMemberOrError.isOk()) return Ok({ account: account, member: findMemberOrError.value });
                 if (findMemberOrError.error instanceof MemberNotFoundError) return ok;
                 return findMemberOrError;
-            })
-            .catch(reason => Err(UnexpectedError.create(reason)));
+            });
         return new AsyncResult(promise);
     }
 }

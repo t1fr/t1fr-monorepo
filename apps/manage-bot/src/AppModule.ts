@@ -11,7 +11,7 @@ import { NecordModule } from "necord";
 import { AccountAutocompleteInterceptor } from "./autocomplete";
 import { DiscordCommands } from "./command";
 import { ManageBotNecordOptionsFactory, ManageMongooseOptionsFactory, SqbMongooseOptionsFactory } from "./factory";
-import { DiscordClientService } from "./service";
+import { DiscordClientService, DiscordListener } from "./service";
 
 
 @Module({
@@ -26,7 +26,7 @@ import { DiscordClientService } from "./service";
         MemberManageModule,
         SqbModule,
     ],
-    providers: concat<Provider>(DiscordCommands, DiscordClientService, AccountAutocompleteInterceptor),
+    providers: concat<Provider>(DiscordCommands, DiscordClientService, AccountAutocompleteInterceptor, DiscordListener),
 
 })
 export class AppModule {

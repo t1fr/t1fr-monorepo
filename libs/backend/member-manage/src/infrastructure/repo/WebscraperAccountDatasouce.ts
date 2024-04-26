@@ -1,7 +1,7 @@
 import { Logger, Provider } from "@nestjs/common";
 import { PromisePool } from "@supercharge/promise-pool";
 import { Configuration } from "@t1fr/backend/configs";
-import { UnexpectedError, ZodParseError } from "@t1fr/backend/ddd-types";
+import { ZodParseError } from "@t1fr/backend/ddd-types";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { chain } from "lodash";
@@ -58,8 +58,7 @@ export class WebscraperAccountDatasouce implements AccountDataSource {
             .then(([element]) => element.focus())
             .then(() => page.keyboard.type(this.credential.password))
             .then(() => page.click("xpath=//*[@id=\"__container\"]/div[2]/div[1]/form/div[3]/button"))
-            .then(() => page.waitForNavigation())
-            .catch(reason => this.logger.error(reason));
+            .then(() => page.waitForNavigation());
     }
 
     private async fetchSquadronAccountList(page: Page) {
@@ -92,8 +91,7 @@ export class WebscraperAccountDatasouce implements AccountDataSource {
         const url = `https://warthunder.com/en/tournament/replay/type/replays?Filter%5Bkeyword%5D=&Filter%5Bnick%5D=${encodeURI(name)}&Filter%5Bstatistic_group%5D=&action=search`;
         const firstReplayItemXpath = "//*[@id=\"bodyRoot\"]/div[4]/div[2]/div[3]/div/section/div[2]/div[3]/div/a[1]";
         const playerItemSelector = `a[href="/${encodeURI(link)}"]`;
-        const page = await this.browser.newPage().catch((e) => this.logger.error(e));
-        if (!page) return uuidV4();
+        const page = await this.browser.newPage();
         try {
             await page.goto(url);
             await page.waitForXPath(firstReplayItemXpath, { timeout: 2000 });
@@ -139,7 +137,7 @@ export class WebscraperAccountDatasouce implements AccountDataSource {
                         .partition((result): result is Ok<Account> => result.isOk())
                         .value();
                     return Result.all(...acconts);
-                }).catch(e => Err(UnexpectedError.create(e))).finally();
+                });
         return new AsyncResult(promise);
     }
 }

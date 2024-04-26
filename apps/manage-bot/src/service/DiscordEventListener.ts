@@ -32,4 +32,6 @@ export class DiscordListener {
         const ouo = channel.members.find(value => value.id === "287556741808259075");
         await ouo?.voice.disconnect("緊急避難");
     }
+
+
 }

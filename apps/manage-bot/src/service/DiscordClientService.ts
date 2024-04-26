@@ -10,6 +10,10 @@ import { DigitFullWidthHelper } from "./DigitFullWidthHelper";
 type PostApplicationData = { discordId: string, gameId: string, level: string, type: string }
 
 
+class Test {
+    a!: string;
+}
+
 @Injectable()
 export class DiscordClientService {
     @Inject()
@@ -36,6 +40,8 @@ export class DiscordClientService {
     @Configuration("bot.roles.relax")
     private readonly relaxRoleId!: string;
 
+    @Configuration("bot.roles.relax")
+    private readonly test!: Test;
 
     private TransformDiscordMemberToSyncData(member: GuildMember): ConstructorParameters<typeof SyncMember>[0][number] {
         const roles = member.roles.cache;
@@ -83,7 +89,6 @@ export class DiscordClientService {
         if (!(category && category.type === ChannelType.GuildCategory)) return Err("聯隊戰類別獲取失敗");
         if (!(channel && channel.type === ChannelType.GuildVoice)) return Err("聯隊戰分房公告頻道獲取失敗");
 
-
         const findSectionOrError = await this.queryBus.execute(new FindCurrentSection());
 
         return findSectionOrError
@@ -107,5 +112,4 @@ export class DiscordClientService {
 
         return channel.send(table).then(() => Ok.EMPTY).catch(reason => Err(`${reason}`));
     }
-
 }

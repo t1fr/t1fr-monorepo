@@ -1,5 +1,5 @@
 import { Injectable, Provider } from "@nestjs/common";
-import { AsyncActionResult, UnexpectedError } from "@t1fr/backend/ddd-types";
+import { AsyncActionResult } from "@t1fr/backend/ddd-types";
 import { castArray } from "lodash";
 import { AsyncResult, Err, Ok } from "ts-results-es";
 import { BattleRating, EnumField, FindByNameOptions, FindVehicleByIdError, SearchCriteria, Vehicle, VehicleRepo } from "../domain";
@@ -49,8 +49,7 @@ export class MongoVehicleRepo implements VehicleRepo {
                 return { updateOne: { filter: { _id }, update: other, upsert: true } };
             });
         const promise = this.vehicleModel.bulkWrite(writeModels)
-            .then(result => Ok(result.matchedCount))
-            .catch(reason => Err(UnexpectedError.create(reason)));
+            .then(result => Ok(result.matchedCount));
 
         return new AsyncResult(promise);
     }

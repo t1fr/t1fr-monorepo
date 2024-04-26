@@ -9,6 +9,7 @@ interface SectionProps {
     battleRating: number;
 }
 
+export type SeasonMeta = { year: number, seasonIndex: number }
 
 export class Section extends ValueObject<SectionProps> {
     static create({ from, to, battleRating }: SectionProps) {
@@ -33,9 +34,15 @@ export class Section extends ValueObject<SectionProps> {
         return this.props.battleRating;
     }
 
+    get meta() {
+        return Section.getMetaFromTime(this.from);
+    }
 
-    get seasonIndex() {
-        return Math.floor(this.from.getMonth() / 2) + 1;
+    static getMetaFromTime(time: Date): SeasonMeta {
+        return {
+            year: time.getFullYear(),
+            seasonIndex: Math.floor(time.getMonth() / 2) + 1,
+        };
     }
 }
 
