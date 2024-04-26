@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
-import { FindCurrentSeason, NewSeasonFromText } from "@t1fr/backend/sqb";
+import { FindCurrentSeason, NewSeasonFromText, SnapshotCurrentSeason } from "@t1fr/backend/sqb";
 import { ModalBuilder, TextInputStyle } from "discord.js";
 import { Context, createCommandGroupDecorator, Ctx, Modal, ModalContext, Options, SlashCommandContext, Subcommand } from "necord";
 import { DiscordClientService, SeasonToTableHelper } from "../service";
@@ -67,11 +67,12 @@ export class SqbCommand {
         interaction.followUp({ content, ephemeral: true });
     }
 
-    @Subcommand({ name: "snapshot", description: "快照當前聯隊狀態進入賽季紀錄" })
+    @Subcommand({ name: "snapshot", description: "快照當前賽季各聯隊狀態" })
     async snapshot(@Context() [interaction]: SlashCommandContext) {
-        // await interaction.deferReply();
-        // await this.battleService.backup();
-        // interaction.followUp({ content: "已記錄完畢" });
+        await interaction.deferReply();
+        const result = await this.commandBus.execute(new SnapshotCurrentSeason());
+        const content = result.mapOrElse(error => error.toString(), ({ year, seasonIndex }) => `已更新 ${year} 年第 ${seasonIndex} 賽季的聯隊表現紀錄`);
+        interaction.followUp(content);
     }
 
     @Modal(SqbCommand.InputScheduleModelId)

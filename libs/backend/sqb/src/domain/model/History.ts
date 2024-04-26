@@ -7,39 +7,40 @@ type HistoryIdValue = { year: number; seasonIndex: number };
 
 interface HistoryProps {
     top100: Squad[];
-    finalPos: number | null;
+    me: Squad | null;
 }
 
-export class HistoryId extends EntityId<HistoryIdValue> {}
+export class HistoryId extends EntityId<HistoryIdValue> {
+}
 
 export class History extends Entity<HistoryId, HistoryProps> {
     private static readonly t1frSquadId = 1078072;
 
     static create(id: HistoryId, props: Pick<HistoryProps, "top100">) {
-        const findPosOrError = History.searchPos(props.top100);
+        const findPosOrError = History.searchMe(props.top100);
 
         return findPosOrError.mapOrElse(
-            () => new History(id, { ...props, finalPos: null }),
-            pos => new History(id, { ...props, finalPos: pos }),
+            () => new History(id, { ...props, me: null }),
+            me => new History(id, { ...props, me: me }),
         );
     }
 
     static rebuild(id: HistoryId, props: HistoryProps) {
-        return Ok(new History(id, props));
+        return new History(id, props);
     }
 
-    get finalPos(): number | null {
-        return this.props.finalPos;
+    get me(): Squad | null {
+        return this.props.me;
     }
 
-    set finalPos(pos: number) {
-        this.props.finalPos = pos;
+    set me(me: Squad) {
+        this.props.me = me;
     }
 
-    static searchPos(squads: Squad[]) {
+    static searchMe(squads: Squad[]) {
         const t1fr = squads.find(it => it.props.id === History.t1frSquadId);
         if (!t1fr) return Err(NotFoundOurPositionError.create());
-        return Ok(t1fr.props.position);
+        return Ok(t1fr);
     }
 
     get top100() {

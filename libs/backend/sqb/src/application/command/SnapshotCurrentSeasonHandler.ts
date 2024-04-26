@@ -13,23 +13,20 @@ export class SnapshotCurrentSeasonHandler implements IInferredCommandHandler<Sna
         const { year, seasonIndex } = Section.getMetaFromTime(now);
         const id = new HistoryId({ year, seasonIndex });
         const top100 = new Array<Squad>();
-        range(1, 11)
-            .map(i => this.repo.fetch(i))
-            .forEach(result =>
-                result.map(squads => {
-                    top100.push(...squads);
-                }),
-            );
+        const squadChunksResult = await Promise.all(range(1, 6).map(i => this.repo.fetch(i).promise));
+        squadChunksResult.forEach(result => {
+            if (result.isOk()) top100.push(...result.value);
+        });
 
         const history = History.create(id, { top100 });
 
-        if (history.finalPos === null) {
-            for (const i of range(11, 21)) {
+        if (history.me === null) {
+            for (const i of range(6, 15)) {
                 const result = await this.repo
                     .fetch(i)
-                    .andThen(squads => History.searchPos(squads))
-                    .map(pos => {
-                        history.finalPos = pos;
+                    .andThen(squads => History.searchMe(squads))
+                    .map(t1fr => {
+                        history.me = t1fr;
                     }).promise;
                 if (result.isOk()) break;
             }

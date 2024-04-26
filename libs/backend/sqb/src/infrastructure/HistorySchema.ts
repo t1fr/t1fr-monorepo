@@ -39,7 +39,7 @@ export class SquadSchema {
     performance!: PerformanceSchema;
 }
 
-@Schema({ collection: "histories" })
+@Schema({ collection: "histories", versionKey: false })
 export class HistorySchema {
     @Prop()
     year!: number;
@@ -50,8 +50,8 @@ export class HistorySchema {
     @Prop()
     top100!: SquadSchema[];
 
-    @Prop({ type: Number })
-    finalPos!: number | null;
+    @Prop({ type: SquadSchema })
+    me!: SquadSchema | null;
 }
 
 export const HistoryModelDef: ModelDefinition = { name: HistorySchema.name, schema: SchemaFactory.createForClass(HistorySchema) };
