@@ -14,9 +14,10 @@ class MongoHistoryRepo implements HistoryRepo {
     @InjectHistoryModel()
     private readonly seasonModel!: HistoryModel;
 
+
     private modelToDoc(history: History): HistorySchema {
         const { year, seasonIndex } = history.id.value;
-        const top100: HistorySchema["top100"] = history.top100.map(squad => {
+        const squadToDoc = (squad: Squad) => {
             const { id, tag, point, position, performance } = squad.props;
             const { deaths, battles, period, wins, groundKills, airKills } = performance.props;
             return {
@@ -26,9 +27,10 @@ class MongoHistoryRepo implements HistoryRepo {
                 position,
                 performance: { deaths, wins, battles, groundKills, airKills, period },
             };
-        });
+        };
+        const top100: HistorySchema["top100"] = history.top100.map(squadToDoc);
 
-        return { year, seasonIndex, top100, finalPos: history.finalPos };
+        return { year, seasonIndex, top100, me: history.me ? squadToDoc(history.me) : null };
     }
 
     private static transformReponse(reponse: SquadApiResponse[number]): Squad {
