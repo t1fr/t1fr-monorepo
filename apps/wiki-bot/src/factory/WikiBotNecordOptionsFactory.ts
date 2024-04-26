@@ -2,6 +2,6 @@ import { AbstractNecordOptionsFactory, Configuration } from "@t1fr/backend/confi
 import { NecordModuleOptions } from "necord";
 
 export class WikiBotNecordOptionsFactory extends AbstractNecordOptionsFactory {
-    @Configuration("bot", { intents: [] })
+    @Configuration("bot")
     protected readonly options!: NecordModuleOptions;
 }

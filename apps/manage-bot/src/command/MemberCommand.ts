@@ -2,7 +2,6 @@ import { Inject, Injectable } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { GuildMember, ModalBuilder, TextInputStyle } from "discord.js";
 import { Context, createCommandGroupDecorator, Ctx, Modal, ModalContext, ModalParam, Options, SlashCommand, SlashCommandContext, Subcommand } from "necord";
-import { Channel } from "../constant";
 import { JoinOption } from "../option";
 import { DiscordClientService } from "../service";
 import { configLayout } from "../utlity";
@@ -58,11 +57,16 @@ export class MemberCommand {
     @Modal("join/:type")
     async onJoinSubmit(@Ctx() [interaction]: ModalContext, @ModalParam("type") type: string) {
         const accept = interaction.fields.getTextInputValue("accept");
-        if (accept !== "是") return await interaction.reply({ content: `請閱讀 <#${Channel.入隊須知}> 後再申請`, ephemeral: true });
+        if (accept !== "是") return await interaction.reply({
+            content: `請閱讀 <#${this.discordClientService.constants.channels.recruitment.notice}> 後再申請`,
+            ephemeral: true,
+        });
         const gameId = interaction.fields.getTextInputValue("game-id");
         const level = interaction.fields.getTextInputValue("level");
-        const url = await this.discordClientService.postApplication({ discordId: interaction.user.id, level, type, gameId });
-        await interaction.reply({ content: `已[申請](<${url}>)成功，請等候軍官確認`, ephemeral: true });
+        const postOrError = await this.discordClientService.postApplication({ discordId: interaction.user.id, level, type, gameId });
+
+        if (postOrError.isOk()) interaction.reply({ content: `已[申請](<${postOrError.value}>)成功，請等候軍官確認`, ephemeral: true });
+        else interaction.reply(postOrError.error);
     }
 
     @Subcommand({ name: "sync", description: "同步 DC 帳號到資料庫" })

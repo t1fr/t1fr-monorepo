@@ -1,0 +1,29 @@
+app:
+    port: 6518
+
+jwt:
+    secret: "***REMOVED***"
+    signOptions:
+        expiresIn: "30min"
+
+
+gaijin:
+    username: "zvn2060@cloud.isu.edu.tw"
+    password: "***REMOVED***"
+
+http:
+    cookie:
+        httpOnly: true
+        path: "/"
+        sameSite: "strict"
+        maxAge: 1800000
+        domain: "t1fr.club"
+
+database:
+    mongo:
+        manage:
+            username: ***REMOVED***
+            password: ***REMOVED***
+            database: manage-test
+            host: 114.32.177.157
+            port: 38422

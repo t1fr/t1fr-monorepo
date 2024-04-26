@@ -11,7 +11,7 @@ module.exports = {
             compiler: "tsc",
             main: "./src/main.ts",
             tsConfig: "./tsconfig.app.json",
-            assets: ["./src/assets", "./src/config"],
+            assets: ["./src/config/application.yaml"],
             optimization: false,
             outputHashing: "none",
         }),

@@ -9,6 +9,7 @@ export abstract class AbstractNecordOptionsFactory implements ConfigurableModule
     private readonly logger = new Logger(AbstractNecordOptionsFactory.name);
 
     protected static convertConfig(config: NecordModuleOptions): NecordModuleOptions {
+        if (!config.intents) config.intents = [];
         return { ...config, development: ["1046623840710705152"] };
     }
 

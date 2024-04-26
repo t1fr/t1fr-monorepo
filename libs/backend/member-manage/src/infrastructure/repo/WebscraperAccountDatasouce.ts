@@ -44,7 +44,7 @@ export class WebscraperAccountDatasouce implements AccountDataSource {
         return htmlId?.match(/player-(?<uid>\d+)/)?.groups?.["uid"] ?? null;
     }
 
-    @Configuration("app.gaijin")
+    @Configuration("gaijin")
     private readonly credential!: { username: string, password: string };
 
 
