@@ -2,13 +2,13 @@ import { Inject, Injectable } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { Configuration } from "@t1fr/backend/configs";
 import { SyncMember } from "@t1fr/backend/member-manage";
-import { FindCurrentSection } from "@t1fr/backend/sqb-schedule";
+import { FindCurrentSection } from "@t1fr/backend/sqb";
 import { ChannelType, Client, escapeMarkdown, GuildMember } from "discord.js";
 import { Err, Ok, Result } from "ts-results-es";
 import { DigitFullWidthHelper } from "./DigitFullWidthHelper";
 import { DiscordClientConfig } from "./DiscordClientConfig";
 
-type PostApplicationData = { discordId: string, gameId: string, level: string, type: string }
+type PostApplicationData = { discordId: string; gameId: string; level: string; type: string };
 
 @Injectable()
 export class DiscordClientService {
@@ -83,8 +83,7 @@ export class DiscordClientService {
             .mapErr(async error => {
                 await Promise.all([channel.setName("今日分房：新賽季"), category.setName(`聯隊戰`)]);
                 return error.toString();
-            })
-            .promise;
+            }).promise;
     }
 
     async postTableToSqbBulletin(table: string): Promise<Result<void, string>> {
@@ -93,6 +92,9 @@ export class DiscordClientService {
 
         if (!channel.isTextBased()) return Err("聯隊戰公告頻道非文字頻道");
 
-        return channel.send(table).then(() => Ok.EMPTY).catch(reason => Err(`${reason}`));
+        return channel
+            .send(table)
+            .then(() => Ok.EMPTY)
+            .catch(reason => Err(`${reason}`));
     }
 }

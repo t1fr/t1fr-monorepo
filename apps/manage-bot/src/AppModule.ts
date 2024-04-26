@@ -5,7 +5,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ConfigsModule, MongooseConfig } from "@t1fr/backend/configs";
 import { MemberManageModule, MemberManageMongooseConnection } from "@t1fr/backend/member-manage";
-import { SqbModule, SqbMongooseConnection } from "@t1fr/backend/sqb-schedule";
+import { SqbModule, SqbMongooseConnection } from "@t1fr/backend/sqb";
 import { concat } from "lodash";
 import { NecordModule } from "necord";
 import { z } from "zod";
@@ -13,7 +13,6 @@ import { AccountAutocompleteInterceptor } from "./autocomplete";
 import { DiscordCommands } from "./command";
 import { ManageBotNecordOptionsFactory, ManageMongooseOptionsFactory, SqbMongooseOptionsFactory } from "./factory";
 import { DiscordClientConfig, DiscordClientService, DiscordListener } from "./service";
-
 
 @Module({
     imports: [
@@ -41,7 +40,5 @@ import { DiscordClientConfig, DiscordClientService, DiscordListener } from "./se
         SqbModule,
     ],
     providers: concat<Provider>(DiscordCommands, DiscordClientService, AccountAutocompleteInterceptor, DiscordListener),
-
 })
-export class AppModule {
-}
+export class AppModule {}

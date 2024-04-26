@@ -1,10 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
-import { FindCurrentSeason, NewSeasonFromText } from "@t1fr/backend/sqb-schedule";
+import { FindCurrentSeason, NewSeasonFromText } from "@t1fr/backend/sqb";
 import { ModalBuilder, TextInputStyle } from "discord.js";
 import { Context, createCommandGroupDecorator, Ctx, Modal, ModalContext, Options, SlashCommandContext, Subcommand } from "necord";
-import { DiscordClientService } from "../service";
-import { SeasonToTableHelper } from "../service/SeasonToTableHelper";
+import { DiscordClientService, SeasonToTableHelper } from "../service";
 import { configLayout } from "../utlity";
 import { SqbScheduleDisplayOption } from "./SqbOption";
 
@@ -13,7 +12,6 @@ const SqbCommandDecorator = createCommandGroupDecorator({ name: "sqb", descripti
 @SqbCommandDecorator()
 @Injectable()
 export class SqbCommand {
-
     @Inject()
     private readonly discordClientService!: DiscordClientService;
 
@@ -30,7 +28,7 @@ export class SqbCommand {
         customId: SqbCommand.InputScheduleModelId,
         components: configLayout(
             { customId: "year", label: "年份", placeholder: "該賽季的年份", style: TextInputStyle.Short, required: true },
-            { customId: "text", label: "聯隊戰行程", placeholder: "請至論壇聯隊戰訊息", style: TextInputStyle.Paragraph, required: true },
+            { customId: "text", label: "聯隊戰行程", placeholder: "請至論壇複製聯隊戰訊息", style: TextInputStyle.Paragraph, required: true },
         ),
     });
 
@@ -42,7 +40,10 @@ export class SqbCommand {
     @Subcommand({ name: "publish", description: "更新顯示用頻道名稱" })
     async updateSqbChannelName(@Context() [interaction]: SlashCommandContext) {
         const result = await this.discordClientService.updateSqbChannelName();
-        const content = result.mapOrElse(_error => _error, () => "已更新成功");
+        const content = result.mapOrElse(
+            _error => _error,
+            () => "已更新成功",
+        );
         interaction.reply(content);
     }
 
@@ -58,7 +59,10 @@ export class SqbCommand {
         if (inplace) return interaction.followUp(table);
 
         const postResult = await this.discordClientService.postTableToSqbBulletin(table);
-        const content = postResult.mapOrElse(error => `日程表發布失敗 ${error}`, () => "日程表發布成功");
+        const content = postResult.mapOrElse(
+            error => `日程表發布失敗 ${error}`,
+            () => "日程表發布成功",
+        );
 
         interaction.followUp({ content, ephemeral: true });
     }
