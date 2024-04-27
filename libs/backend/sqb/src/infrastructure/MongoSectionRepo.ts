@@ -43,13 +43,15 @@ class MongoSectionRepo implements SectionRepo {
         return new AsyncResult(promise);
     }
 
-    findLatestSection(): AsyncActionResult<Section> {
+    findLatestSeason(): AsyncActionResult<Section[]> {
         const promise = this.sectionModel
-            .find()
-            .sort({ to: -1 })
+            .aggregate()
+            .group({ _id: { year: "$year", seasonIndex: "$seasonIndex" }, sections: { $push: "$$ROOT" } })
+            .sort({ "_id.year": -1, "_id.seasonIndex": -1 })
             .limit(1)
-            .lean()
-            .then(docs => (docs.length ? Ok(this.docToModel(docs[0])) : Err(UnexpectedError.create("賽季資料庫為空"))));
+            .unwind("sections")
+            .replaceRoot("sections")
+            .then(docs => (docs.length ? Ok(docs.map(this.docToModel)) : Err(UnexpectedError.create("賽季資料庫為空"))));
         return new AsyncResult(promise);
     }
 }

@@ -2,16 +2,18 @@ import { IInferredQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { DomainError } from "@t1fr/backend/ddd-types";
 import { Result } from "ts-results-es";
 import { SectionRepo } from "../../domain";
-import { FindCurrentSeason } from "./FindCurrentSeason";
+import { GetLatestSeason } from "./GetLatestSeason";
 import { Season } from "./Season";
 import { SeasonMapper } from "./SeasonMapper";
 
-@QueryHandler(FindCurrentSeason)
-export class FindCurrentSeasonHandler implements IInferredQueryHandler<FindCurrentSeason> {
+@QueryHandler(GetLatestSeason)
+export class GetLatestSeasonHandler implements IInferredQueryHandler<GetLatestSeason> {
     @SectionRepo()
     private readonly seasonRepo!: SectionRepo;
 
     execute(): Promise<Result<Season, DomainError>> {
-        return this.seasonRepo.findSeason(new Date()).map(sections => SeasonMapper.fromSections(sections)).promise;
+        return this.seasonRepo.findLatestSeason()
+            .map(sections => SeasonMapper.fromSections(sections))
+            .promise;
     }
 }

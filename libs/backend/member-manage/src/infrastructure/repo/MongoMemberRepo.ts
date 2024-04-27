@@ -14,7 +14,7 @@ import {
     MemberRepo,
     SaveAccountsResult,
 } from "../../domain";
-import { AccountModel, AccountSchema, InjectAccountModel, InjectMemberModel, MemberModel } from "../mongoose";
+import { AccountModel, AccountSchema, BackupModel, InjectAccountModel, InjectBackupModel, InjectMemberModel, MemberModel } from "../mongoose";
 import { AccountDoc, AccountMapper, MemberDoc, MemberMapper } from "./MemberMapper";
 
 class MongoMemberRepo implements MemberRepo {
@@ -25,6 +25,10 @@ class MongoMemberRepo implements MemberRepo {
 
     @InjectMemberModel()
     private readonly memberModel!: MemberModel;
+
+
+    @InjectBackupModel()
+    private readonly backupModel!: BackupModel;
 
     save<T extends Member | Member[]>(data: T): AsyncActionResult<MemberId[]> {
         const memberDocs = new Array<MemberDoc>();
@@ -47,14 +51,6 @@ class MongoMemberRepo implements MemberRepo {
             .then(() => Ok(models.map(it => it.id)));
 
         return new AsyncResult(promise);
-    }
-
-    findMemberHaveAccount(accountId: AccountId): AsyncActionResult<Member> {
-        throw new Error("Method not implemented.");
-    }
-
-    find(): AsyncActionResult<Member[]> {
-        throw new Error("Method not implemented.");
     }
 
     findMemberById(memberId: MemberId): AsyncActionResult<Member> {
@@ -119,6 +115,25 @@ class MongoMemberRepo implements MemberRepo {
                 if (findMemberOrError.error instanceof MemberNotFoundError) return ok;
                 return findMemberOrError;
             });
+        return new AsyncResult(promise);
+    }
+
+    backup(year: number, seasonIndex: number): AsyncActionResult<void> {
+        const promise = Promise.all([this.accountModel.find().lean(), this.memberModel.find().lean()])
+            .then(([accounts, members]) => {
+                return this.backupModel.updateOne(
+                    { year, seasonIndex },
+                    {
+                        $set: {
+                            accounts: accounts,
+                            members: members,
+                        },
+                    },
+                    { upsert: true },
+                );
+            })
+            .then(() => Ok.EMPTY);
+
         return new AsyncResult(promise);
     }
 }

@@ -1,11 +1,12 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
-import { FindCurrentSeason, NewSeasonFromText, SnapshotCurrentSeason } from "@t1fr/backend/sqb";
+import { Backup } from "@t1fr/backend/member-manage";
+import { FindCurrentSeason, GetLatestSeason, NewSeasonFromText, SnapshotCurrentSeason } from "@t1fr/backend/sqb";
 import { ModalBuilder, TextInputStyle } from "discord.js";
 import { Context, createCommandGroupDecorator, Ctx, Modal, ModalContext, Options, SlashCommandContext, Subcommand } from "necord";
 import { DiscordClientService, SeasonToTableHelper } from "../service";
 import { configLayout } from "../utlity";
-import { SqbScheduleDisplayOption } from "./SqbOption";
+import { OptionNormalizer, SqbScheduleDisplayOption } from "./SqbOption";
 
 const SqbCommandDecorator = createCommandGroupDecorator({ name: "sqb", description: "管理聯隊戰行程" });
 
@@ -48,13 +49,15 @@ export class SqbCommand {
     }
 
     @Subcommand({ name: "display", description: "顯示日程表" })
-    async display(@Context() [interaction]: SlashCommandContext, @Options() { inplace, notification }: SqbScheduleDisplayOption) {
+    async display(@Context() [interaction]: SlashCommandContext, @Options() options: SqbScheduleDisplayOption) {
         await interaction.deferReply();
 
-        const result = await this.queryBus.execute(new FindCurrentSeason());
+        const { inplace, notification, type } = OptionNormalizer.SqbScheduleDisplay(options);
+
+        const result = await this.queryBus.execute(type === "current" ? new FindCurrentSeason() : new GetLatestSeason());
 
         if (result.isErr()) return interaction.followUp({ content: result.error.toString(), ephemeral: true });
-        const table = SeasonToTableHelper.convert(result.value, notification ? this.discordClientService.constants.roles.officer : null);
+        const table = SeasonToTableHelper.convert(result.value, notification ? this.discordClientService.constants.roles.notification.sqb : null);
 
         if (inplace) return interaction.followUp(table);
 
@@ -67,12 +70,19 @@ export class SqbCommand {
         interaction.followUp({ content, ephemeral: true });
     }
 
-    @Subcommand({ name: "snapshot", description: "快照當前賽季各聯隊狀態" })
+    @Subcommand({ name: "snapshot", description: "快照當前賽季各聯隊狀態以及隊員資訊" })
     async snapshot(@Context() [interaction]: SlashCommandContext) {
         await interaction.deferReply();
-        const result = await this.commandBus.execute(new SnapshotCurrentSeason());
-        const content = result.mapOrElse(error => error.toString(), ({ year, seasonIndex }) => `已更新 ${year} 年第 ${seasonIndex} 賽季的聯隊表現紀錄`);
-        interaction.followUp(content);
+        const [snapshot, backup] = await Promise.all([this.commandBus.execute(new SnapshotCurrentSeason()), this.commandBus.execute(new Backup())]);
+        const content = {
+            snapshot: snapshot.mapOrElse(error => error.toString(), ({ year, seasonIndex }) => `已更新 ${year} 年第 ${seasonIndex} 賽季的聯隊表現紀錄`),
+            backup: backup.mapOrElse(error => error.toString(), ({ year, seasonIndex }) => `已更新 ${year} 年第 ${seasonIndex} 賽季的聯隊成員備份`),
+        };
+
+        interaction.followUp([
+            `聯隊資料: ${content.snapshot}`,
+            `成員資料: ${content.backup}`,
+        ].join("\n"));
     }
 
     @Modal(SqbCommand.InputScheduleModelId)

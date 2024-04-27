@@ -4,15 +4,22 @@ import { union } from "lodash";
 import { PuppeteerModule } from "nestjs-puppeteer";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { MemberManageCommandHandler, MemberManageQueryHandlers } from "./application";
-import { AccountModelDef, MemberManageInfraProvider, MemberManageMongooseConnection, MemberModelDef, MongoMemberQueryRepoProvider } from "./infrastructure";
+import {
+    AccountModelDef,
+    BackupModelDef,
+    MemberManageInfraProvider,
+    MemberManageMongooseConnection,
+    MemberModelDef,
+    MongoMemberQueryRepoProvider,
+} from "./infrastructure";
 
 @Module({
     imports: [
         PuppeteerModule.forRoot({ headless: "new", args: ["--disable-notifications"], plugins: [StealthPlugin()] }),
-        MongooseModule.forFeature([MemberModelDef, AccountModelDef], MemberManageMongooseConnection),
+        MongooseModule.forFeature([MemberModelDef, AccountModelDef, BackupModelDef], MemberManageMongooseConnection),
     ],
     providers: union(MemberManageCommandHandler, MemberManageQueryHandlers, MemberManageInfraProvider),
-    exports: [MongoMemberQueryRepoProvider]
+    exports: [MongoMemberQueryRepoProvider],
 })
 export class MemberManageModule {
 }

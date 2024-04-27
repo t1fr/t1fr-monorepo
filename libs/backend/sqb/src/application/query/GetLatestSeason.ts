@@ -2,7 +2,7 @@ import { Query } from "@t1fr/backend/ddd-types";
 import { z } from "zod";
 import { Season } from "./Season";
 
-export class FindCurrentSeason extends Query<FindCurrentSeason, Season> {
+export class GetLatestSeason extends Query<GetLatestSeason, Season> {
     constructor() {
         super(undefined);
     }
@@ -11,3 +11,5 @@ export class FindCurrentSeason extends Query<FindCurrentSeason, Season> {
         return z.undefined();
     }
 }
+
+
