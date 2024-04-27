@@ -19,6 +19,9 @@
                     "buildTarget": "api:build:production"
                 }
             }
-        }
+        },
+        "container": {},
+        "deploy": {}
+
     }
 }

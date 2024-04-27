@@ -1,0 +1,10 @@
+version: '3.7'
+name: manage-bot
+services:
+  manage-bot:
+    image: ghcr.io/t1fr/manage-bot
+    container_name: manage-bot
+    pull_policy: always
+    volumes:
+      - ./manage-bot/config:/usr/src/app/config
+    restart: unless-stopped

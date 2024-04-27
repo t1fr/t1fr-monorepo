@@ -4,7 +4,7 @@ import { AssignAccountOwner, InvalidAccountTypeCountError, MemberNotFoundError, 
 import { MessageFlagsBitField } from "discord.js";
 import { Context, createCommandGroupDecorator, Options, SlashCommandContext, Subcommand } from "necord";
 import { AccountAutocompleteInterceptor } from "../autocomplete";
-import { SetOwnershipOption } from "../option";
+import { SetOwnershipOption } from "./AccountOption";
 
 const AccountCommandGroup = createCommandGroupDecorator({ name: "account", description: "管理聯隊內的 WT 帳號" });
 

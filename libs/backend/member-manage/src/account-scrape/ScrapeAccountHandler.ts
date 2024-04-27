@@ -1,6 +1,9 @@
 import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
-import { AccountDataSource, MemberRepo } from "../../domain";
-import { ScrapeAccount } from "./ScrapeAccount";
+import { DomainError, UnexpectedError } from "@t1fr/backend/ddd-types";
+import { Err, Result } from "ts-results-es";
+import { MemberRepo } from "../domain";
+import { AccountDataSource } from "./AccountDataSource";
+import { ScrapeAccount, ScrapeAccountOutput } from "./ScrapeAccount";
 
 @CommandHandler(ScrapeAccount)
 export class ScrapeAccountHandler implements IInferredCommandHandler<ScrapeAccount> {
@@ -22,5 +25,13 @@ export class ScrapeAccountHandler implements IInferredCommandHandler<ScrapeAccou
                 ids: info.ids.map(it => it.value),
             }))
             .promise;
+    }
+}
+
+
+@CommandHandler(ScrapeAccount)
+export class ScrapeAccountCommandToEvent implements IInferredCommandHandler<ScrapeAccount> {
+    async execute(): Promise<Result<ScrapeAccountOutput, DomainError>> {
+        return Err(UnexpectedError.create("尚未實作"));
     }
 }

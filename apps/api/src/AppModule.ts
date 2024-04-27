@@ -47,7 +47,7 @@ import { AuthService } from "./service";
         CqrsModule.forRoot(),
         ScheduleModule.forRoot(),
         MongooseModule.forRootAsync({ useClass: ManageMongooseOptionsFactory, connectionName: MemberManageMongooseConnection }),
-        MemberManageModule,
+        MemberManageModule.register(true),
     ],
     providers: [AuthService],
     controllers: Controllers,

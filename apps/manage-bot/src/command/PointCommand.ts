@@ -1,7 +1,7 @@
 import { Injectable, UseInterceptors } from "@nestjs/common";
 import { Context, createCommandGroupDecorator, Options, SlashCommand, SlashCommandContext, Subcommand } from "necord";
 import { AccountAutocompleteInterceptor } from "../autocomplete";
-import { AwardData, MemberInfoOption, SeasonSummary } from "../option";
+import { AwardData, MemberInfoOption, SeasonSummary } from "./PointOption";
 
 const PointCommandDecorator = createCommandGroupDecorator({ name: "point", description: "點數相關命令" });
 

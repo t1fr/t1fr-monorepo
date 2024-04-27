@@ -7,6 +7,7 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import cookieParser from "cookie-parser";
 import process from "process";
 import { AppModule } from "./AppModule";
+import "tslib";
 
 console.log(process.env["NODE_ENV"]);
 const allowedOrigin: CustomOrigin = (origin: string, callback) => {

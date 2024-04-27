@@ -10,7 +10,8 @@ import { Browser, Page } from "puppeteer";
 import { AsyncResult, Err, Ok, Result } from "ts-results-es";
 import { v4 as uuidV4 } from "uuid";
 import { z } from "zod";
-import { Account, AccountDataSource, AccountId } from "../../domain";
+import { Account, AccountId } from "../domain";
+import { AccountDataSource } from "./AccountDataSource";
 
 dayjs.extend(customParseFormat);
 

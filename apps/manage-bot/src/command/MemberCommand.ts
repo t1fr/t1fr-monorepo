@@ -2,9 +2,9 @@ import { Inject, Injectable } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { GuildMember, ModalBuilder, TextInputStyle } from "discord.js";
 import { Context, createCommandGroupDecorator, Ctx, Modal, ModalContext, ModalParam, Options, SlashCommand, SlashCommandContext, Subcommand } from "necord";
-import { JoinOption } from "../option";
 import { DiscordClientService } from "../service";
 import { configLayout } from "../utlity";
+import { JoinOption } from "./MemberOption";
 
 const MemberCommandDecorator = createCommandGroupDecorator({ name: "member", description: "管理聯隊內的 DC 帳號" });
 
