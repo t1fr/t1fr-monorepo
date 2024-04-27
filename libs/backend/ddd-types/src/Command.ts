@@ -1,4 +1,4 @@
-import { Command as TypedCommand, Query as TypedQuery } from "@nestjs-architects/typed-cqrs";
+import { Command as TypedCommand, IEvent, Query as TypedQuery } from "@nestjs-architects/typed-cqrs";
 import { Err, Ok, Result } from "ts-results-es";
 import { z } from "zod";
 import { DomainError, ZodParseError } from "./DomainError";
@@ -35,4 +35,9 @@ export abstract class Query<T extends HaveZodSchema, R> extends TypedQuery<Resul
     }
 
     abstract get schema(): T["schema"];
+}
+
+export abstract class Event<T> implements IEvent {
+    constructor(readonly data: T) {
+    }
 }

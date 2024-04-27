@@ -88,8 +88,8 @@ export class DiscordClientService {
 
     async postTableToSqbBulletin(table: string): Promise<Result<void, string>> {
         const channel = this.client.channels.resolve(this.constants.channels.sqb.announcement);
-        if (!(channel && channel.type === ChannelType.GuildText)) return Err("聯隊戰公告頻道獲取失敗");
-
+        console.log(this.constants.channels.sqb.announcement);
+        if (!channel) return Err("聯隊戰公告頻道獲取失敗");
         if (!channel.isTextBased()) return Err("聯隊戰公告頻道非文字頻道");
 
         return channel

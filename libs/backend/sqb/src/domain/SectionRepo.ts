@@ -11,5 +11,5 @@ export interface SectionRepo {
 
     findOngoingSection(time: Date): AsyncActionResult<Section>;
 
-    findLatestSection(): AsyncActionResult<Section>;
+    findLatestSeason(): AsyncActionResult<Section[]>;
 }

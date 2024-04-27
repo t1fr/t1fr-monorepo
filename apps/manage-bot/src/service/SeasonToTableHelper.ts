@@ -1,8 +1,8 @@
-import { FindCurrentSeasonOutput } from "@t1fr/backend/sqb";
+import { Season } from "@t1fr/backend/sqb";
 import dayjs from "dayjs";
 
 export class SeasonToTableHelper {
-    static convert({ year, seasonIndex, sections }: FindCurrentSeasonOutput, notificationRole: string | null) {
+    static convert({ year, seasonIndex, sections }: Season, notificationRole: string | null) {
         const startMonth = (seasonIndex - 1) * 2 + 1;
         const scheduleMessage = [
             `**${year} 年 ${startMonth} ~ ${startMonth + 1} 月**聯隊戰行程`,

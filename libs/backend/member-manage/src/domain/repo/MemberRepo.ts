@@ -13,10 +13,6 @@ export interface MemberRepo {
 
     save<T extends Member | Member[]>(data: T): AsyncActionResult<MemberId[]>;
 
-    findMemberHaveAccount(accountId: AccountId): AsyncActionResult<Member>;
-
-    find(): AsyncActionResult<Member[]>;
-
     findMemberById(memberId: MemberId): AsyncActionResult<Member>;
 
     dumpAccounts(): AsyncActionResult<Account[]>;
@@ -26,4 +22,6 @@ export interface MemberRepo {
     findUnlinkedAccounts(): AsyncActionResult<Account[]>;
 
     findAccountById(accountId: AccountId): AsyncActionResult<FindAccountByIdResult>;
+
+    backup(year: number, seasonIndex: number): AsyncActionResult<void>;
 }
