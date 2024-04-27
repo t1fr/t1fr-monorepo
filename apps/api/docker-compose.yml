@@ -1,0 +1,14 @@
+version: '3.7'
+name: api
+services:
+  api:
+    image: ghcr.io/t1fr/api
+    container_name: api
+    pull_policy: always
+    volumes:
+      - ./api/config:/usr/src/app/config
+    networks:
+      - nginx_network
+    environment:
+      - CHROME_PATH=/usr/bin/google-chrome
+    restart: unless-stopped

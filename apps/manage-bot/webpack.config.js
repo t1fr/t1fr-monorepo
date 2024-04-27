@@ -14,6 +14,7 @@ module.exports = {
             assets: ["./src/config"],
             optimization: false,
             outputHashing: "none",
+            generatePackageJson: true
         }),
     ],
 };

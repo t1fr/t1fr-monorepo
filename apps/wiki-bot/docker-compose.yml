@@ -1,0 +1,10 @@
+version: '3.7'
+name: wiki-bot
+services:
+  wiki-bot:
+    image: ghcr.io/t1fr/wiki-bot
+    container_name: wiki-bot
+    pull_policy: always
+    volumes:
+      - ./wiki-bot/config:/usr/src/app/config
+    restart: unless-stopped

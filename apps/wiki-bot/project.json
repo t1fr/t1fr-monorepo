@@ -1,24 +1,26 @@
 {
-  "name": "wiki-bot",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/wiki-bot/src",
-  "projectType": "application",
-  "tags": [],
-  "targets": {
-    "serve": {
-      "executor": "@nx/js:node",
-      "defaultConfiguration": "development",
-      "options": {
-        "buildTarget": "wiki-bot:build"
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "wiki-bot:build:development"
+    "name": "wiki-bot",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "apps/wiki-bot/src",
+    "projectType": "application",
+    "tags": [],
+    "targets": {
+        "serve": {
+            "executor": "@nx/js:node",
+            "defaultConfiguration": "development",
+            "options": {
+                "buildTarget": "wiki-bot:build"
+            },
+            "configurations": {
+                "development": {
+                    "buildTarget": "wiki-bot:build:development"
+                },
+                "production": {
+                    "buildTarget": "wiki-bot:build:production"
+                }
+            }
         },
-        "production": {
-          "buildTarget": "wiki-bot:build:production"
-        }
-      }
+        "container": {},
+        "deploy": {}
     }
-  }
 }

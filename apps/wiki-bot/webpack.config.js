@@ -11,10 +11,11 @@ module.exports = {
             compiler: "tsc",
             main: "./src/main.ts",
             tsConfig: "./tsconfig.app.json",
-            assets: ["./src/config/application.yaml", "./src/i18n"],
+            assets: ["./src/config", "./src/i18n"],
             watch: true,
             optimization: false,
             outputHashing: "none",
+            generatePackageJson: true,
         }),
     ],
 };

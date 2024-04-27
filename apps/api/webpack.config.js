@@ -11,9 +11,10 @@ module.exports = {
             compiler: "tsc",
             main: "./src/main.ts",
             tsConfig: "./tsconfig.app.json",
-            assets: ["./src/config/application.yaml"],
+            assets: ["./src/config", "./src/.puppeteerrc.cjs"],
             optimization: false,
             outputHashing: "none",
+            generatePackageJson: true,
         }),
     ],
 };
