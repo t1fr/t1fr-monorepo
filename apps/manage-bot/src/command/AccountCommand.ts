@@ -64,12 +64,4 @@ export class AccountCommand {
     // 	}
     // }
     //
-    // @Subcommand({ name: "autolink", description: "自動根據 DC 暱稱後方的 ID 來連結帳號。如果帳號類型未定義，將由連結成員的身分組推斷" })
-    // private async autolink(@Context() [interaction]: SlashCommandContext) {
-    // 	await interaction.deferReply();
-    // 	const { linkable, modified, errors } = await this.accountService.joinOnId();
-    // 	const content = [`可連結 ${linkable} 個帳號`, `已更新 ${modified} 個帳號`];
-    // 	if (errors.length) content.push(...errors);
-    // 	interaction.followUp({ content: content.join("\n") });
-    // }
 }
