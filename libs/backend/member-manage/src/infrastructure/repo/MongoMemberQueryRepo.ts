@@ -1,6 +1,9 @@
 import { Provider } from "@nestjs/common";
+import { AsyncActionResult } from "@t1fr/backend/ddd-types";
 import { FilterQuery, ProjectionType } from "mongoose";
-import { ListAccountDTO, ListExistMemberDTO, MemberInfo, MemberQueryRepo, SearchAccountByNameDTO } from "../../application";
+import { AsyncResult, Err, Ok } from "ts-results-es";
+import { ListAccountDTO, ListExistMemberDTO, MemberDetail, MemberInfo, MemberQueryRepo, SearchAccountByNameDTO } from "../../application";
+import { MemberNotFoundError } from "../../domain";
 import { AccountModel, AccountSchema, InjectAccountModel, InjectMemberModel, MemberModel } from "../mongoose";
 
 class MongoMemberQueryRepo implements MemberQueryRepo {
@@ -58,6 +61,44 @@ class MongoMemberQueryRepo implements MemberQueryRepo {
             name: nickname,
             onVacation,
         }));
+    }
+
+    getMemberDetail(memberId: string): AsyncActionResult<MemberDetail> {
+        const promise = this.memberModel.findOne({ discordId: memberId })
+            .populate("accounts")
+            .populate("pointLogs")
+            .lean()
+            .then(doc => {
+                if (doc === null) return Err(MemberNotFoundError.create(memberId));
+                const { accounts, pointLogs } = doc;
+
+                const point: MemberDetail["point"] = {
+                    "absense": { total: 0, logs: [] },
+                    "reward": { total: 0, logs: [] },
+                    "penalty": { total: 0, logs: [] },
+                };
+
+                pointLogs.forEach(log => {
+                    const delta = parseFloat(log.delta.toString());
+                    point[log.type].total += delta;
+                    point[log.type].logs.push({
+                        date: log.date,
+                        delta: delta,
+                        comment: log.comment,
+                        category: log.category,
+                    });
+                });
+
+                return Ok({
+                    accounts: accounts.map(account => {
+                        const { gaijinId: id, name, personalRating, activity, type, joinDate } = account;
+                        return { id, name, personalRating, activity, type, joinDate };
+                    }),
+                    point,
+                });
+            });
+
+        return new AsyncResult(promise);
     }
 }
 

@@ -1,4 +1,4 @@
-import { Enum, isEnum } from "@t1fr/backend/ddd-types";
+import { Enum } from "@t1fr/backend/ddd-types";
 
 export const AccountType = {
     S_SqbMain: "sqb_main",
@@ -11,4 +11,3 @@ export const AccountType = {
 
 export type AccountType = Enum<typeof AccountType>
 
-export const isValidAccountType = isEnum(AccountType);

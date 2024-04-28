@@ -10,10 +10,11 @@ import {
     MemberManageMongooseConnection,
     MemberModelDef,
     MongoMemberQueryRepoProvider,
+    PointLogModelDef,
 } from "./infrastructure";
 
 @Module({
-    imports: [MongooseModule.forFeature([MemberModelDef, AccountModelDef, BackupModelDef], MemberManageMongooseConnection)],
+    imports: [MongooseModule.forFeature([PointLogModelDef, MemberModelDef, AccountModelDef, BackupModelDef], MemberManageMongooseConnection)],
     providers: union(MemberManageCommandHandler, MemberManageQueryHandlers, MemberManageInfraProvider),
     exports: [MongoMemberQueryRepoProvider],
 })

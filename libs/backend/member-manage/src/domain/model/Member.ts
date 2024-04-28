@@ -5,12 +5,18 @@ import { Account, AccountId } from "./Account";
 import { AccountType } from "./AccountType";
 import { InvalidAccountTypeCountError } from "./DomainError";
 import { MemberType } from "./MemberType";
+import { PointLog, PointSummary } from "./PointLog";
+import { PointType } from "./PointType";
 
 interface RequiredMemberProps {
     type: MemberType;
     accounts: Account[];
     isSponsor: boolean;
     isLeave: boolean;
+    point: {
+        summary: PointSummary,
+        logs: PointLog[]
+    };
 }
 
 interface NonBussinessMemberProps {
@@ -30,8 +36,19 @@ export class MemberId extends EntityId<string> {
 }
 
 export class Member extends AggregateRoot<MemberId, MemberProps> {
+
     static create(id: MemberId, options: MemberCreateOptions) {
-        return Ok(new Member(id, { ...options, accounts: [], isSponsor: false }));
+        const initialPointState = {
+            summary: {
+                [PointType.Absense]: 0,
+                [PointType.Reward]: 0,
+                [PointType.Penalty]: 0,
+                isInitAbsense: true,
+            },
+            logs: [],
+        };
+
+        return Ok(new Member(id, { ...options, accounts: [], isSponsor: false, point: initialPointState }));
     }
 
     static rebuild(id: MemberId, options: MemberProps) {
