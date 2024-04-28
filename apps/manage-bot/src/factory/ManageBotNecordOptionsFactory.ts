@@ -10,7 +10,6 @@ export class ManageBotNecordOptionsFactory extends AbstractNecordOptionsFactory 
                 IntentsBitField.Flags.Guilds,
                 IntentsBitField.Flags.GuildMembers,
                 IntentsBitField.Flags.GuildVoiceStates,
-                IntentsBitField.Flags.GuildPresences,
                 IntentsBitField.Flags.GuildMessages,
                 IntentsBitField.Flags.MessageContent,
             ];
