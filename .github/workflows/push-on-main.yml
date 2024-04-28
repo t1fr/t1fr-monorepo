@@ -35,6 +35,7 @@ jobs:
         run: |
           AFFECTED=$(nx show projects --affected);
           if [ -z "$AFFECTED" ]; then
+            echo "no affected"
             gh run cancel ${{ github.run_id }}
             gh run watch ${{ github.run_id }}
           fi
