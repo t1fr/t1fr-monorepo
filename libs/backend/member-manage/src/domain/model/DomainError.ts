@@ -23,12 +23,13 @@ export class ViolateAccountTypeRuleError extends DomainError {
 export class MemberNotFoundError extends DomainError {
     readonly memberId: string;
 
-    constructor(memberId: MemberId) {
-        super({ context: ViolateAccountTypeRuleError, message: `找不到 ID 為 ${memberId.value} 的成員`, noLog: true });
-        this.memberId = memberId.value;
+    constructor(memberId: MemberId | string) {
+        const memberIdValue = memberId instanceof MemberId ? memberId.value : memberId;
+        super({ context: ViolateAccountTypeRuleError, message: `找不到 ID 為 ${memberIdValue} 的成員`, noLog: true });
+        this.memberId = memberIdValue;
     }
 
-    static create(memberId: MemberId) {
+    static create(memberId: MemberId | string) {
         return new MemberNotFoundError(memberId);
     }
 }

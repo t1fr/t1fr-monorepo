@@ -1,6 +1,6 @@
 import { Undefinedable } from "@t1fr/backend/ddd-types";
-import { pickBy } from "lodash";
-import { Account, AccountId, Member, MemberId } from "../../domain";
+import { countBy, get, pickBy } from "lodash";
+import { Account, AccountId, Member, MemberId, PointType } from "../../domain";
 import { AccountSchema, MemberSchema } from "../mongoose";
 
 export type MemberDoc = Undefinedable<Omit<MemberSchema, "accounts">, "avatarUrl" | "onVacation" | "isOfficer" | "nickname">;
@@ -29,6 +29,8 @@ export class MemberMapper {
     static fromMongo(doc: MemberSchema): Member {
         const id = new MemberId(doc.discordId);
         const accounts = doc.accounts.map(account => AccountMapper.fromMongo(account));
+        const pointCount = countBy(doc.pointLogs, it => it.type);
+        const hasInitAbsense = doc.pointLogs.some(it => it.category === "入隊發放");
         return Member.rebuild(id, {
             type: doc.type,
             accounts: accounts,
@@ -38,6 +40,15 @@ export class MemberMapper {
             avatarUrl: doc.avatarUrl,
             onVacation: doc.onVacation,
             isOfficer: doc.isOfficer,
+            point: {
+                summary: {
+                    [PointType.Penalty]: get(pointCount, PointType.Penalty, 0),
+                    [PointType.Reward]: get(pointCount, PointType.Reward, 0),
+                    [PointType.Absense]: get(pointCount, PointType.Absense, 0),
+                    isInitAbsense: hasInitAbsense,
+                },
+                logs: [],
+            },
         });
     }
 

@@ -56,6 +56,7 @@ class MongoMemberRepo implements MemberRepo {
     findMemberById(memberId: MemberId): AsyncActionResult<Member> {
         const promise = this.memberModel.findOne({ discordId: memberId.value })
             .populate("accounts")
+            .populate("pointLogs")
             .lean()
             .then(doc => doc === null ? Err(MemberNotFoundError.create(memberId)) : Ok(MemberMapper.fromMongo(doc)));
         return new AsyncResult(promise);
