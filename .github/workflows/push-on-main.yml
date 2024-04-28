@@ -33,7 +33,8 @@ jobs:
 
       - name: 測試 Affected，若無則取消 workflow
         run: |
-          if [ -z $(nx show projects --affected) ]; then
+          AFFECTED=$(nx show projects --affected);
+          if [ -z "$AFFECTED" ]; then
             gh run cancel ${{ github.run_id }}
             gh run watch ${{ github.run_id }}
           fi
