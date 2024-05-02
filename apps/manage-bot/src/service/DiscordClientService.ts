@@ -58,7 +58,7 @@ export class DiscordClientService {
         if (!members) throw Error(`無法獲取成員資料`);
 
         const syncData = members
-            .filter(member => member.roles.cache.hasAny(this.constants.roles.officer, this.constants.roles.relaxer))
+            .filter(member => !member.user.bot && member.roles.cache.hasAny(this.constants.roles.officer, this.constants.roles.relaxer))
             .map(member => this.TransformDiscordMemberToSyncData(member));
 
         const result = await this.commandBus.execute(new SyncMember(syncData));
