@@ -1,0 +1,77 @@
+$medals-per-row: 3;
+$medals-per-col: 3;
+$bronze-color: #FFA96F;
+$silver-color: #CBCCC9;
+$gold-color: #F4CB73;
+
+.medal {
+  background-image: url("../images/medals.png");
+  background-size: calc(100% * $medals-per-row) calc(100% * $medals-per-col);
+  width: 200px;
+  aspect-ratio: 1;
+  position: relative;
+  -webkit-text-stroke: 0.2px #151511;
+
+  &:before {
+    position: absolute;
+    content: "歷史";
+    font-size: 23px;
+    inset: 22px 0;
+    text-align: center;
+  }
+
+  &:after {
+    position: absolute;
+    content: attr(data-year) "-" attr(data-season);
+    font-size: 23px;
+    bottom: 36px;
+    left: 0;
+    right: 0;
+    text-align: center;
+  }
+}
+
+@mixin medal-index($i, $j) {
+  background-position: (-100% * $j) (-100% * $i);
+}
+
+
+.medal-100 {
+  @include medal-index(0, 0);
+  color: $bronze-color;
+}
+
+.medal-50 {
+  @include medal-index(0, 1);
+  color: $bronze-color;
+}
+
+.medal-20 {
+  @include medal-index(0, 2);
+  color: $bronze-color;
+}
+
+.medal-5 {
+  @include medal-index(1, 0);
+  color: $silver-color;
+}
+
+.medal-10 {
+  @include medal-index(1, 1);
+  color: $silver-color;
+}
+
+.medal-3 {
+  @include medal-index(2, 0);
+  color: $gold-color;
+}
+
+.medal-2 {
+  @include medal-index(2, 1);
+  color: $gold-color;
+}
+
+.medal-1 {
+  @include medal-index(2, 2);
+  color: #F4CB73;
+}

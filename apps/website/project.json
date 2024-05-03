@@ -4,5 +4,19 @@
     "projectType": "application",
     "sourceRoot": "apps/website/src",
     "// targets": "to see all targets run: nx show project website --web",
-    "targets": {}
+    "targets": {
+     
+        "serve": {
+            "executor": "@nx/vite:dev-server",
+            "defaultConfiguration": "local-backend",
+            "configurations": {
+                "production": {
+                    "buildTarget": "website:build:production"
+                },
+                "local-backend": {
+                    "buildTarget": "website:build:local-backend"
+                }
+            }
+        }
+    }
 }
