@@ -6,6 +6,7 @@ import { AsyncResult, Err, Ok } from "ts-results-es";
 import {
     Account,
     AccountId,
+    AccountNoOwnerError,
     AccountNotFoundError,
     FindAccountByIdResult,
     Member,
@@ -18,8 +19,6 @@ import { AccountModel, AccountSchema, BackupModel, InjectAccountModel, InjectBac
 import { AccountDoc, AccountMapper, MemberDoc, MemberMapper } from "./MemberMapper";
 
 class MongoMemberRepo implements MemberRepo {
-
-
     @InjectAccountModel()
     private readonly accountModel!: AccountModel;
 
@@ -59,6 +58,18 @@ class MongoMemberRepo implements MemberRepo {
             .populate("pointLogs")
             .lean()
             .then(doc => doc === null ? Err(MemberNotFoundError.create(memberId)) : Ok(MemberMapper.fromMongo(doc)));
+        return new AsyncResult(promise);
+    }
+
+    findMemberByAccountId(accountId: AccountId): AsyncActionResult<Member> {
+        const promise = this.accountModel.findOne({ gaijinId: accountId.value }, { ownerId: true })
+            .lean()
+            .then(accountDoc => {
+                if (accountDoc === null) return Err(AccountNotFoundError.create(accountId))
+                if (accountDoc.ownerId === null) return Err(AccountNoOwnerError.create(accountId))
+                return this.findMemberById(new MemberId(accountDoc.ownerId)).promise
+            })
+
         return new AsyncResult(promise);
     }
 

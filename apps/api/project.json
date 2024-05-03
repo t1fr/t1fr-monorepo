@@ -5,23 +5,25 @@
     "projectType": "application",
     "tags": [],
     "targets": {
+        "build": {
+            "executor": "@nx/vite:build",
+            "outputs": [
+                "{options.outputPath}"
+            ],
+            "options": {
+                "outputPath": "dist/{projectRoot}",
+                "generatePackageJson": true
+            },
+            "cache": true
+        },
         "serve": {
-            "executor": "@nx/js:node",
+            "executor": "@nx/vite:dev-server",
             "defaultConfiguration": "development",
             "options": {
-                "buildTarget": "api:build"
-            },
-            "configurations": {
-                "development": {
-                    "buildTarget": "api:build:development"
-                },
-                "production": {
-                    "buildTarget": "api:build:production"
-                }
+                "buildTarget": "api:build:development"
             }
         },
         "container": {},
         "deploy": {}
-
     }
 }

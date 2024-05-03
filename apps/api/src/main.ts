@@ -6,8 +6,9 @@ import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import cookieParser from "cookie-parser";
 import process from "process";
-import { AppModule } from "./AppModule";
 import "tslib";
+import { AppModule } from "./AppModule";
+import { ResultTransformer } from "./ResultInterceptor";
 
 console.log(process.env["NODE_ENV"]);
 const allowedOrigin: CustomOrigin = (origin: string, callback) => {
@@ -24,7 +25,7 @@ function configSwagger(app: INestApplication) {
     SwaggerModule.setup("api", app, document);
 }
 
-async function bootstrap() {
+async function createApp() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule, { cors: { origin: allowedOrigin, credentials: true } });
     app.disable("x-powered-by");
     app.use(cookieParser());
@@ -32,11 +33,22 @@ async function bootstrap() {
 
     if (process.env["NODE_ENV"] !== "production") configSwagger(app);
 
+    app.useGlobalInterceptors(new ResultTransformer())
+    return app;
+}
+
+async function bootstrap() {
+    const app = await createApp()
     const configService = app.get(ConfigService);
     const port = configService.get("app.port", 3000);
-    await app.listen(port);
+    app.listen(port);
 
     Logger.log(`API 伺服器啟動中，監聽 port ${port}`);
 }
 
-bootstrap();
+
+
+if (__BUILD__) bootstrap();
+
+
+export const appServer = createApp()

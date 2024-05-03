@@ -14,6 +14,8 @@ export interface MemberRepo {
     save<T extends Member | Member[]>(data: T): AsyncActionResult<MemberId[]>;
 
     findMemberById(memberId: MemberId): AsyncActionResult<Member>;
+ 
+    findMemberByAccountId(accountId: AccountId): AsyncActionResult<Member>;
 
     dumpAccounts(): AsyncActionResult<Account[]>;
 
