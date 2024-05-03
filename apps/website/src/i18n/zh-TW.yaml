@@ -1,0 +1,11 @@
+path:
+  /: 首頁
+  /squadron-battle: 聯隊戰
+  /squadron-battle/overview: 賽季現況
+  /squadron-battle/metalist: Meta List
+  /me: 隊員專區
+  /me/dashboard: 我的帳號
+  /admin: 軍官專區
+  /admin/accounts: 帳號列表
+  /admin/members: 隊員列表
+  /admin/points: 點數紀錄

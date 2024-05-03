@@ -1,6 +1,5 @@
 import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
-import { DomainError } from "@t1fr/backend/ddd-types";
-import { Err, Result } from "ts-results-es";
+import { Result } from "ts-results-es";
 import { Member, MemberId, MemberRepo } from "../../domain";
 import { SyncMember } from "./SyncMember";
 
@@ -16,8 +15,7 @@ export class SyncMemberHandler implements IInferredCommandHandler<SyncMember> {
 
         const data = parseOrError.value;
 
-        const errors = new Array<Err<DomainError>>;
-        const members = [];
+        const members = new Array<Member>();
 
         for (const { discordId, ...other } of data) {
             const id = new MemberId(discordId);
@@ -25,18 +23,18 @@ export class SyncMemberHandler implements IInferredCommandHandler<SyncMember> {
             if (findByIdOrError.isErr()) {
                 const createMemberOrError = Member.create(new MemberId(discordId), { ...other, isLeave: false });
                 if (createMemberOrError.isOk()) members.push(createMemberOrError.value);
-                else errors.push(createMemberOrError);
+                else return createMemberOrError
             } else {
                 const member = findByIdOrError.value;
                 const result = Result.all(member.changeType(other.type), member.updateInfo(other));
                 if (result.isOk()) members.push(member);
-                else errors.push(result);
+                else return result;
             }
         }
 
         return this.memberRepo
-            .save(members)
-            .map((ids) => ({ ids: ids.map(it => it.value), errors: errors.map(it => it.error) }))
+            .save(members, true)
+            .map((ids) => ({ ids: ids.map(it => it.value) }))
             .promise;
     }
 

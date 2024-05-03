@@ -29,7 +29,7 @@ class MongoMemberRepo implements MemberRepo {
     @InjectBackupModel()
     private readonly backupModel!: BackupModel;
 
-    save<T extends Member | Member[]>(data: T): AsyncActionResult<MemberId[]> {
+    save<T extends Member | Member[]>(data: T, markLeaveOnNoUpdate?: true): AsyncActionResult<MemberId[]> {
         const memberDocs = new Array<MemberDoc>();
         const accountDocs = new Array<AccountDoc>();
         const models = castArray(data);
@@ -39,10 +39,14 @@ class MongoMemberRepo implements MemberRepo {
             accountDocs.push(...accounts);
         });
 
+        const memberWrite: AnyBulkWriteOperation[] = memberDocs.map(({ discordId, ...other }) => ({
+            updateOne: { filter: { discordId }, update: { $set: { ...other, isLeave: false } }, upsert: true },
+        }))
+
+        if (markLeaveOnNoUpdate) memberWrite.unshift({ updateMany: { filter: {}, update: { $set: { isLeave: true } } } })
+
         const promise = Promise.all([
-            this.memberModel.bulkWrite(memberDocs.map(({ discordId, ...other }) => ({
-                updateOne: { filter: { discordId }, update: { $set: other }, upsert: true },
-            }))),
+            this.memberModel.bulkWrite(memberWrite),
             this.accountModel.bulkWrite(accountDocs.map(({ gaijinId, ...other }) => ({
                 updateOne: { filter: { gaijinId }, update: { $set: other } },
             }))),

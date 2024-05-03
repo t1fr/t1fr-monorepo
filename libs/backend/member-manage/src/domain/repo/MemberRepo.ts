@@ -7,14 +7,14 @@ export const MemberRepo = () => Inject(MemberRepo);
 
 export type SaveAccountsResult = { inserted: number, deleted: number, modified: number, ids: AccountId[] }
 
-export  type FindAccountByIdResult = { owner?: Member, account: Account }
+export type FindAccountByIdResult = { owner?: Member, account: Account }
 
 export interface MemberRepo {
 
-    save<T extends Member | Member[]>(data: T): AsyncActionResult<MemberId[]>;
+    save<T extends Member | Member[]>(data: T, markLeaveOnNoUpdate?: true): AsyncActionResult<MemberId[]>;
 
     findMemberById(memberId: MemberId): AsyncActionResult<Member>;
- 
+
     findMemberByAccountId(accountId: AccountId): AsyncActionResult<Member>;
 
     dumpAccounts(): AsyncActionResult<Account[]>;
