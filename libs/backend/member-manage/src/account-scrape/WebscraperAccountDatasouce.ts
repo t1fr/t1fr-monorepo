@@ -139,6 +139,7 @@ export class WebscraperAccountDatasouce implements AccountDataSource {
                         .value();
                     return Result.all(...acconts);
                 });
+        this.logger.verbose("爬蟲完畢");
         return new AsyncResult(promise);
     }
 }

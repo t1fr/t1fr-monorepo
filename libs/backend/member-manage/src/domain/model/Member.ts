@@ -110,7 +110,7 @@ export class Member extends AggregateRoot<MemberId, MemberProps> {
         const staging = this.props.accounts.map(it => it.clone());
         const target = staging.find(it => it.id.equals(accountId));
         if (!target) return Ok.EMPTY;
-        return target.setType(type).map(() => this.setAccounts(staging));
+        return target.setType(type).andThen(() => this.setAccounts(staging));
     }
 
     findAccount(accountId: AccountId) {

@@ -12,11 +12,6 @@ export class JwtGuard implements CanActivate {
         const request = context.switchToHttp().getRequest<Request>();
         const token = request.cookies.token;
 
-        if (process.env["NODE_ENV"] === "development") {
-            request.user = new User({ id: "287556741808259075", name: "Test man", avatarUrl: "", isOfficer: true });
-            return true;
-        }
-
         if (!token) throw new UnauthorizedException();
 
         this.jwtService

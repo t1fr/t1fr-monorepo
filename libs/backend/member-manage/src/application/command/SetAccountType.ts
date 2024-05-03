@@ -9,8 +9,8 @@ export class SetAccountType extends Command<SetAccountType, SetAccountTypeOutput
 
     private static schema = z.object({
         id: z.string(),
-        type: z.nativeEnum(AccountType).nullable(),
+        type: z.nativeEnum(AccountType),
     });
 }
 
-export  type SetAccountTypeOutput = { id: string, type: string }
+export  type SetAccountTypeOutput = { id: string, type: AccountType }

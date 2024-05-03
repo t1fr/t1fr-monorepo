@@ -41,3 +41,9 @@ export class AccountNotFoundError extends DomainError {
     }
 }
 
+export class AccountNoOwnerError extends DomainError {
+    static create(accountId: AccountId) {
+        return new AccountNoOwnerError({ context: AccountNoOwnerError, message: `戰雷帳號 ${accountId.value} 還未有主人，不可設置帳號類型` });
+    }
+}
+
