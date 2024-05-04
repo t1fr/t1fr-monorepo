@@ -2,7 +2,7 @@
 import type { DataTableCellEditCompleteEvent, DataTableFilterMeta, DataTableProps } from "primevue/datatable";
 import type { ColumnProps } from "primevue/column";
 import type { Account } from "../../types";
-import { FilterMatchMode, FilterOperator, PrimeIcons } from "primevue/api";
+import { FilterMatchMode, FilterOperator } from "primevue/api";
 
 const memberStore = useMemberStore();
 const { updateAccount } = memberStore;

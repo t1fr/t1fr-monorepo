@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { PrimeIcons } from "primevue/api";
-
 const props = withDefaults(
     defineProps<{
         pointName: string;
@@ -13,9 +11,7 @@ const props = withDefaults(
     { value: 0, minHue: 0, maxHue: 120 },
 );
 
-
-defineEmits<{'click': []}>()
-
+defineEmits<{ click: [] }>();
 
 const valueTemplate = (val: number) => `${val}/${props.max}`;
 
@@ -42,7 +38,11 @@ const meterColor = computed(() => {
             :max="Math.max(value, max)"
             class="pointer-events-none"
         />
-        <Button :label="`${pointName}點明細`" :icon="PrimeIcons.FILE" text link class="shadow-none" @click="$emit('click')" />
+        <Button :label="`${pointName}點明細`" text link class="shadow-none" @click="$emit('click')">
+            <template #icon>
+                <MdiFileDocumentMultipleOutline class="mx-2" />
+            </template>
+        </Button>
     </div>
 </template>
 

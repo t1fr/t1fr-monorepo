@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { TransitionExpand, TransitionFade, TransitionSlide } from "@morev/vue-transitions";
-import { PrimeIcons } from "primevue/api";
 import BlurDiscordPreview from "../assets/images/our_community_blur.png";
 import SquadLogo from "../assets/images/squadron_logo.png";
 
@@ -35,13 +34,12 @@ onMounted(async () => {
                         </TransitionExpand>
                     </div>
                     <TransitionFade>
-                        <span
+                        <MdiChevronDoubleDown
                             v-if="isScrollDownHintShow"
                             id="home-title-scroll-down-hint"
-                            :class="PrimeIcons.ANGLE_DOUBLE_DOWN"
                             class="w-full text-center absolute text-200"
                             style="bottom: 16px; font-size: min(3.5rem, 6vw)"
-                        ></span>
+                        />
                     </TransitionFade>
                 </div>
             </TransitionSlide>
@@ -60,11 +58,7 @@ onMounted(async () => {
                 </div>
             </ArticleSection>
             <ArticleSection>
-                <template #header>
-                    <span>我們的</span>
-                    <MdiDiscord />
-                    <span>社群</span>
-                </template>
+                <template #header> 我們的 <MdiDiscord class="mx-2" /> 社群 </template>
                 <div class="flex lg:flex-row flex-column w-full gap-4">
                     <div class="flex flex-column justify-content-between gap-3">
                         <div class="flex flex-column gap-3">
@@ -72,9 +66,9 @@ onMounted(async () => {
                             <div>
                                 我們的社群有非常多活躍的隊員！無論您只是想文字聊天，或者想要和我們語音閒聊，我們都有許多隊員很樂意和您聊天、交朋友（只要您不違反我們的版規），歡迎各路好手來和我們蕉流蕉流！
                             </div>
-                            <div class="text-600">
-                                <strong>請注意：</strong>為了維護其他使用者的帳號安全，我們的 <span :class="PrimeIcons.DISCORD" />
-                                Discord 社群需要您的帳號進行手機驗證，造成不便敬請見諒
+                            <div class="text-600 vertical-align-bottom">
+                                <strong>請注意：</strong>為了維護其他使用者的帳號安全，我們的 <MdiDiscord class="mx-1" style="margin-bottom: -4px" /> Discord
+                                社群需要您的帳號進行手機驗證，造成不便敬請見諒
                             </div>
                         </div>
                         <ExternalLink href="https://discord.gg/t1fr" class="align-self-center bg-discord w-full">
