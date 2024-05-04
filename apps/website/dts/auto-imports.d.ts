@@ -7,7 +7,6 @@ export {}
 declare global {
   const EffectScope: typeof import('vue')['EffectScope']
   const Formatter: typeof import('../src/tools/formater')['Formatter']
-  const PointLog: typeof import('../src/types/PointLog')['PointLog']
   const SquadronBattleAchievement: typeof import('../src/stores/squadron-battle-achievement')['SquadronBattleAchievement']
   const acceptHMRUpdate: typeof import('pinia')['acceptHMRUpdate']
   const asyncComputed: typeof import('@vueuse/core')['asyncComputed']

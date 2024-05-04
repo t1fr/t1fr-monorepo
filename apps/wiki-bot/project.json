@@ -2,8 +2,8 @@
     "name": "wiki-bot",
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
     "sourceRoot": "apps/wiki-bot/src",
-    "projectType": "application",
-    "tags": [],
+    "projectType": "application",    
+    "tags": ["backend", "bot"],
     "targets": {
         "build": {
             "executor": "@nx/vite:build"
@@ -12,6 +12,6 @@
             "executor": "@nx/vite:dev-server"
         },
         "container": {},
-        "deploy": {}
+        "backend-deploy": {}
     }
 }

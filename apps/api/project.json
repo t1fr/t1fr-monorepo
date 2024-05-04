@@ -3,7 +3,7 @@
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
     "sourceRoot": "apps/api/src",
     "projectType": "application",
-    "tags": [],
+    "tags": ["backend"],
     "targets": {
         "build": {
             "executor": "@nx/vite:build"
@@ -12,6 +12,6 @@
             "executor": "@nx/vite:dev-server"
         },
         "container": {},
-        "deploy": {}
+        "backend-deploy": {}
     }
 }
