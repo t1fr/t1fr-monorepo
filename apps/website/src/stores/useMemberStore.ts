@@ -53,10 +53,10 @@ export const useMemberStore = defineStore("成員與帳號", () => {
         return Ok({ name: target.name, newOwnerId, oldOwnerId })
     }
 
-    async function getSummary(memberId: string) {
+    async function getSummary(memberId: string, force = false) {
         const summary = summaries.get(memberId)
 
-        if (summary !== undefined) return summary;
+        if (summary !== undefined && !force) return summary;
 
         return http
             .get<MemberDetail>(`/members/${memberId}/summary`, { withCredentials: true })

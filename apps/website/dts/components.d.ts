@@ -27,6 +27,7 @@ declare module 'vue' {
     Listbox: typeof import('primevue/listbox')['default']
     MdiCalendarMultiselect: typeof import('~icons/mdi/calendar-multiselect')['default']
     MdiCashUsd: typeof import('~icons/mdi/cash-usd')['default']
+    MdiChartPie: typeof import('~icons/mdi/chart-pie')['default']
     MdiCoffee: typeof import('~icons/mdi/coffee')['default']
     MdiShieldStarOutline: typeof import('~icons/mdi/shield-star-outline')['default']
     MdiSwordCross: typeof import('~icons/mdi/sword-cross')['default']

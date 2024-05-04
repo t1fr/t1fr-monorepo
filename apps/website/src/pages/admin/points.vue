@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { DataTableEmits, DataTableProps } from "primevue/datatable";
+import type { DataTableProps } from "primevue/datatable";
 import type { ColumnProps } from "primevue/column";
 import type { PointType } from "@t1fr/backend/member-manage";
 
@@ -21,11 +21,13 @@ const tableProps: DataTableProps = {
     paginatorTemplate: "CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown",
 };
 
-function load() {
-    pointLogStore.load(pointType.value, first.value, rows.value, focusMemberId.value);
-}
+watchEffect(
+    () => {
+        pointLogStore.load(pointType.value, first.value, rows.value, focusMemberId.value);
+    },
+    { flush: "post" },
+);
 
-const listeners: Partial<DataTableEmits> = { page: load };
 const first = ref(0);
 const rows = ref(20);
 
@@ -34,33 +36,31 @@ const columnProps: ColumnProps = {
     showAddButton: false,
     showFilterOperator: false,
 };
-
-onMounted(() => load());
 </script>
 
 <template>
-    <DataTable v-bind="tableProps" v-model:first="first" v-model:rows="rows" :value="currentLogs" :total-records="currentTotal" v-on="listeners">
+    <DataTable v-bind="tableProps" v-model:first="first" v-model:rows="rows" :value="currentLogs" :total-records="currentTotal">
         <template #header>
-            <div class="flex align-items-center gap-3">
-                <PointTypeSelection @update:model-value="load" v-model="pointType" />
-                <MembersDropdown v-model="focusMemberId" class="w-20rem" @update:model-value="load" show-clear />
-                <div class="flex-1" />
+            <div class="table-header-content">
+                <span role="title" class="mr-auto">點數紀錄</span>
+                <PointTypeSelection v-model="pointType" />
+                <MembersDropdown v-model="focusMemberId" class="max-w-20rem" show-clear />
             </div>
         </template>
-        <Column field="dateLabel" header="日期" class="white-space-nowrap w-8rem" />
-        <Column field="memberId" header="對象" class="white-space-nowrap w-15rem" v-bind="columnProps">
+        <Column field="dateLabel" header="日期" class="center w-12rem" />
+        <Column field="memberId" header="對象" class="w-15rem" v-bind="columnProps">
             <template #body="{ data, field }">
                 <MemberSnippet :id="data[field]" />
             </template>
         </Column>
-        <Column field="category" header="分類" class="white-space-nowrap w-8rem" />
-        <Column field="delta" header="變化" class="white-space-nowrap text-right w-5rem">
+        <Column field="category" header="分類" class="center w-8rem" />
+        <Column field="delta" header="變化" class="center w-5rem">
             <template #body="{ data, field }">
                 <span v-if="data[field] >= 0" class="text-green-400">{{ data[field] }}</span>
                 <span v-else class="text-red-400">{{ data[field] }}</span>
             </template>
         </Column>
-        <Column field="comment" header="備註" class="white-space-nowrap" />
+        <Column field="comment" header="備註" />
     </DataTable>
 </template>
 

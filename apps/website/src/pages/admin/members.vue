@@ -29,7 +29,6 @@ const tableProps: DataTableProps = {
     showGridlines: true,
     paginator: true,
     rows: 20,
-    size: "small",
     rowsPerPageOptions: [10, 20, 50, 100, 128],
     globalFilterFields: ["noAccount"],
     rowClass: (data: Member) => ({ "bg-red-900": data.noAccount }),
@@ -43,13 +42,13 @@ async function onDoubleClick(event: DataTableRowDoubleClickEvent) {
 <template>
     <DataTable v-bind="tableProps" @row-dblclick="onDoubleClick" v-model:filters="filters" :value="members">
         <template #header>
-            <div class="flex m-0 align-items-center gap-3 h-3rem">
-                <h2 class="m-0 text-white mr-auto">成員清單</h2>
+            <div class="table-header-content">
+                <span role="title" class="mr-auto">成員清單</span>
                 <Checkbox v-model="filters['global'].value" binary :false-value="null" />
                 <span>僅顯示沒有帳號的成員</span>
             </div>
         </template>
-        <Column field="isOfficer" class="center w-5rem" header="職位" :sortable="true">
+        <Column field="isOfficer" class="center w-6rem" header="職位" :sortable="true">
             <template #body="{ data, field }">
                 <Tag v-if="data[field]" value="軍官" severity="warning" />
             </template>
@@ -71,12 +70,12 @@ async function onDoubleClick(event: DataTableRowDoubleClickEvent) {
                 </div>
             </template>
         </Column>
-        <Column field="isSponsor" class="center w-6rem" header="贊助者" :sortable="true">
+        <Column field="isSponsor" class="center w-7rem" header="贊助者" :sortable="true">
             <template #body="{ data, field }">
                 <MdiCashUsd v-if="data[field]" class="text-lg vertical-align-middle" />
             </template>
         </Column>
-        <Column field="onVacation" class="center w-6rem" header="請假中" :sortable="true">
+        <Column field="onVacation" class="center w-7rem" header="請假中" :sortable="true">
             <template #body="{ data, field }">
                 <MdiCalendarMultiselect v-if="data[field]" class="text-lg vertical-align-middle" />
             </template>
