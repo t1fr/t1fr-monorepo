@@ -23,7 +23,7 @@ if (DEPLOY_PATH === undefined) {
 
 export default defineConfig({
     root: __dirname,
-    base: DEPLOY_PATH,
+    base: `/${DEPLOY_PATH}/`,
     cacheDir: "../../node_modules/.vite/apps/website",
     server: {
         port: 4200,
