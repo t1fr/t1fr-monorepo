@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { PrimeIcons } from "primevue/api";
 import type { TooltipOptions } from "primevue/tooltip";
 
 const props = withDefaults(defineProps<{ id: string | null; brief?: boolean; copiable?: boolean }>(), { brief: true, copiable: true });
@@ -27,16 +26,11 @@ const tooltip = computed<TooltipOptions>(() => ({
     disabled: !(clickable.value && memberInfo.value),
 }));
 
-const error = ref(false);
 </script>
 
 <template>
     <div v-tooltip.top="tooltip" class="flex gap-2 align-items-center" :class="{ clickable: clickable }" @click="onClick">
-        <Avatar shape="circle" :image="memberInfo?.avatar" @error="error = true">
-            <template v-if="error" #icon>
-                <i :class="PrimeIcons.USER"></i>
-            </template>
-        </Avatar>
+        <Avatar shape="circle" :image="memberInfo?.avatar" />
         <span>{{ memberInfo?.nickname ?? "未知" }}</span>
     </div>
 </template>

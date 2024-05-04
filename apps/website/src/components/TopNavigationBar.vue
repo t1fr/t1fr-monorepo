@@ -5,7 +5,6 @@ import type { MenuItem } from "primevue/menuitem";
 const router = useRouter();
 function onClick(item: MenuItem) {
     if (item.route) {
-        console.log(item);
         if (!item.items || item.items.length === 0) router.push(item.route);
     } else if (item.url) {
         console.log(item);
