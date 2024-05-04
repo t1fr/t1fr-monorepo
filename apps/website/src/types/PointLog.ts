@@ -1,3 +1,4 @@
+import type { PointType } from "@t1fr/backend/member-manage";
 import dayjs from "dayjs";
 
 type PointLogProp = {
@@ -26,4 +27,10 @@ export class PointLog {
         this.dateUnix = dayJsDate.unix()
     }
 
+}
+
+export const PointTypeNameMap: Record<PointType, string> = {
+    "absense": "請假",
+    "reward": "獎勵",
+    "penalty": "懲處",
 }

@@ -1,27 +1,26 @@
 <script setup lang="ts">
-import type { PointType } from "@t1fr/backend/member-manage";
-import type { Summary } from "../types";
 import { PrimeIcons } from "primevue/api";
 
 const props = withDefaults(
     defineProps<{
-        summary?: Summary;
-        type: PointType;
+        pointName: string;
+        value: number;
         max: number;
         reverse?: boolean;
         minHue?: number;
         maxHue?: number;
     }>(),
-    { value: 0, minHue: 0, maxHue: 120, summary: undefined },
+    { value: 0, minHue: 0, maxHue: 120 },
 );
 
-const model = defineModel<PointType>();
+
+defineEmits<{'click': []}>()
+
 
 const valueTemplate = (val: number) => `${val}/${props.max}`;
 
-const value = computed(() => props.summary?.points[props.type].sum ?? 0);
 const ratio = computed(() => {
-    const ratio = Math.min(value.value / props.max, 1);
+    const ratio = Math.min(props.value / props.max, 1);
     return props.reverse ? 1 - ratio : ratio;
 });
 
@@ -43,7 +42,7 @@ const meterColor = computed(() => {
             :max="Math.max(value, max)"
             class="pointer-events-none"
         />
-        <Button :label="`${type}點明細`" :icon="PrimeIcons.FILE" text link class="shadow-none" @click="model = type" />
+        <Button :label="`${pointName}點明細`" :icon="PrimeIcons.FILE" text link class="shadow-none" @click="$emit('click')" />
     </div>
 </template>
 

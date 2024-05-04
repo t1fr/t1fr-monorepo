@@ -1,4 +1,4 @@
-import type { AccountType, AssignAccountOwnerOutput, ListAccountDTO, ListExistMemberDTO, SetAccountTypeOutput } from "@t1fr/backend/member-manage";
+import type { AccountType, AssignAccountOwnerOutput, ListAccountDTO, ListExistMemberDTO, MemberDetail, SetAccountTypeOutput } from "@t1fr/backend/member-manage";
 import { keyBy, mapValues } from "lodash-es";
 import { Err, Ok } from "ts-results-es";
 import { Account, Member, type Summary } from "../types";
@@ -9,20 +9,19 @@ export const useMemberStore = defineStore("成員與帳號", () => {
     const members = ref<Member[]>([]);
     const memberOptions = computed(() => members.value.map((member) => ({ value: member.id, callsign: member.callsign, id: member.gameId, avatarUrl: member.avatarUrl })),);
     const memberMap = computed(() => mapValues(keyBy(members.value, it => it.id), it => ({ avatar: it.avatarUrl, nickname: it.callsign })));
-    const summaries = ref<Record<string, Summary>>({});
-
     const accounts = ref<Account[]>([]);
     const http = useHttpService();
 
-    load();
+    const summaries = new Map<string, Summary>()
 
+    load();
 
     async function load() {
         http
             .get<ListExistMemberDTO[]>("members", { withCredentials: true })
             .then((data) => (members.value = data.map(member => {
-                const { id, name, noAccount, isOfficer, avatarUrl } = member;
-                return new Member(id, name, isOfficer, noAccount, avatarUrl)
+                const { id, name, noAccount, isOfficer, avatarUrl, onVacation, type, isSponsor, } = member;
+                return new Member({ id, name, isOfficer, noAccount, avatarUrl, onVacation, type, isSponsor })
             })))
         http
             .get<ListAccountDTO[]>("accounts", { withCredentials: true })
@@ -32,12 +31,6 @@ export const useMemberStore = defineStore("成員與帳號", () => {
             })))
     }
 
-    function loadSummary(memberId: string) {
-        if (summaries.value[memberId]) return;
-        http
-            .get<Summary>(`/members/${memberId}/summary`, { withCredentials: true })
-            .then((value) => (summaries.value[memberId] = value))
-    }
 
     function findAccountById(id: string) {
         return accounts.value.find(it => it.id === id);
@@ -60,5 +53,19 @@ export const useMemberStore = defineStore("成員與帳號", () => {
         return Ok({ name: target.name, newOwnerId, oldOwnerId })
     }
 
-    return { members, accounts, summaries, memberOptions, memberMap, updateAccount: { ownerId: updateAccountOwner, type: updateAccountType }, loadSummary };
+    async function getSummary(memberId: string) {
+        const summary = summaries.get(memberId)
+
+        if (summary !== undefined) return summary;
+
+        return http
+            .get<MemberDetail>(`/members/${memberId}/summary`, { withCredentials: true })
+            .then((value) => {
+                const fetchedSummary = mapSummary(value);
+                summaries.set(memberId, fetchedSummary)
+                return fetchedSummary;
+            })
+    }
+
+    return { members, accounts, getSummary, memberOptions, memberMap, updateAccount: { ownerId: updateAccountOwner, type: updateAccountType } };
 });

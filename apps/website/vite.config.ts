@@ -30,7 +30,7 @@ export default defineConfig({
         VueRouter({ dts: "./dts/typed-router.d.ts", root: __dirname }),
         Layouts(),
         Vue({ script: { defineModel: true } }),
-        Components({ dirs: ["./src/components"], resolvers: [PrimeVueResolver(), IconsResolver()], dts: "./dts/components.d.ts" }),
+        Components({ dirs: ["./src/components"], resolvers: [PrimeVueResolver(), IconsResolver({ prefix: "" })], dts: "./dts/components.d.ts" }),
         AutoImports({
             dts: "./dts/auto-imports.d.ts",
             imports: ["vue", "@vueuse/core", "pinia", VueRouterAutoImports, "vue-i18n"],

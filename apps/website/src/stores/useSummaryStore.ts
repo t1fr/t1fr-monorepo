@@ -1,3 +1,4 @@
+import type { MemberDetail } from "@t1fr/backend/member-manage";
 import type { Summary } from "../types";
 
 export const useSummaryStore = defineStore("個人資訊與統計", () => {
@@ -6,8 +7,10 @@ export const useSummaryStore = defineStore("個人資訊與統計", () => {
 
     function fetch() {
         httpService
-            .get<Summary>("/members/me/summary", { withCredentials: true })
-            .then((value) => (summary.value = value))
+            .get<MemberDetail>("/members/me/summary", { withCredentials: true })
+            .then((value) => {
+                summary.value = mapSummary(value)
+            })
     }
 
     return { summary, fetch };
