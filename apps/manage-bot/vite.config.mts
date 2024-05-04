@@ -12,9 +12,6 @@ export default defineConfig(({ command }) => {
     const outputPath = `dist/${projectRootDir(ProjectType.Application)}/${process.env["NX_TASK_TARGET_PROJECT"]}`;
     return {
         root: __dirname,
-        server: {
-            port: 6518,
-        },
         define: {
             __dirname: JSON.stringify(command === "build" ? resolve(root, outputPath) : resolve(__dirname, "src")),
             __BUILD__: command === "build"
@@ -30,7 +27,6 @@ export default defineConfig(({ command }) => {
             viteStaticCopy({
                 targets: [
                     { src: "./src/config", dest: "." },
-                    { src: "./.puppeteerrc.cjs", dest: "." },
                 ]
             }),
             typescript({
@@ -44,6 +40,7 @@ export default defineConfig(({ command }) => {
                 exportName: 'appServer',
 
                 tsCompiler: 'swc',
+                initAppOnBoot: true,
             }),
         ],
         optimizeDeps: {

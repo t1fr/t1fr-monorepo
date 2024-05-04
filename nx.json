@@ -7,7 +7,10 @@
     },
     "parallel": 5,
     "namedInputs": {
-        "default": ["{projectRoot}/**/*", "sharedGlobals"],
+        "default": [
+            "{projectRoot}/**/*",
+            "sharedGlobals"
+        ],
         "production": [
             "default",
             "!{projectRoot}/.eslintrc.json",
@@ -21,14 +24,6 @@
         "sharedGlobals": []
     },
     "plugins": [
-        {
-            "plugin": "@nx/webpack/plugin",
-            "options": {
-                "buildTargetName": "build",
-                "serveTargetName": "serve",
-                "previewTargetName": "preview"
-            }
-        },
         {
             "plugin": "@nx/eslint/plugin",
             "options": {
@@ -53,15 +48,40 @@
         }
     ],
     "targetDefaults": {
+        "build": {
+            "executor": "@nx/vite:build",
+            "outputs": [
+                "{options.outputPath}"
+            ],
+            "inputs": [
+                "production",
+                "^production"
+            ],
+            "options": {
+                "outputPath": "dist/{projectRoot}",
+                "generatePackageJson": true
+            },
+            "cache": true
+        },
+        "serve": {
+            "executor": "@nx/vite:dev-server",
+            "options": {
+                "buildTarget": "{projectName}:build"
+            }
+        },
         "container": {
             "executor": "@nx-tools/nx-container:build",
-            "dependsOn": ["build"],
+            "dependsOn": [
+                "build"
+            ],
             "options": {
                 "engine": "docker",
                 "load": true,
                 "push": true,
                 "metadata": {
-                    "images": ["ghcr.io/t1fr/{projectName}"],
+                    "images": [
+                        "ghcr.io/t1fr/{projectName}"
+                    ],
                     "tags": [
                         "type=ref,event=branch",
                         "type=ref,event=tag",
