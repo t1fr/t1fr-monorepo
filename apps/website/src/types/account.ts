@@ -1,7 +1,7 @@
 import type { AccountType } from "@t1fr/backend/member-manage";
 import dayjs from "dayjs";
 
-const typeMap: Record<AccountType, string> = {
+export const AccountTypeMap: Record<AccountType, string> = {
     "sqb_main": "S 聯隊戰主帳",
     "relax_main": "N 休閒主帳",
     "private_alt": "A 個人小帳",
@@ -54,11 +54,11 @@ export class Account {
 
     get typeLabel() {
         if (this.cachedType !== this.type) {
-            this.cachedTypeLabel = this.type ? typeMap[this.type] : null
+            this.cachedTypeLabel = this.type ? AccountTypeMap[this.type] : null
             this.cachedType = this.type;
             return this.cachedTypeLabel;
         } else {
-            if (this.cachedTypeLabel === undefined) this.cachedTypeLabel = this.type ? typeMap[this.type] : null
+            if (this.cachedTypeLabel === undefined) this.cachedTypeLabel = this.type ? AccountTypeMap[this.type] : null
             return this.cachedTypeLabel;
         }
     }
