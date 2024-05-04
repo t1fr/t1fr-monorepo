@@ -39,7 +39,11 @@ jobs:
                   fetch-depth: 0
             - name: 設置環境
               uses: ./.github/actions/setup-env
-
+            # ssh 設定
+            - run: mkdir -p ~/.ssh && ssh-keyscan 114.32.177.157 >> ~/.ssh/known_hosts
+            - uses: webfactory/ssh-agent@v0.9.0
+              with:
+                  ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
             - name: 部屬前端網站
               run: pnpm run frontend-deploy:affect
 

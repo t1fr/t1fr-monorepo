@@ -12,7 +12,7 @@ jobs:
             - name: 移除本次 PR 的預覽用網站
               uses: appleboy/ssh-action@v1.0.3
               with:
-                  host: 220.135.86.181
+                  host: 114.32.177.157
                   username: T1FR Server
                   key: ${{ secrets.SSH_PRIVATE_KEY }}
                   script: rm -rf ./Documents/services/nginx/sites/${{env.DEPLOY_PATH}}
