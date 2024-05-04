@@ -6,7 +6,7 @@ on:
             - "main"
 
 env:
-    SUBROUTE: "t1fr"
+    DEPLOY_PATH: "t1fr"
 
 permissions:
     actions: write
@@ -18,6 +18,9 @@ jobs:
         name: 測試是否有專案變動，若無則取消此次 workflow
         runs-on: ubuntu-latest
         steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
             - name: 設置環境
               uses: ./.github/actions/setup-env
 
@@ -31,13 +34,15 @@ jobs:
                   fi
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     build:
         needs:
             - "test-affected"
         name: 測試與建置
         runs-on: ubuntu-latest
         steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
             - name: 設置環境
               uses: ./.github/actions/setup-env
 
@@ -56,15 +61,27 @@ jobs:
                   password: ${{ secrets.GITHUB_TOKEN }}
             - name: 打包 Docker image 並推送到 GHCR
               run: INPUT_GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} pnpm run container:affect
+            - name: 上傳產物
+              uses: actions/upload-artifact@v4
+              with:
+                name: ${{env.DEPLOY_PATH}}
+                path: dist
     deploy:
         name: 部屬
         needs:
             - "build"
         runs-on: ubuntu-latest
         steps:
+            - uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
             - name: 設置環境
               uses: ./.github/actions/setup-env
-
+            - name: 下載產物
+              uses: actions/download-artifact@v4
+              with:
+                name: ${{env.DEPLOY_PATH}}
+                path: dist
             # 建立部屬指令
             - name: 進入服務資料夾
               run: echo cd Documents/services >> scripts.txt
