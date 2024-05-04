@@ -1,19 +1,18 @@
-
-
 .navbar.p-menubar {
     background-color: var(--squadron-primary-color);
     border-color: var(--squadron-primary-color);
     border-radius: 0;
     padding: 0 0.5rem;
-    
-    > *:not(.p-menubar-root-list) {
+    gap: 0.5rem;
+
+    >*:not(.p-menubar-root-list) {
         padding: 0.5rem 0;
     }
 
     .p-submenu-list {
         z-index: 2 !important;
         padding: 0;
-    
+
     }
 
     .p-menubar-root-list {
@@ -22,11 +21,13 @@
         padding: 0;
     }
 
-    .p-menuitem, .p-menuitem-content, .p-menuitem-link {
+    .p-menuitem,
+    .p-menuitem-content,
+    .p-menuitem-link {
         height: 100%;
     }
 
-    .p-menuitem-content{
+    .p-menuitem-content {
         border-radius: 0;
     }
 
