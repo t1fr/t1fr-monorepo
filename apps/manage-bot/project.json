@@ -3,7 +3,10 @@
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
     "sourceRoot": "apps/manage-bot/src",
     "projectType": "application",
-    "tags": [],
+    "tags": [
+        "backend",
+        "bot"
+    ],
     "targets": {
         "build": {
             "executor": "@nx/vite:build"
@@ -12,6 +15,6 @@
             "executor": "@nx/vite:dev-server"
         },
         "container": {},
-        "deploy": {}
+        "backend-deploy": {}
     }
 }

@@ -21,7 +21,9 @@
             "!{projectRoot}/src/test-setup.[jt]s",
             "!{projectRoot}/test-setup.[jt]s"
         ],
-        "sharedGlobals": []
+        "sharedGlobals": [
+            "{workspaceRoot}/.github/**/*.yml"
+        ]
     },
     "plugins": [
         {
@@ -71,9 +73,6 @@
         },
         "container": {
             "executor": "@nx-tools/nx-container:build",
-            "dependsOn": [
-                "build"
-            ],
             "options": {
                 "engine": "docker",
                 "load": true,
@@ -92,12 +91,20 @@
                 }
             }
         },
-        "deploy": {
+        "backend-deploy": {
             "executor": "nx:run-commands",
             "options": {
                 "commands": [
                     "echo \"docker rm -f {projectName} || true\" >> scripts.txt",
                     "node decomposerize.js {projectRoot}/docker-compose.yml >> scripts.txt"
+                ]
+            }
+        },
+        "frontend-deploy": {
+            "executor": "nx:run-commands",
+            "options": {
+                "commands": [
+                    "rsync -azvhn --delete-after \"ssh -o StrictHostKeyChecking=no\" dist/{projectRoot}/ \"T1FR Server\"@220.135.86.181:./Documents/services/nginx/sites/$SUBROUTE/"
                 ]
             }
         }

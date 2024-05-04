@@ -9,9 +9,11 @@
     "container": "nx run-many -t container",
     "deploy": "nx run-many -t deploy --parallel 1",
     "build:affect": "nx affected -t build",
+    "build:frontend:affect": "nx affected -t build --exclude='*,!tag:frontend'",
     "lint:affect": "nx affected -t lint",
     "container:affect": "nx affected -t container",
-    "deploy:affect": "nx affected -t deploy --parallel 1",
+    "backend-deploy:affect": "nx affected -t backend-deploy --parallel 1",
+    "frontend-deploy:affect": "nx affected -t frontend-deploy --parallel 1",
     "graph": "nx graph",
     "graph:affect": "nx affected:graph",
     "show-affect": "nx show projects --affected"
