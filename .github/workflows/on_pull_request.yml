@@ -1,0 +1,53 @@
+name: Create PR preview website
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+    branches:
+      - "main"
+env:
+  DEPLOY_PATH: "t1fr-pr${{github.event.pull_request.number}}-${{github.event.pull_request.head.ref}}"
+
+jobs:
+  build:
+    name: 建置前端專案
+    if: "${{ github.event.pull_request.head.repo.full_name == github.repository }}"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: 設置環境
+        uses: ./.github/actions/setup-env
+      - name: 建置
+        run: pnpm run build:frontend:affect
+      - name: 上傳產物
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{env.DEPLOY_PATH}}
+          path: dist
+  deploy:
+    name: 部屬網站
+    runs-on: ubuntu-latest
+    needs: [ "build" ]
+    steps:
+      - name: 下載產物
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{env.DEPLOY_PATH}}
+          path: dist
+      - name: 部屬前端網站
+        run: pnpm run frontend-deploy:affect
+
+  comment:
+    runs-on: ubuntu-latest
+    needs: [ "deploy" ]
+    steps:
+      - name: 評論 PR
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            預覽連結：https://t1fr.club/${{env.DEPLOY_PATH}}/
+            對應 commit ${{github.event.pull_request.head.sha}}
+          comment_tag: deploy

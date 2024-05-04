@@ -1,7 +1,8 @@
 /// <reference types='vitest' />
-import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite';
+import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
 import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin";
 import Vue from "@vitejs/plugin-vue";
+import * as process from "node:process";
 import { resolve } from "path";
 import AutoImports from "unplugin-auto-import/vite";
 import IconsResolver from "unplugin-icons/resolver";
@@ -13,8 +14,16 @@ import VueRouter from "unplugin-vue-router/vite";
 import { defineConfig } from "vite";
 import Layouts from "vite-plugin-vue-layouts";
 
+const DEPLOY_PATH = process.env["DEPLOY_PATH"];
+
+if (DEPLOY_PATH === undefined) {
+    console.error("DEPLOY_PATH 未定義")
+    process.exit(1)
+}
+
 export default defineConfig({
     root: __dirname,
+    base: DEPLOY_PATH,
     cacheDir: "../../node_modules/.vite/apps/website",
     server: {
         port: 4200,
@@ -37,7 +46,7 @@ export default defineConfig({
             dirs: ["./src/composition", "./src/tools", "./src/stores"],
             vueTemplate: true,
         }),
-        VueI18nPlugin({ include: resolve(__dirname, './src/i18n/**'), }),
+        VueI18nPlugin({ include: resolve(__dirname, "./src/i18n/**") }),
         Icons(),
         nxViteTsPaths(),
     ],
@@ -48,7 +57,7 @@ export default defineConfig({
         commonjsOptions: {
             transformMixedEsModules: true,
         },
-        emptyOutDir: true
+        emptyOutDir: true,
     },
 
     test: {
