@@ -104,7 +104,7 @@
             "executor": "nx:run-commands",
             "options": {
                 "commands": [
-                    "rsync -azvhn --delete-after \"ssh -o StrictHostKeyChecking=no\" dist/{projectRoot}/ \"T1FR Server\"@220.135.86.181:./Documents/services/nginx/sites/$SUBROUTE/"
+                    "rsync -azvhn --delete-after \"ssh -o StrictHostKeyChecking=no\" dist/{projectRoot}/ \"T1FR Server\"@220.135.86.181:./Documents/services/nginx/sites/$DEPLOY_PATH/"
                 ]
             }
         }
