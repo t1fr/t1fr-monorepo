@@ -37,7 +37,8 @@ export class AuthService {
     };
 
     private getToken(referer: string, code: string) {
-        const redirect_uri = `${referer}redirect`;
+        const url = new URL(referer)
+        const redirect_uri = `${url.origin}/redirect`;
         const data = { grant_type: "authorization_code", code, redirect_uri };
         const promise = this.httpService.axiosRef.post<DiscordTokenResponse>(
             AuthService.DiscordTokenUrl, data, AuthService.RequestTokenConfig,
