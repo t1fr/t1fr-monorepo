@@ -2,9 +2,9 @@ import { Provider } from "@nestjs/common";
 import { AsyncActionResult } from "@t1fr/backend/ddd-types";
 import { FilterQuery, ProjectionType } from "mongoose";
 import { AsyncResult, Err, Ok } from "ts-results-es";
-import { ListAccountDTO, ListExistMemberDTO, MemberDetail, MemberInfo, MemberQueryRepo, SearchAccountByNameDTO } from "../../application";
-import { MemberNotFoundError } from "../../domain";
-import { AccountModel, AccountSchema, InjectAccountModel, InjectMemberModel, MemberModel } from "../mongoose";
+import { GetPointLogDTO, ListAccountDTO, ListExistMemberDTO, MemberDetail, MemberInfo, MemberQueryRepo, PageControl, SearchAccountByNameDTO } from "../../application";
+import { MemberNotFoundError, PointType } from "../../domain";
+import { AccountModel, AccountSchema, InjectAccountModel, InjectMemberModel, InjectPointLogModel, MemberModel, PointLogModel, PointLogSchema } from "../mongoose";
 
 class MongoMemberQueryRepo implements MemberQueryRepo {
 
@@ -13,6 +13,9 @@ class MongoMemberQueryRepo implements MemberQueryRepo {
 
     @InjectMemberModel()
     private readonly memberModel!: MemberModel;
+
+    @InjectPointLogModel()
+    private readonly pointLogModel!: PointLogModel;
 
     async searchAccountByName(name: string): Promise<SearchAccountByNameDTO[]> {
         const filter: FilterQuery<AccountSchema> = name.length ? { name: { $regex: RegExp(name, "i") } } : {};
@@ -83,7 +86,8 @@ class MongoMemberQueryRepo implements MemberQueryRepo {
                     point[log.type].total += delta;
                     point[log.type].logs.push({
                         date: log.date,
-                        delta: delta,
+                        memberId: log.memberId,
+                        delta: delta.toString(),
                         comment: log.comment,
                         category: log.category,
                     });
@@ -100,6 +104,29 @@ class MongoMemberQueryRepo implements MemberQueryRepo {
 
         return new AsyncResult(promise);
     }
+
+    async getPointLogs(type: PointType, control: PageControl, memberId: string | undefined): Promise<GetPointLogDTO> {
+
+        const filter: FilterQuery<PointLogSchema> = memberId ? { memberId, type } : { type }
+
+        const [logs, total] = await Promise.all([
+            this.pointLogModel
+                .find(filter, null, { skip: control.skip, limit: control.rows })
+                .lean(),
+            this.pointLogModel.countDocuments(filter)
+        ])
+
+
+        return {
+            total,
+            logs: logs.map(it => {
+                const { date, delta, comment, category, memberId } = it;
+                return { date, delta: delta.toString(), category, comment, memberId }
+            })
+        }
+    }
+
+
 }
 
 export const MongoMemberQueryRepoProvider: Provider = { provide: MemberQueryRepo, useClass: MongoMemberQueryRepo };

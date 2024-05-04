@@ -15,12 +15,12 @@ const attrs: DropdownProps = {
 </script>
 
 <template>
-    <Dropdown v-model="id" :options="memberOptions" class="w-full" v-bind="attrs">
+    <Dropdown v-model="id" :options="memberOptions" class="w-full" v-bind="attrs" scroll-height="min(50dvh, 400px)">
         <template #value>
             <MemberSnippet :id="id" :copiable="false" />
         </template>
-        <template #option="{ option }: { option: { id: string } }">
-            <MemberSnippet :id="option.id" :copiable="false" />
+        <template #option="{ option }: { option: { value: string } }">
+            <MemberSnippet :id="option.value" :copiable="false" />
         </template>
     </Dropdown>
 </template>

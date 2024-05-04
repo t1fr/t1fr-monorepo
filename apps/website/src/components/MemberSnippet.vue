@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { PrimeIcons } from "primevue/api";
+import type { TooltipOptions } from "primevue/tooltip";
 
 const props = withDefaults(defineProps<{ id: string | null; brief?: boolean; copiable?: boolean }>(), { brief: true, copiable: true });
 const { memberMap } = storeToRefs(useMemberStore());
@@ -7,8 +8,10 @@ const memberInfo = computed(() => (props.id ? memberMap.value[props.id] : null))
 const toastService = useToastService();
 const { ctrl, alt } = useMagicKeys();
 
+const clickable = computed(() => props.copiable && ctrl.value);
+
 function onClick(event: Event) {
-    if (!props.copiable || !ctrl.value) return;
+    if (!clickable.value) return;
     event.stopPropagation();
     if (alt.value) {
         window.navigator.clipboard.writeText(props.id!);
@@ -19,16 +22,16 @@ function onClick(event: Event) {
     }
 }
 
-const tooltip = computed(() => ({
+const tooltip = computed<TooltipOptions>(() => ({
     value: `複製 ${memberInfo.value?.nickname} 的 ID`,
-    disabled: !(props.copiable && memberInfo.value && ctrl.value),
+    disabled: !(clickable.value && memberInfo.value),
 }));
 
 const error = ref(false);
 </script>
 
 <template>
-    <div v-tooltip.top="tooltip" class="flex gap-2 align-items-center clickable" @click="onClick">
+    <div v-tooltip.top="tooltip" class="flex gap-2 align-items-center" :class="{ clickable: clickable }" @click="onClick">
         <Avatar shape="circle" :image="memberInfo?.avatar" @error="error = true">
             <template v-if="error" #icon>
                 <i :class="PrimeIcons.USER"></i>

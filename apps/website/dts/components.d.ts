@@ -29,6 +29,7 @@ declare module 'vue' {
     Menubar: typeof import('primevue/menubar')['default']
     PieChart: typeof import('./../src/components/PieChart.vue')['default']
     PointMeter: typeof import('./../src/components/PointMeter.vue')['default']
+    PointTypeSelection: typeof import('./../src/components/PointTypeSelection.vue')['default']
     ProgressSpinner: typeof import('primevue/progressspinner')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
