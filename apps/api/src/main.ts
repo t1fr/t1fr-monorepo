@@ -10,7 +10,6 @@ import "tslib";
 import { AppModule } from "./AppModule";
 import { ResultTransformer } from "./ResultInterceptor";
 
-console.log(process.env["NODE_ENV"]);
 const allowedOrigin: CustomOrigin = (origin: string, callback) => {
     if (!origin) return callback(null, false);
     const url = new URL(origin);

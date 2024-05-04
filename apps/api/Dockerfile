@@ -30,4 +30,4 @@ COPY dist/apps/api .
 
 RUN chown -R node:node .
 USER node
-CMD ["dumb-init", "node", "main.js"]
+CMD ["dumb-init", "node", "main.mjs"]

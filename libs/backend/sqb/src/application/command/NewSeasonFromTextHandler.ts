@@ -1,5 +1,5 @@
 import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
-import { uniqWith } from "lodash";
+import { uniqWith } from "lodash-es";
 import { Err } from "ts-results-es";
 import { SectionRepo, SectionSpanError } from "../../domain";
 import { TextToSectionHelper } from "../../domain/TextToSectionHelper";

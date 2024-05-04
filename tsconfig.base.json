@@ -8,7 +8,6 @@
         "moduleResolution": "node",
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
-        "importHelpers": true,
         "target": "ESNext",
         "module": "ESNext",
         "lib": ["ES2023", "dom"],

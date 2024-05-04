@@ -2,7 +2,7 @@ import { DynamicModule, Global, Logger, Module, Provider } from "@nestjs/common"
 import { ConfigModule } from "@nestjs/config";
 import { existsSync, readFileSync } from "fs";
 import { load } from "js-yaml";
-import { get, isArray, merge, mergeWith } from "lodash";
+import { get, isArray, merge, mergeWith } from "lodash-es";
 import { Error } from "mongoose";
 import * as path from "node:path";
 import { resolve } from "path";

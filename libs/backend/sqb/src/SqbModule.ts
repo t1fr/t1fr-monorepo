@@ -1,6 +1,6 @@
 import { Module, Provider } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
-import { concat } from "lodash";
+import { concat } from "lodash-es";
 import { SqbCommandHandlers, SqbQueryHandlers } from "./application";
 import { HistoryModelDef, MongoHistoryRepoProvider, MongooseSectionRepoProvider, SectionModelDef, SqbMongooseConnection } from "./infrastructure";
 

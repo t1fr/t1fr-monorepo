@@ -1,4 +1,4 @@
-import { isEqual } from "lodash";
+import { isEqual } from "lodash-es";
 import { randomInteger, randomString } from "zufall";
 import { Account, AccountId } from "./Account";
 import { AccountType } from "./AccountType";

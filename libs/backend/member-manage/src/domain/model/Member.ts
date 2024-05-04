@@ -1,5 +1,5 @@
 import { AggregateRoot, DomainError, EntityId } from "@t1fr/backend/ddd-types";
-import { countBy, get } from "lodash";
+import { countBy, get } from "lodash-es";
 import { Err, Ok, Result } from "ts-results-es";
 import { Account, AccountId } from "./Account";
 import { AccountType } from "./AccountType";

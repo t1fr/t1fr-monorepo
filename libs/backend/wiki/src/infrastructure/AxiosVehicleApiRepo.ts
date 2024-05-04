@@ -1,7 +1,7 @@
 import { HttpService } from "@nestjs/axios";
 import { Inject, Injectable, Provider } from "@nestjs/common";
 import { AsyncActionResult, ZodParseError } from "@t1fr/backend/ddd-types";
-import { chain, union } from "lodash";
+import _ from "lodash-es";
 import { AsyncResult, Err, Ok } from "ts-results-es";
 import { ScrapeVehicleError, Vehicle, VehicleApiRepo } from "../domain";
 import { DataResponse } from "./VehicleJsonSchema";
@@ -21,7 +21,7 @@ export class AxiosVehicleApiRepo implements VehicleApiRepo {
             if (!parseDataOrError.success) return Err(ZodParseError.create(parseDataOrError.error));
             const { version, ship, boat, army, helicopters, aviation } = parseDataOrError.data;
             if (version === currentVersion) return Err(new ScrapeVehicleError.VersionNotChangeError(version));
-            const vehicles = chain(union(ship, boat, army, helicopters, aviation))
+            const vehicles = _.chain(_.union(ship, boat, army, helicopters, aviation))
                 .map(VehicleMapper.fromJsonSchema)
                 .value();
             return Ok({ vehicles, version });

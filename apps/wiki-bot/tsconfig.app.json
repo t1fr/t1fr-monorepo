@@ -8,8 +8,15 @@
     ],
     "declaration": false,
     "emitDecoratorMetadata": true,
-    "target": "es2021"
+    "target": "ESNext"
   },
-  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],
-  "include": ["src/**/*.ts", "**/*.d.ts"]
+  "exclude": [
+    "jest.config.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts"
+  ],
+  "include": [
+    "src/**/*.ts",
+    "**/*.d.ts"
+  ]
 }

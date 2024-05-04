@@ -1,6 +1,6 @@
 import { Provider } from "@nestjs/common";
 import { AsyncActionResult } from "@t1fr/backend/ddd-types";
-import { castArray, isUndefined, omitBy } from "lodash";
+import { castArray, isUndefined, omitBy } from "lodash-es";
 import { AnyBulkWriteOperation } from "mongoose";
 import { AsyncResult, Err, Ok } from "ts-results-es";
 import {

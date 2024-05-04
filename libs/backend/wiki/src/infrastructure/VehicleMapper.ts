@@ -1,4 +1,4 @@
-import { union } from "lodash";
+import { union } from "lodash-es";
 import { BattleRating, ObtainSource, Vehicle } from "../domain";
 import { VehicleJsonSchema } from "./VehicleJsonSchema";
 

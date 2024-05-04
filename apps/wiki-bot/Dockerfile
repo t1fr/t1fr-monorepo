@@ -20,4 +20,4 @@ COPY --from=deps /usr/src/app/package.json ./package.json
 COPY dist/apps/wiki-bot .
 RUN chown -R node:node .
 USER node
-CMD ["dumb-init", "node", "main.js"]
+CMD ["dumb-init", "node", "main.mjs"]

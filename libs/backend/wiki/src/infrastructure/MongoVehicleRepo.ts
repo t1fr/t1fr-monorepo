@@ -1,6 +1,6 @@
 import { Injectable, Provider } from "@nestjs/common";
 import { AsyncActionResult } from "@t1fr/backend/ddd-types";
-import { castArray } from "lodash";
+import { castArray } from "lodash-es";
 import { AsyncResult, Err, Ok } from "ts-results-es";
 import { BattleRating, EnumField, FindByNameOptions, FindVehicleByIdError, SearchCriteria, Vehicle, VehicleRepo } from "../domain";
 import { InjectVehicleModel, VehicleModel, VehicleSchema } from "./VehicleSchema";

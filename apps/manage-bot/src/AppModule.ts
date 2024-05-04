@@ -6,7 +6,7 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { ConfigsModule, MongooseConfig } from "@t1fr/backend/configs";
 import { MemberManageModule, MemberManageMongooseConnection } from "@t1fr/backend/member-manage";
 import { SqbModule, SqbMongooseConnection } from "@t1fr/backend/sqb";
-import { concat } from "lodash";
+import { concat } from "lodash-es";
 import { NecordModule } from "necord";
 import { z } from "zod";
 import { AccountAutocompleteInterceptor } from "./autocomplete";

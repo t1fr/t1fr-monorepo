@@ -29,9 +29,9 @@ export default defineConfig(({ command }) => {
                     { src: "./src/config", dest: "." },
                 ]
             }),
-            typescript({
+            command === "build" ? typescript({
                 tsconfig: resolve(__dirname, "./tsconfig.app.json"),
-            }),
+            }) : undefined,
             ...VitePluginNode({
                 adapter: 'nest',
 
@@ -42,7 +42,7 @@ export default defineConfig(({ command }) => {
                 tsCompiler: 'swc',
                 initAppOnBoot: true,
             }),
-        ],
+        ].filter(it => it !== undefined),
         optimizeDeps: {
             exclude: [
                 '@nestjs/microservices',

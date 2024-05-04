@@ -4,7 +4,7 @@ import { Configuration } from "@t1fr/backend/configs";
 import { ZodParseError } from "@t1fr/backend/ddd-types";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import { chain } from "lodash";
+import _ from "lodash-es";
 import { InjectBrowser } from "nestjs-puppeteer";
 import { Browser, Page } from "puppeteer";
 import { AsyncResult, Err, Ok, Result } from "ts-results-es";
@@ -128,7 +128,7 @@ export class WebscraperAccountDatasouce implements AccountDataSource {
                         const id = await this.fetchUidFromReplay(rawAccount.name, rawAccount.link);
                         return { ...rawAccount, id };
                     });
-                    const [acconts] = chain(rawAccountsWithId.results)
+                    const [acconts] = _.chain(rawAccountsWithId.results)
                         .map(data => {
                             const parseOrError = AccountDataFromWeb.safeParse(data);
                             if (!parseOrError.success) return Err(ZodParseError.create(parseOrError.error));

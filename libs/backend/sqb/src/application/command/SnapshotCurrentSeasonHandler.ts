@@ -1,5 +1,5 @@
 import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
-import { range } from "lodash";
+import { range } from "lodash-es";
 import { History, HistoryId, HistoryRepo, Section, Squad } from "../../domain";
 import { SnapshotCurrentSeason } from "./SnapshotCurrentSeason";
 

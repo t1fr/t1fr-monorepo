@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { mapValues } from "lodash";
+import { mapValues } from "lodash-es";
 import { I18nService } from "nestjs-i18n";
 import { AdvanceTranslateOptions } from "./AdvanceTranslateOptions";
 
