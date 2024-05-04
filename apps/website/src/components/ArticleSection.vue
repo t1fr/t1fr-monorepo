@@ -4,7 +4,7 @@ defineProps<{ header?: string }>();
 
 <template>
   <section class="flex flex-column p-4 border-round-2xl">
-    <div class="text-center text-5xl font-bold mb-2">
+    <div class="justify-content-center text-5xl font-bold mb-2 flex align-items-center">
       <slot name="header">
         {{ header }}
       </slot>

@@ -14,56 +14,6 @@ html {
   overflow-y: hidden;
 }
 
-
-.p-datatable {
-  $editing-padding-y: 0.5rem;
-  $editing-padding-x: 0.5rem;
-
-  .p-cell-editing[data-p-editable-column=true] {
-    padding: $editing-padding-y $editing-padding-x !important;
-  }
-
-  tr,
-  td {
-    padding: calc(0.75rem + $editing-padding-y + 0.8px) calc($editing-padding-x + 0.75rem  + 0.8px) !important;
-  }
-}
-
-.content-center {
-  >.p-column-header-content {
-    justify-content: center;
-  }
-}
-
-.table-fit-content {
-  white-space: nowrap;
-  width: 0
-}
-
-.p-submenu-list {
-  z-index: 2 !important;
-}
-
-.p-menubar {
-  background-color: var(--squadron-primary-color);
-  border-color: var(--squadron-primary-color);
-  border-radius: 0;
-
-  .p-menubar-root-list {
-    flex-wrap: nowrap;
-  }
-
-  .p-menuitem-text {
-    white-space: nowrap;
-    line-height: normal !important;
-  }
-
-}
-
-.w-0 {
-  width: 0;
-}
-
 .clickable {
   cursor: pointer;
 

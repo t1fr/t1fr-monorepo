@@ -1,4 +1,17 @@
 .p-datatable {
+
+    $editing-padding-y: 0.5rem;
+    $editing-padding-x: 0.5rem;
+
+    .p-cell-editing[data-p-editable-column=true] {
+        padding: $editing-padding-y $editing-padding-x !important;
+    }
+
+    tr,
+    td {
+        padding: calc(0.75rem + $editing-padding-y + 0.8px) calc($editing-padding-x + 0.75rem + 0.8px) !important;
+    }
+
     th {
         &.center {
             .p-column-header-content {
@@ -55,6 +68,7 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+
     span[role="title"] {
         font-size: larger;
     }

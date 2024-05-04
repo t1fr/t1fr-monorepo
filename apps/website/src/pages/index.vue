@@ -4,6 +4,8 @@ import { PrimeIcons } from "primevue/api";
 import BlurDiscordPreview from "../assets/images/our_community_blur.png";
 import SquadLogo from "../assets/images/squadron_logo.png";
 
+definePage({ meta: { icon: "mdi-home" } });
+
 const isLogoEnter = ref(false);
 const titleShow = ref(false);
 const isScrollDownHintShow = ref(false);
@@ -58,7 +60,11 @@ onMounted(async () => {
                 </div>
             </ArticleSection>
             <ArticleSection>
-                <template #header>我們的<span :class="PrimeIcons.DISCORD" class="text-5xl mx-2" />社群</template>
+                <template #header>
+                    <span>我們的</span>
+                    <MdiDiscord />
+                    <span>社群</span>
+                </template>
                 <div class="flex lg:flex-row flex-column w-full gap-4">
                     <div class="flex flex-column justify-content-between gap-3">
                         <div class="flex flex-column gap-3">
@@ -71,7 +77,10 @@ onMounted(async () => {
                                 Discord 社群需要您的帳號進行手機驗證，造成不便敬請見諒
                             </div>
                         </div>
-                        <ExternalLink href="https://discord.gg/t1fr" :icon="PrimeIcons.DISCORD" class="align-self-center bg-discord w-full">
+                        <ExternalLink href="https://discord.gg/t1fr" class="align-self-center bg-discord w-full">
+                            <template #icon>
+                                <MdiDiscord />
+                            </template>
                             <span class="text-2xl line-height-1">加入我們的 Discord</span>
                         </ExternalLink>
                     </div>
@@ -81,8 +90,12 @@ onMounted(async () => {
         </div>
         <div id="home-footer" class="mt-4 flex align-items-center p-2 gap-2">
             <div class="text-400 mr-auto">© Copyright by T1FR@R&D</div>
-            <ExternalLink href="https://discord.gg/t1fr" icon="DISCORD" class="bg-discord border-round-2xl" />
-            <ExternalLink href="https://www.youtube.com/@t1fr.official" icon="YOUTUBE" class="bg-youtube border-round-2xl" />
+            <ExternalLink href="https://discord.gg/t1fr" class="bg-discord border-round-2xl">
+                <MdiDiscord />
+            </ExternalLink>
+            <ExternalLink href="https://www.youtube.com/@t1fr.official" class="bg-youtube border-round-2xl">
+                <MdiYoutube />
+            </ExternalLink>
         </div>
     </ScrollPanel>
 </template>

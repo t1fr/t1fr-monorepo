@@ -69,7 +69,7 @@ async function save(event: DataTableCellEditCompleteEvent) {
                 <PieChart field="type" :value="accounts" />
             </Dialog>
         </template>
-        <Column field="name" header="遊戲 ID" :sortable="true" class="table-fit-content" style="min-width: 14rem" />
+        <Column field="name" header="遊戲 ID" :sortable="true" style="min-width: 14rem" />
         <Column field="ownerId" header="擁有者">
             <template #body="{ data, field }">
                 <MemberSnippet :id="data[field]" />

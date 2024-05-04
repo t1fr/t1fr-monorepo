@@ -1,4 +1,5 @@
 <script setup lang="ts">
+definePage({ meta: { exclude: true } });
 </script>
 
 <template>

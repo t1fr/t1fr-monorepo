@@ -12,7 +12,6 @@ const router = useRouter();
 auth.verify();
 
 onErrorCaptured(error => {
-    console.error(error);
     toast.error({ detail: error });
 });
 
@@ -28,6 +27,7 @@ function mappingRoute(route: RouteRecordRaw): MenuItem {
     return {
         label: path ? t(`path.${path}`) : path,
         route: path,
+        icon: route.meta?.icon,
         items: route.children?.filter(checkPermission).map(subroute => mappingRoute(subroute)),
     };
 }
