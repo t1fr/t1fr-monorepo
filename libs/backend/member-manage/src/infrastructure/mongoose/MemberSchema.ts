@@ -2,7 +2,8 @@ import { InjectModel, ModelDefinition, Prop, Schema, SchemaFactory } from "@nest
 import { Model } from "mongoose";
 import { MemberType } from "../../domain";
 import type { AccountSchema } from "./AccountSchema";
-import { AccountSchemaRefToken, MemberManageMongooseConnection, MemberSchemaRefToken } from "./connection";
+import { AccountSchemaRefToken, MemberManageMongooseConnection, MemberSchemaRefToken, PointLogSchemaRefToken } from "./connection";
+import type { PointLogSchema } from "./PointLogSchema";
 
 @Schema({ collection: "members", versionKey: false, timestamps: true })
 export class MemberSchema {
@@ -33,12 +34,15 @@ export class MemberSchema {
     accounts!: AccountSchema[];
 
     accountCount?: number;
+
+    pointLogs!: PointLogSchema[];
 }
 
 const memberSchema = SchemaFactory.createForClass(MemberSchema);
 
 memberSchema.virtual("accounts", { ref: AccountSchemaRefToken, localField: "discordId", foreignField: "ownerId" });
 memberSchema.virtual("accountCount", { ref: AccountSchemaRefToken, localField: "discordId", foreignField: "ownerId", count: true });
+memberSchema.virtual("pointLogs", { ref: PointLogSchemaRefToken, localField: "discordId", foreignField: "memberId" });
 
 export const MemberModelDef: ModelDefinition = { name: MemberSchemaRefToken, schema: memberSchema };
 

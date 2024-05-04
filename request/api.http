@@ -7,6 +7,10 @@ GET {{baseUrl}}/accounts
 GET {{baseUrl}}/members
 
 
+### 獲取自身點數資訊與帳號清單
+// @no-log
+GET {{baseUrl}}/members/me/summary
+
 ### 重新獲取與當前 cookie jwt token 相關的成員資訊
 // @no-log
 POST {{baseUrl}}/auth/verify

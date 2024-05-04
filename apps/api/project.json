@@ -3,25 +3,15 @@
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
     "sourceRoot": "apps/api/src",
     "projectType": "application",
-    "tags": [],
+    "tags": ["backend"],
     "targets": {
+        "build": {
+            "executor": "@nx/vite:build"
+        },
         "serve": {
-            "executor": "@nx/js:node",
-            "defaultConfiguration": "development",
-            "options": {
-                "buildTarget": "api:build"
-            },
-            "configurations": {
-                "development": {
-                    "buildTarget": "api:build:development"
-                },
-                "production": {
-                    "buildTarget": "api:build:production"
-                }
-            }
+            "executor": "@nx/vite:dev-server"
         },
         "container": {},
-        "deploy": {}
-
+        "backend-deploy": {}
     }
 }

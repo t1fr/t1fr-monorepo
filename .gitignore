@@ -42,3 +42,5 @@ Thumbs.db
 
 apps/**/config/*.json
 apps/**/config/*.yaml
+
+**/vite.config.mts.timestamp-*

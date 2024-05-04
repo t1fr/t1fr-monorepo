@@ -18,7 +18,7 @@ export class ListAccountDTO {
     activity!: number;
 
     @ApiProperty({ enum: AccountType, description: "帳號類型", nullable: true })
-    type!: string | null;
+    type!: AccountType | null;
 
     @ApiProperty({ example: "2022-11-01", description: "日期格式 YYYY-MM-DD" })
     joinDate!: Date;

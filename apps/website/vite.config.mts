@@ -1,0 +1,77 @@
+/// <reference types='vitest' />
+import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
+import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin";
+import Vue from "@vitejs/plugin-vue";
+import * as process from "node:process";
+import { resolve } from "path";
+import AutoImports from "unplugin-auto-import/vite";
+import IconsResolver from "unplugin-icons/resolver";
+import Icons from "unplugin-icons/vite";
+import { PrimeVueResolver } from "unplugin-vue-components/resolvers";
+import Components from "unplugin-vue-components/vite";
+import { VueRouterAutoImports } from "unplugin-vue-router";
+import VueRouter from "unplugin-vue-router/vite";
+import { defineConfig } from "vite";
+import Layouts from "vite-plugin-vue-layouts";
+
+const DEPLOY_PATH = process.env["DEPLOY_PATH"];
+
+if (DEPLOY_PATH === undefined) {
+    console.error("DEPLOY_PATH 未定義")
+    process.exit(1)
+}
+
+export default defineConfig({
+    root: __dirname,
+    base: `/${DEPLOY_PATH}/`,
+    cacheDir: "../../node_modules/.vite/apps/website",
+    server: {
+        port: 4200,
+        host: "localhost",
+    },
+
+    preview: {
+        port: 4300,
+        host: "localhost",
+    },
+
+    plugins: [
+        VueRouter({ dts: "./dts/typed-router.d.ts", root: __dirname }),
+        Layouts(),
+        Vue({ script: { defineModel: true } }),
+        Components({ dirs: ["./src/components"], resolvers: [PrimeVueResolver(), IconsResolver({ prefix: "" })], dts: "./dts/components.d.ts" }),
+        AutoImports({
+            dts: "./dts/auto-imports.d.ts",
+            imports: ["vue", "@vueuse/core", "pinia", VueRouterAutoImports, "vue-i18n"],
+            dirs: ["./src/composition", "./src/tools", "./src/stores"],
+            vueTemplate: true,
+        }),
+        VueI18nPlugin({ include: resolve(__dirname, "./src/i18n/**") }),
+        Icons(),
+        nxViteTsPaths(),
+    ],
+
+    build: {
+        outDir: "../../dist/apps/website",
+        reportCompressedSize: true,
+        commonjsOptions: {
+            transformMixedEsModules: true,
+        },
+        emptyOutDir: true,
+    },
+
+    test: {
+        globals: true,
+        cache: {
+            dir: "../../node_modules/.vitest",
+        },
+        environment: "jsdom",
+        include: ["src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+
+        reporters: ["default"],
+        coverage: {
+            reportsDirectory: "../../coverage/apps/website",
+            provider: "v8",
+        },
+    },
+});

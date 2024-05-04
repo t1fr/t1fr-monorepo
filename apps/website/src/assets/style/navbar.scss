@@ -1,0 +1,55 @@
+.navbar.p-menubar {
+    background-color: var(--squadron-primary-color);
+    border-color: var(--squadron-primary-color);
+    border-radius: 0;
+    padding: 0 0.5rem;
+    gap: 0.5rem;
+
+    >*:not(.p-menubar-root-list) {
+        padding: 0.5rem 0;
+    }
+
+    .p-submenu-list {
+        z-index: 2 !important;
+        padding: 0;
+
+    }
+
+    .p-menubar-root-list {
+        align-self: stretch;
+        flex-wrap: nowrap;
+        padding: 0;
+    }
+
+    .p-menuitem,
+    .p-menuitem-content,
+    .p-menuitem-link {
+        height: 100%;
+    }
+
+    .p-menuitem-content {
+        border-radius: 0;
+    }
+
+    .p-menuitem-icon {
+        font-size: 24px;
+    }
+
+    .p-menubar-start {
+        display: flex;
+
+        @media screen and (max-width: 960px) {
+            display: none;
+        }
+    }
+
+    .p-menuitem-text {
+        white-space: nowrap;
+        line-height: normal !important;
+    }
+
+    .p-menuitem-link.active {
+        background-color: var(--squadron-secondary-color);
+    }
+
+}

@@ -75,20 +75,12 @@ export class MemberCommand {
         const result = await this.discordClientService.syncMember();
         if (result.isErr()) return interaction.followUp(result.error.toString());
 
-        const { success, errors } = result.value;
+        const { ids } = result.value;
 
         const content = [
-            "同步聯隊 DC 帳號完畢",
-            `已新增與更新 ${success} 個帳號`,
+            `同步聯隊 DC 帳號完畢`,
+            `已新增與更新 ${ids.length} 個帳號`,
         ];
-
-        if (errors.length) {
-            content.push(`有 ${errors.length} 個帳號更新失敗，原因: `);
-            content.push("```");
-            content.push(errors.slice(0, 8).map(it => it.toString()).join("\n"));
-            if (errors.length > 8) content.push(`以及其他 ${errors.length - 8} 項錯誤`);
-            content.push("```");
-        }
 
         interaction.followUp(content.join("\n"));
     }

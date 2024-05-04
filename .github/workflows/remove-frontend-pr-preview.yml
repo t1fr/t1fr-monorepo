@@ -1,0 +1,24 @@
+name: Remove PR preview site on merged, closed
+on:
+    pull_request:
+        types:
+            - closed
+env:
+    DEPLOY_PATH: "t1fr-pr${{github.event.pull_request.number}}-${{github.event.pull_request.head.ref}}"
+jobs:
+    remove:
+        runs-on: ubuntu-latest
+        steps:
+            - name: 移除本次 PR 的預覽用網站
+              uses: appleboy/ssh-action@v1.0.3
+              with:
+                  host: 114.32.177.157
+                  username: T1FR Server
+                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                  script: rm -rf ./Documents/services/nginx/sites/${{env.DEPLOY_PATH}}
+            - name: 移除有關預覽用網站的 PR 評論
+              uses: thollander/actions-comment-pull-request@v2
+              with:
+                  message: deleting...
+                  comment_tag: deploy
+                  mode: delete

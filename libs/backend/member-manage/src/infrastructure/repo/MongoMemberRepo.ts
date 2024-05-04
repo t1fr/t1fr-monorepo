@@ -6,6 +6,7 @@ import { AsyncResult, Err, Ok } from "ts-results-es";
 import {
     Account,
     AccountId,
+    AccountNoOwnerError,
     AccountNotFoundError,
     FindAccountByIdResult,
     Member,
@@ -18,8 +19,6 @@ import { AccountModel, AccountSchema, BackupModel, InjectAccountModel, InjectBac
 import { AccountDoc, AccountMapper, MemberDoc, MemberMapper } from "./MemberMapper";
 
 class MongoMemberRepo implements MemberRepo {
-
-
     @InjectAccountModel()
     private readonly accountModel!: AccountModel;
 
@@ -30,7 +29,7 @@ class MongoMemberRepo implements MemberRepo {
     @InjectBackupModel()
     private readonly backupModel!: BackupModel;
 
-    save<T extends Member | Member[]>(data: T): AsyncActionResult<MemberId[]> {
+    save<T extends Member | Member[]>(data: T, markLeaveOnNoUpdate?: true): AsyncActionResult<MemberId[]> {
         const memberDocs = new Array<MemberDoc>();
         const accountDocs = new Array<AccountDoc>();
         const models = castArray(data);
@@ -40,10 +39,14 @@ class MongoMemberRepo implements MemberRepo {
             accountDocs.push(...accounts);
         });
 
+        const memberWrite: AnyBulkWriteOperation[] = memberDocs.map(({ discordId, ...other }) => ({
+            updateOne: { filter: { discordId }, update: { $set: { ...other, isLeave: false } }, upsert: true },
+        }))
+
+        if (markLeaveOnNoUpdate) memberWrite.unshift({ updateMany: { filter: {}, update: { $set: { isLeave: true } } } })
+
         const promise = Promise.all([
-            this.memberModel.bulkWrite(memberDocs.map(({ discordId, ...other }) => ({
-                updateOne: { filter: { discordId }, update: { $set: other }, upsert: true },
-            }))),
+            this.memberModel.bulkWrite(memberWrite),
             this.accountModel.bulkWrite(accountDocs.map(({ gaijinId, ...other }) => ({
                 updateOne: { filter: { gaijinId }, update: { $set: other } },
             }))),
@@ -56,8 +59,21 @@ class MongoMemberRepo implements MemberRepo {
     findMemberById(memberId: MemberId): AsyncActionResult<Member> {
         const promise = this.memberModel.findOne({ discordId: memberId.value })
             .populate("accounts")
+            .populate("pointLogs")
             .lean()
             .then(doc => doc === null ? Err(MemberNotFoundError.create(memberId)) : Ok(MemberMapper.fromMongo(doc)));
+        return new AsyncResult(promise);
+    }
+
+    findMemberByAccountId(accountId: AccountId): AsyncActionResult<Member> {
+        const promise = this.accountModel.findOne({ gaijinId: accountId.value }, { ownerId: true })
+            .lean()
+            .then(accountDoc => {
+                if (accountDoc === null) return Err(AccountNotFoundError.create(accountId))
+                if (accountDoc.ownerId === null) return Err(AccountNoOwnerError.create(accountId))
+                return this.findMemberById(new MemberId(accountDoc.ownerId)).promise
+            })
+
         return new AsyncResult(promise);
     }
 

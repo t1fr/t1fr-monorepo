@@ -1,18 +1,20 @@
 import { AssignAccountOwnerHandler } from "./AssignAccountOwnerHandler";
 import { BackupHandler } from "./BackupHandler";
+import { SetAccountTypeHandler } from "./SetAccountTypeHandler";
 import { SyncMemberHandler } from "./SyncMemberHandler";
 
-export * from "./SyncMember";
-export * from "./JoinMember";
+export * from "./AssignAccountOwner";
+export * from "./Backup";
 export * from "./DisbandMember";
+export * from "./JoinMember";
+export * from "./SetAccountType";
+export * from "./SyncMember";
 export * from "./UpdateMemberInfo";
 export * from "./UpdateMemberType";
-export * from "./AssignAccountOwner";
-export * from "./SetAccountType";
-export * from "./Backup";
 
 export const MemberManageCommandHandler = [
     SyncMemberHandler,
     AssignAccountOwnerHandler,
     BackupHandler,
+    SetAccountTypeHandler
 ];

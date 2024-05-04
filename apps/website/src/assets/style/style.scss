@@ -1,0 +1,24 @@
+:root {
+  --squadron-primary-color: #1c1c1c;
+  --squadron-secondary-color: #363636;
+}
+
+body,
+html {
+  font-family: var(--font-family);
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  overflow-y: hidden;
+}
+
+.clickable {
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(110%);
+    color: var(--highlight-text-color);
+  }
+}

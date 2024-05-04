@@ -1,7 +1,10 @@
 import { Provider } from "@nestjs/common";
+import { AsyncActionResult } from "@t1fr/backend/ddd-types";
 import { FilterQuery, ProjectionType } from "mongoose";
-import { ListAccountDTO, ListExistMemberDTO, MemberInfo, MemberQueryRepo, SearchAccountByNameDTO } from "../../application";
-import { AccountModel, AccountSchema, InjectAccountModel, InjectMemberModel, MemberModel } from "../mongoose";
+import { AsyncResult, Err, Ok } from "ts-results-es";
+import { GetPointLogDTO, ListAccountDTO, ListExistMemberDTO, MemberDetail, MemberInfo, MemberQueryRepo, PageControl, SearchAccountByNameDTO } from "../../application";
+import { MemberNotFoundError, PointType } from "../../domain";
+import { AccountModel, AccountSchema, InjectAccountModel, InjectMemberModel, InjectPointLogModel, MemberModel, PointLogModel, PointLogSchema } from "../mongoose";
 
 class MongoMemberQueryRepo implements MemberQueryRepo {
 
@@ -10,6 +13,9 @@ class MongoMemberQueryRepo implements MemberQueryRepo {
 
     @InjectMemberModel()
     private readonly memberModel!: MemberModel;
+
+    @InjectPointLogModel()
+    private readonly pointLogModel!: PointLogModel;
 
     async searchAccountByName(name: string): Promise<SearchAccountByNameDTO[]> {
         const filter: FilterQuery<AccountSchema> = name.length ? { name: { $regex: RegExp(name, "i") } } : {};
@@ -59,6 +65,68 @@ class MongoMemberQueryRepo implements MemberQueryRepo {
             onVacation,
         }));
     }
+
+    getMemberDetail(memberId: string): AsyncActionResult<MemberDetail> {
+        const promise = this.memberModel.findOne({ discordId: memberId })
+            .populate("accounts")
+            .populate("pointLogs")
+            .lean()
+            .then(doc => {
+                if (doc === null) return Err(MemberNotFoundError.create(memberId));
+                const { accounts, pointLogs } = doc;
+
+                const point: MemberDetail["point"] = {
+                    "absense": { total: 0, logs: [] },
+                    "reward": { total: 0, logs: [] },
+                    "penalty": { total: 0, logs: [] },
+                };
+
+                pointLogs.forEach(log => {
+                    const delta = parseFloat(log.delta.toString());
+                    point[log.type].total += delta;
+                    point[log.type].logs.push({
+                        date: log.date,
+                        memberId: log.memberId,
+                        delta: delta.toString(),
+                        comment: log.comment,
+                        category: log.category,
+                    });
+                });
+
+                return Ok({
+                    accounts: accounts.map(account => {
+                        const { gaijinId: id, name, personalRating, activity, type, joinDate } = account;
+                        return { id, name, personalRating, activity, type, joinDate };
+                    }),
+                    point,
+                });
+            });
+
+        return new AsyncResult(promise);
+    }
+
+    async getPointLogs(type: PointType, control: PageControl, memberId: string | undefined): Promise<GetPointLogDTO> {
+
+        const filter: FilterQuery<PointLogSchema> = memberId ? { memberId, type } : { type }
+
+        const [logs, total] = await Promise.all([
+            this.pointLogModel
+                .find(filter, null, { skip: control.skip, limit: control.rows })
+                .lean(),
+            this.pointLogModel.countDocuments(filter)
+        ])
+
+
+        return {
+            total,
+            logs: logs.map(it => {
+                const { date, delta, comment, category, memberId } = it;
+                return { date, delta: delta.toString(), category, comment, memberId }
+            })
+        }
+    }
+
+
 }
 
 export const MongoMemberQueryRepoProvider: Provider = { provide: MemberQueryRepo, useClass: MongoMemberQueryRepo };

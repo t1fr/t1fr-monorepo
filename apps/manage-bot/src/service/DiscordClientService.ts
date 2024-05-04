@@ -56,13 +56,11 @@ export class DiscordClientService {
         if (!guild) throw Error(`不在 T1FR 伺服器 ${this.constants.guilds.t1fr}`);
         const members = await guild.members.fetch();
         if (!members) throw Error(`無法獲取成員資料`);
-
         const syncData = members
-            .filter(member => member.roles.cache.hasAny(this.constants.roles.officer, this.constants.roles.relaxer))
+            .filter(member => !member.user.bot && member.roles.cache.hasAny(this.constants.roles.fighter, this.constants.roles.relaxer))
             .map(member => this.TransformDiscordMemberToSyncData(member));
 
-        const result = await this.commandBus.execute(new SyncMember(syncData));
-        return result.map(({ ids, errors }) => ({ success: ids.length, errors }));
+        return this.commandBus.execute(new SyncMember(syncData));
     }
 
     async updateSqbChannelName(): Promise<Result<void, string>> {

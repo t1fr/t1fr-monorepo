@@ -23,12 +23,13 @@ export class ViolateAccountTypeRuleError extends DomainError {
 export class MemberNotFoundError extends DomainError {
     readonly memberId: string;
 
-    constructor(memberId: MemberId) {
-        super({ context: ViolateAccountTypeRuleError, message: `找不到 ID 為 ${memberId.value} 的成員`, noLog: true });
-        this.memberId = memberId.value;
+    constructor(memberId: MemberId | string) {
+        const memberIdValue = memberId instanceof MemberId ? memberId.value : memberId;
+        super({ context: ViolateAccountTypeRuleError, message: `找不到 ID 為 ${memberIdValue} 的成員`, noLog: true });
+        this.memberId = memberIdValue;
     }
 
-    static create(memberId: MemberId) {
+    static create(memberId: MemberId | string) {
         return new MemberNotFoundError(memberId);
     }
 }
@@ -37,6 +38,12 @@ export class MemberNotFoundError extends DomainError {
 export class AccountNotFoundError extends DomainError {
     static create(accountId: AccountId) {
         return new AccountNotFoundError({ context: AccountNotFoundError, message: `找不到 ID 為 ${accountId.value} 的戰雷帳號` });
+    }
+}
+
+export class AccountNoOwnerError extends DomainError {
+    static create(accountId: AccountId) {
+        return new AccountNoOwnerError({ context: AccountNoOwnerError, message: `戰雷帳號 ${accountId.value} 還未有主人，不可設置帳號類型` });
     }
 }
 

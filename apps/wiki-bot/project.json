@@ -2,25 +2,16 @@
     "name": "wiki-bot",
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
     "sourceRoot": "apps/wiki-bot/src",
-    "projectType": "application",
-    "tags": [],
+    "projectType": "application",    
+    "tags": ["backend", "bot"],
     "targets": {
+        "build": {
+            "executor": "@nx/vite:build"
+        },
         "serve": {
-            "executor": "@nx/js:node",
-            "defaultConfiguration": "development",
-            "options": {
-                "buildTarget": "wiki-bot:build"
-            },
-            "configurations": {
-                "development": {
-                    "buildTarget": "wiki-bot:build:development"
-                },
-                "production": {
-                    "buildTarget": "wiki-bot:build:production"
-                }
-            }
+            "executor": "@nx/vite:dev-server"
         },
         "container": {},
-        "deploy": {}
+        "backend-deploy": {}
     }
 }

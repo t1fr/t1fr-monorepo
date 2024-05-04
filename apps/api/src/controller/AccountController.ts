@@ -1,8 +1,7 @@
-import { BadRequestException, Body, Controller, Get, HttpStatus, Inject, Param, Patch, Res, UseGuards } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, Inject, Param, Patch, UseGuards } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { ApiResponse } from "@nestjs/swagger";
-import { AssignAccountOwner, ListAccountDTO, MemberQueryRepo, SetAccountType } from "@t1fr/backend/member-manage";
-import { Response } from "express";
+import { AssignAccountOwner, ListAccountDTO, MemberQueryRepo, ScrapeAccount, SetAccountType } from "@t1fr/backend/member-manage";
 import { JwtGuard, OfficerGuard } from "../guard";
 
 type UpdateAccountDTO = { type?: string | null; ownerId?: string; }
@@ -16,6 +15,12 @@ export class AccountController {
     @MemberQueryRepo()
     private readonly memberRepo!: MemberQueryRepo;
 
+    @Get("sync")
+    private sync() {
+        this.commandBus.execute(new ScrapeAccount())
+    }
+
+
     @Get()
     @UseGuards(JwtGuard, OfficerGuard)
     @ApiResponse({ description: "聯隊內的帳號資訊，延遲最長 4 小時", type: ListAccountDTO, isArray: true })
@@ -25,11 +30,10 @@ export class AccountController {
 
     @Patch(":id")
     @UseGuards(JwtGuard, OfficerGuard)
-    async updateAccount(@Param("id") id: string, @Body() data: UpdateAccountDTO, @Res() response: Response) {
+    updateAccount(@Param("id") id: string, @Body() data: UpdateAccountDTO) {
         if (data.type !== undefined && data.ownerId !== undefined) throw new BadRequestException("不可同時設定帳號類型與擁有者");
-        if (data.type !== undefined) return await this.commandBus.execute(new SetAccountType({ id: id, type: data.type }));
-        if (data.ownerId !== undefined) return await this.commandBus.execute(new AssignAccountOwner({ accountId: id, memberId: data.ownerId }));
-
-        return response.status(HttpStatus.NO_CONTENT);
+        if (data.type === undefined && data.ownerId === undefined) throw new BadRequestException("無效的請求");
+        if (data.type !== undefined) return this.commandBus.execute(new SetAccountType({ id: id, type: data.type }));
+        if (data.ownerId !== undefined) return this.commandBus.execute(new AssignAccountOwner({ accountId: id, memberId: data.ownerId }));
     }
 }

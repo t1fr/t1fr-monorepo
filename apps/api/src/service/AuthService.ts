@@ -17,10 +17,11 @@ export class AuthService {
 
     async login(referer: string, code: string | undefined): Promise<User> {
         if (!code) throw new UnauthorizedException("無效的授權");
-        const userOrError = await this.getToken(code, referer)
+        const userOrError = await this.getToken(referer, code)
             .andThen(token => this.getUserId(token))
             .andThen(id => this.queryMember(id))
             .promise;
+
 
         if (userOrError.isErr()) throw new InternalServerErrorException(userOrError.error);
 
@@ -36,7 +37,7 @@ export class AuthService {
     };
 
     private getToken(referer: string, code: string) {
-        const redirect_uri = `${referer}/auth/redirect`;
+        const redirect_uri = `${referer}redirect`;
         const data = { grant_type: "authorization_code", code, redirect_uri };
         const promise = this.httpService.axiosRef.post<DiscordTokenResponse>(
             AuthService.DiscordTokenUrl, data, AuthService.RequestTokenConfig,

@@ -2,3 +2,4 @@ export const MemberManageMongooseConnection = "MEMBER_MANAGE_MONGOOSE_CONNECTION
 
 export const MemberSchemaRefToken = "MemberSchema";
 export const AccountSchemaRefToken = "AccountSchema";
+export const PointLogSchemaRefToken = "PointLogSchema";

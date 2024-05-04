@@ -1,4 +1,4 @@
-import { Command, DomainError } from "@t1fr/backend/ddd-types";
+import { Command } from "@t1fr/backend/ddd-types";
 import { z } from "zod";
 import { MemberType } from "../../domain";
 
@@ -17,4 +17,4 @@ export class SyncMember extends Command<SyncMember, SyncMemberOutput> {
     }).array();
 }
 
-export type SyncMemberOutput = { ids: string[], errors: DomainError[] }
+export type SyncMemberOutput = { ids: string[] }
