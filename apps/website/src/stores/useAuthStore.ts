@@ -1,22 +1,22 @@
-import type { MemberInfo } from "@t1fr/backend/member-manage";
+import type { MemberInfo as RemoteMemberInfo } from "@t1fr/backend/member-manage";
 import { defineStore } from "pinia";
-import { Member } from "../types";
+import { MemberInfo } from "../types";
 
 export const useAuthStore = defineStore("auth", () => {
-    const userData = ref<Member>();
+    const userData = ref<MemberInfo>();
     const httpService = useHttpService();
     const router = useRouter()
     async function logout() {
         return httpService.delete("auth", null, { withCredentials: true }).then(() => (userData.value = undefined));
     }
 
-    function infoToMember({ id, name, isOfficer, avatarUrl }: MemberInfo) {
-        userData.value = new Member(id, name, isOfficer, false, avatarUrl)
+    function infoToMember({ id, name, isOfficer, avatarUrl }: RemoteMemberInfo) {
+        userData.value = new MemberInfo({ id, name, isOfficer, avatarUrl })
     }
 
     function verify() {
         httpService
-            .post<MemberInfo>("auth/verify", null, { withCredentials: true })
+            .post<RemoteMemberInfo>("auth/verify", null, { withCredentials: true })
             .then((value) => infoToMember(value))
             .catch(console.warn);
     }

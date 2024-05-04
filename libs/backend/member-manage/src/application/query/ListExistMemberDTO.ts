@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import type { MemberType } from "../../domain";
 
 export class ListExistMemberDTO {
     @ApiProperty({ name: "DC 頭像連結" })
@@ -23,5 +24,5 @@ export class ListExistMemberDTO {
     onVacation!: boolean;
 
     @ApiProperty({ name: "隊員類型" })
-    type!: string;
+    type!: MemberType;
 }

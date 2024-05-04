@@ -1,4 +1,4 @@
-import { PointType } from "../../domain";
+import { AccountType, PointType } from "../../domain";
 
 export interface PointLog {
     date: Date,
@@ -17,7 +17,7 @@ interface Account {
 
     activity: number;
 
-    type: string | null;
+    type: AccountType | null;
 
     joinDate: Date;
 }

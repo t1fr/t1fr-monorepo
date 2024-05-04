@@ -4,5 +4,5 @@ import type { PointLog } from "./PointLog";
 
 export interface Summary {
     accounts: Pick<Account, "name" | "activity" | "personalRating" | "type">[];
-    points: { [key in PointType]: { sum: number; logs: PointLog[] } };
+    point: Record<PointType, { total: number; logs: PointLog[] }>;
 }
