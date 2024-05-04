@@ -5,6 +5,7 @@ on:
             - "main"
 env:
     DEPLOY_PATH: "t1fr-pr${{github.event.pull_request.number}}-${{github.event.pull_request.head.ref}}"
+    BASE_URL: "/t1fr-pr${{github.event.pull_request.number}}-${{github.event.pull_request.head.ref}}/"
 
 jobs:
     build:

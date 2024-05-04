@@ -7,6 +7,7 @@ on:
 
 env:
     DEPLOY_PATH: "t1fr"
+    BASE_URL: "/"
 
 permissions:
     actions: write

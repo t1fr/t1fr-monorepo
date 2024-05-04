@@ -17,6 +17,7 @@ import { WikiCommand } from "./WikiCommand";
 @Module({
     imports: [
         ConfigsModule.forRoot({
+            configDir: join(import.meta.dirname, "./config"),
             schema: z.object({
                 database: z.object({
                     mongo: z.object({
@@ -27,7 +28,7 @@ import { WikiCommand } from "./WikiCommand";
         }),
         AdvancedI18nModule.forRoot({
             fallbackLanguage: "en-US",
-            loaderOptions: { path: join(__dirname, "/i18n/"), watch: true },
+            loaderOptions: { path: join(import.meta.dirname, "/i18n/"), watch: true },
             loader: I18nYamlLoader,
             resolvers: [AcceptLanguageResolver],
         }),

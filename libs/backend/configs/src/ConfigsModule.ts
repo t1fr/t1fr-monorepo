@@ -5,7 +5,6 @@ import { load } from "js-yaml";
 import { get, isArray, merge, mergeWith } from "lodash-es";
 import { Error } from "mongoose";
 import * as path from "node:path";
-import { resolve } from "path";
 import { env } from "process";
 import { z } from "zod";
 import { ConfigHelper } from "./ConfigHelper";
@@ -18,7 +17,7 @@ export class ConfigsModule {
 
     private static logger: Logger | undefined;
 
-    static forRoot(options?: Partial<ConfigsModuleOptions>): DynamicModule {
+    static forRoot(options?: ConfigsModuleOptions): DynamicModule {
         const normalizeOptions = this.normalizeOptions(options);
         if (normalizeOptions.logging) this.logger = new Logger(ConfigModule.name);
         ConfigHelper.Config = this.getRawConfig(normalizeOptions.configDir, normalizeOptions.watch);
@@ -50,9 +49,6 @@ export class ConfigsModule {
         };
 
         const normalize = options ? merge(defaultOptions, options) : defaultOptions;
-
-        normalize.configDir = resolve(__dirname, normalize.configDir);
-
         return normalize;
     }
 

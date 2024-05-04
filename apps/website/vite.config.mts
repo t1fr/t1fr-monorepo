@@ -17,12 +17,12 @@ import Layouts from "vite-plugin-vue-layouts";
 
 
 export default defineConfig(({ command }) => {
-    const DEPLOY_PATH = command === "build" && process.env["DEPLOY_PATH"]
-        ? `/${process.env["DEPLOY_PATH"]}/`
+    const BASE_URL = command === "build" && process.env["BASE_URL"]
+        ? process.env["BASE_URL"]
         : undefined;
     return {
         root: __dirname,
-        base: DEPLOY_PATH,
+        base: BASE_URL,
         cacheDir: "../../node_modules/.vite/apps/website",
         server: {
             port: 4200,

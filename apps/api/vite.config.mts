@@ -16,7 +16,6 @@ export default defineConfig(({ command }) => {
             port: 6518,
         },
         define: {
-            __dirname: JSON.stringify(command === "build" ? resolve(root, outputPath) : resolve(__dirname, "src")),
             __BUILD__: command === "build"
         },
         legacy: {

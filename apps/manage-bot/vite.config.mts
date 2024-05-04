@@ -13,7 +13,6 @@ export default defineConfig(({ command }) => {
     return {
         root: __dirname,
         define: {
-            __dirname: JSON.stringify(command === "build" ? resolve(root, outputPath) : resolve(__dirname, "src")),
             __BUILD__: command === "build"
         },
         legacy: {

@@ -8,6 +8,7 @@ import { MemberManageModule, MemberManageMongooseConnection } from "@t1fr/backen
 import { SqbModule, SqbMongooseConnection } from "@t1fr/backend/sqb";
 import { concat } from "lodash-es";
 import { NecordModule } from "necord";
+import { join } from "path";
 import { z } from "zod";
 import { AccountAutocompleteInterceptor } from "./autocomplete";
 import { DiscordCommands } from "./command";
@@ -18,6 +19,7 @@ import { DiscordClientConfig, DiscordClientService, DiscordListener } from "./se
     imports: [
         ScheduleModule.forRoot(),
         ConfigsModule.forRoot({
+            configDir: join(import.meta.dirname, "./config"),
             schema: z.object({
                 database: z.object({
                     mongo: z.object({
