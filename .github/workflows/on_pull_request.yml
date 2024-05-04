@@ -44,6 +44,9 @@ jobs:
             - uses: webfactory/ssh-agent@v0.9.0
               with:
                   ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+            - run: ls
+            - run: ls dist
+            - run: ls dist/apps
             - name: 部屬前端網站
               run: pnpm run frontend-deploy:affect
 
