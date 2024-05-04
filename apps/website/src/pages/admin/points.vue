@@ -4,7 +4,7 @@ import type { ColumnProps } from "primevue/column";
 import type { PointType } from "@t1fr/backend/member-manage";
 
 const pointLogStore = usePointLogStore();
-const { total, logs } = storeToRefs(pointLogStore);
+const { total, logs, loading } = storeToRefs(pointLogStore);
 const currentTotal = computed(() => total.value.get(pointType.value) ?? 0);
 const currentLogs = computed(() => logs.value.get(pointType.value) ?? []);
 const pointType = useLocalStorage<PointType>("points", "reward");
@@ -39,7 +39,7 @@ const columnProps: ColumnProps = {
 </script>
 
 <template>
-    <DataTable v-bind="tableProps" v-model:first="first" v-model:rows="rows" :value="currentLogs" :total-records="currentTotal">
+    <DataTable v-bind="tableProps" :loading="loading" v-model:first="first" v-model:rows="rows" :value="currentLogs" :total-records="currentTotal">
         <template #header>
             <div class="table-header-content">
                 <span role="title" class="mr-auto">點數紀錄</span>
