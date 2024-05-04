@@ -26,7 +26,7 @@ jobs:
 
             - name: 測試 Affected，若無則取消 workflow
               run: |
-                  AFFECTED=$(nx show projects --affected --type app);
+                  AFFECTED=$(pnpm nx show projects --affected --type app);
                   if [ -z "$AFFECTED" ]; then
                     echo "no affected"
                     gh run cancel ${{ github.run_id }}
