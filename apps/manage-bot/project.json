@@ -5,20 +5,11 @@
     "projectType": "application",
     "tags": [],
     "targets": {
+        "build": {
+            "executor": "@nx/vite:build"
+        },
         "serve": {
-            "executor": "@nx/js:node",
-            "defaultConfiguration": "development",
-            "options": {
-                "buildTarget": "manage-bot:build"
-            },
-            "configurations": {
-                "development": {
-                    "buildTarget": "manage-bot:build:development"
-                },
-                "production": {
-                    "buildTarget": "manage-bot:build:production"
-                }
-            }
+            "executor": "@nx/vite:dev-server"
         },
         "container": {},
         "deploy": {}
