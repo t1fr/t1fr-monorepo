@@ -9,9 +9,11 @@ runs:
               node-version: 20
               cache: "pnpm"
         - run: pnpm install --frozen-lockfile
+          shell: bash
         - name: 設定 NX affected 所需要的 base 跟 main 變數
           uses: nrwl/nx-set-shas@v4
 
         # 讓 CI 在 PR 時可以正常作用，必須執行
         - run: git branch --track main origin/main
           if: ${{ github.event_name == 'pull_request' }}
+          shell: bash
