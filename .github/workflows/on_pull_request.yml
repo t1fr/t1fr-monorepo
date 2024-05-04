@@ -34,6 +34,12 @@ jobs:
               with:
                   name: ${{env.DEPLOY_PATH}}
                   path: dist
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+            - name: 設置環境
+              uses: ./.github/actions/setup-env
+
             - name: 部屬前端網站
               run: pnpm run frontend-deploy:affect
 
