@@ -1,11 +1,9 @@
-import type { PrimeIconsOptions } from "primevue/api";
-
+export { }; // needed in .d.ts files
 declare module "vue-router" {
     interface RouteMeta {
         exclude?: boolean;
-        group?: boolean;
         order?: number;
-        icon?: keyof PrimeIconsOptions;
+        icon?: string;
         memberOnly?: boolean;
         officerOnly?: boolean;
     }

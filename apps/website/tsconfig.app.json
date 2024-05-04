@@ -6,7 +6,8 @@
         "types": [
             "unplugin-vue-router/client",
             "vite-plugin-vue-layouts/client",
-            "vite/client"
+            "vite/client",
+            "unplugin-icons/types/vue3"
         ],
     },
     "exclude": [
