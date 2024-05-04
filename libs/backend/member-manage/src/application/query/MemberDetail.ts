@@ -1,10 +1,11 @@
 import { PointType } from "../../domain";
 
-interface PointLog {
+export interface PointLog {
     date: Date,
-    delta: number;
+    delta: string;
     comment: string;
     category: string;
+    memberId: string;
 }
 
 interface Account {

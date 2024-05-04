@@ -7,7 +7,7 @@ export {}
 declare global {
   const EffectScope: typeof import('vue')['EffectScope']
   const Formatter: typeof import('../src/tools/formater')['Formatter']
-  const PointLog: typeof import('../src/stores/usePointLogStore')['PointLog']
+  const PointLog: typeof import('../src/types/PointLog')['PointLog']
   const SquadronBattleAchievement: typeof import('../src/stores/squadron-battle-achievement')['SquadronBattleAchievement']
   const acceptHMRUpdate: typeof import('pinia')['acceptHMRUpdate']
   const asyncComputed: typeof import('@vueuse/core')['asyncComputed']
@@ -322,7 +322,6 @@ declare module 'vue' {
   interface ComponentCustomProperties {
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly Formatter: UnwrapRef<typeof import('../src/tools/formater')['Formatter']>
-    readonly PointLog: UnwrapRef<typeof import('../src/stores/usePointLogStore')['PointLog']>
     readonly SquadronBattleAchievement: UnwrapRef<typeof import('../src/stores/squadron-battle-achievement')['SquadronBattleAchievement']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
@@ -630,7 +629,6 @@ declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly Formatter: UnwrapRef<typeof import('../src/tools/formater')['Formatter']>
-    readonly PointLog: UnwrapRef<typeof import('../src/stores/usePointLogStore')['PointLog']>
     readonly SquadronBattleAchievement: UnwrapRef<typeof import('../src/stores/squadron-battle-achievement')['SquadronBattleAchievement']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
