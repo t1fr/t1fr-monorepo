@@ -10,7 +10,6 @@ import { z } from "zod";
 import { ConfigHelper } from "./ConfigHelper";
 import { ConfigsModuleOptions } from "./ConfigsModuleOptions";
 
-
 @Global()
 @Module({})
 export class ConfigsModule {
@@ -49,6 +48,8 @@ export class ConfigsModule {
         };
 
         const normalize = options ? merge(defaultOptions, options) : defaultOptions;
+        console.log(`configs module: ${import.meta.dirname}`)
+        normalize.configDir = path.resolve(import.meta.dirname, normalize.configDir);
         return normalize;
     }
 

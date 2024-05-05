@@ -6,17 +6,16 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ConfigsModule, MongooseConfig } from "@t1fr/backend/configs";
 import { MemberManageModule, MemberManageMongooseConnection } from "@t1fr/backend/member-manage";
-import { join } from "path";
 import { z } from "zod";
 import { Controllers } from "./controller";
 import { ConfigJwtOptionFactory, ManageMongooseOptionsFactory } from "./factory";
 import { AuthService } from "./service";
 
+console.log(`dirname: ${import.meta.dirname}`)
 
 @Module({
     imports: [
         ConfigsModule.forRoot({
-            configDir: join(import.meta.dirname, "./config"),
             schema: z.object({
                 http: z.object({
                     cookie: z.object({

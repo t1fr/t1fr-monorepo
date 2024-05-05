@@ -7,7 +7,6 @@
       "node"
     ],
     "declaration": false,
-    "emitDecoratorMetadata": true,
     "target": "ESNext"
   },
   "exclude": [

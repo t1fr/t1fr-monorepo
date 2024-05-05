@@ -4,6 +4,7 @@ import { NestExpressApplication } from "@nestjs/platform-express";
 import "tslib";
 import { AppModule } from "./AppModule";
 
+
 async function createApp(standaloneApp: boolean) {
     const app = await (standaloneApp ? NestFactory.createApplicationContext(AppModule) : NestFactory.create<NestExpressApplication>(AppModule));
     return app;
