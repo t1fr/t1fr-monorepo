@@ -38,7 +38,7 @@ const focusType = ref<PointType>("reward");
                     </template>
                 </Column>
                 <Column field="category" header="類別" class="center w-8rem" />
-                <Column field="detail" header="事由" class="center" />
+                <Column field="comment" header="事由" class="center" />
             </DataTable>
         </TabPanel>
     </TabView>
