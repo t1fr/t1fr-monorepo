@@ -1,9 +1,9 @@
 import { HttpService } from "@nestjs/axios";
 import { Inject, Injectable } from "@nestjs/common";
-import { AsyncActionResult, UnexpectedError, ZodParseError } from "@t1fr/backend/ddd-types";
+import { type AsyncActionResult, UnexpectedError, ZodParseError } from "@t1fr/backend/ddd-types";
 import { AsyncResult, Err, Ok } from "ts-results-es";
 import { History, HistoryId, HistoryRepo, Performance, Squad } from "../domain";
-import { HistoryModel, HistorySchema, InjectHistoryModel } from "./HistorySchema";
+import { type HistoryModel, HistorySchema, InjectHistoryModel } from "./HistorySchema";
 import { SquadApiResponse } from "./SquadApiResponse";
 
 @Injectable()

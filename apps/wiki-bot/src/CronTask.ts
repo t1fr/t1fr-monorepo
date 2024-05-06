@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger, OnApplicationBootstrap } from "@nestjs/common";
+import { Inject, Injectable, Logger, type OnApplicationBootstrap } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { ScrapeDatamine } from "@t1fr/backend/wiki";

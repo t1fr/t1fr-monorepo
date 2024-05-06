@@ -1,6 +1,5 @@
 import { Logger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import "tslib";
 import { AppModule } from "./AppModule";
 
 async function createApp(standaloneApp: boolean) {
@@ -15,7 +14,5 @@ async function bootstrap() {
     Logger.log(`🚀 WIKI BOT 執行中`);
 }
 
-if (__BUILD__) bootstrap();
 
-
-export const appServer = createApp(false)
+export const appServer = __BUILD__ ? bootstrap() : createApp(false)

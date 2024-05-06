@@ -1,7 +1,10 @@
 import { ValueObject } from "@t1fr/backend/ddd-types";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { Err, Ok } from "ts-results-es";
-import "dayjs/plugin/utc";
 import { InvalidSectionError } from "./DomainError";
+
+dayjs.extend(utc)
 
 interface SectionProps {
     from: Date;

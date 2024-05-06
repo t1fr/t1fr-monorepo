@@ -1,4 +1,4 @@
-import { Enum, isEnum } from "@t1fr/backend/ddd-types";
+import type { Enum } from "@t1fr/backend/ddd-types";
 
 export const VehicleClass = {
     Bomber: "type_bomber",
@@ -44,4 +44,3 @@ export const VehicleClass = {
 
 export type VehicleClass = Enum<typeof VehicleClass>;
 
-export const isValidVehicleClass = isEnum(VehicleClass);

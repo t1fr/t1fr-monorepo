@@ -1,5 +1,5 @@
 import { Section } from "../../domain";
-import { Season } from "./Season";
+import type { Season } from "./Season";
 
 export class SeasonMapper {
     static fromSections(sections: Section[]): Season {

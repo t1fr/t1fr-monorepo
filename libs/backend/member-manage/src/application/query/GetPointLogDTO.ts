@@ -1,3 +1,3 @@
-import { PointLog } from "./MemberDetail";
+import type { PointLog } from "./MemberDetail";
 
 export type GetPointLogDTO = { total: number, logs: PointLog[] }

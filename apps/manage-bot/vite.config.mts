@@ -1,6 +1,5 @@
 import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin";
-import { resolve } from "path";
-import typescript from 'rollup-plugin-typescript2';
+import generatePackageJson from "rollup-plugin-generate-package-json";
 import { defineConfig } from "vite";
 import { VitePluginNode } from "vite-plugin-node";
 import { viteStaticCopy } from 'vite-plugin-static-copy';
@@ -14,10 +13,7 @@ export default defineConfig(({ command }) => {
     return {
         root: __dirname,
         define,
-        legacy: {
-            proxySsrExternalModules: true
-        },
-        build: { emptyOutDir: true, },
+        build: { emptyOutDir: true, rollupOptions: { plugins: [generatePackageJson({ baseContents: { main: "main.mjs", name: "@t1fr/manage-bot" } })] } },
         plugins: [
             nxViteTsPaths(),
             viteStaticCopy({
@@ -25,17 +21,10 @@ export default defineConfig(({ command }) => {
                     { src: "./config", dest: "." },
                 ]
             }),
-            {
-                ...typescript({ tsconfig: resolve(__dirname, "./tsconfig.app.json") }),
-                apply: "build"
-            },
             ...VitePluginNode({
                 adapter: 'nest',
-
                 appPath: './src/main',
-
                 exportName: 'appServer',
-
                 tsCompiler: 'swc',
                 initAppOnBoot: true,
             }),

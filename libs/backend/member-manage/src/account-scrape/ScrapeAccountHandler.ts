@@ -1,9 +1,9 @@
-import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, type IInferredCommandHandler } from "@nestjs/cqrs";
 import { DomainError, UnexpectedError } from "@t1fr/backend/ddd-types";
 import { Err, Result } from "ts-results-es";
 import { MemberRepo } from "../domain";
 import { AccountDataSource } from "./AccountDataSource";
-import { ScrapeAccount, ScrapeAccountOutput } from "./ScrapeAccount";
+import { ScrapeAccount, type ScrapeAccountOutput } from "./ScrapeAccount";
 
 @CommandHandler(ScrapeAccount)
 export class ScrapeAccountHandler implements IInferredCommandHandler<ScrapeAccount> {

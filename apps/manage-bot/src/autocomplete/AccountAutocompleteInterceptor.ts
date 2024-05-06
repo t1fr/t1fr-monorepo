@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { MemberQueryRepo, SearchAccountByNameDTO } from "@t1fr/backend/member-manage";
-import { ApplicationCommandOptionChoiceData, AutocompleteInteraction } from "discord.js";
+import { MemberQueryRepo, type SearchAccountByNameDTO } from "@t1fr/backend/member-manage";
+import { type ApplicationCommandOptionChoiceData, AutocompleteInteraction } from "discord.js";
 import { AutocompleteInterceptor } from "necord";
 
 @Injectable()

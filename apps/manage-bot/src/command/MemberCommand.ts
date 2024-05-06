@@ -1,7 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { GuildMember, ModalBuilder, TextInputStyle } from "discord.js";
-import { Context, createCommandGroupDecorator, Ctx, Modal, ModalContext, ModalParam, Options, SlashCommand, SlashCommandContext, Subcommand } from "necord";
+import type { ModalContext, SlashCommandContext } from "necord";
+import { Context, createCommandGroupDecorator, Ctx, Modal, ModalParam, Options, SlashCommand, Subcommand } from "necord";
 import { DiscordClientService } from "../service";
 import { configLayout } from "../utlity";
 import { JoinOption } from "./MemberOption";

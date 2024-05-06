@@ -1,8 +1,8 @@
-import { IInferredQueryHandler, QueryHandler } from "@nestjs/cqrs";
+import { type IInferredQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { DomainError } from "@t1fr/backend/ddd-types";
 import { Result } from "ts-results-es";
 import { SectionRepo } from "../../domain";
-import { FindCurrentSection, FindCurrentSectionOutput } from "./FindCurrentSection";
+import { FindCurrentSection, type FindCurrentSectionOutput } from "./FindCurrentSection";
 
 @QueryHandler(FindCurrentSection)
 export class FindCurrentSectionHandler implements IInferredQueryHandler<FindCurrentSection> {

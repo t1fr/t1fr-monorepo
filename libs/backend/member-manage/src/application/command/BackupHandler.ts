@@ -1,8 +1,8 @@
-import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, type IInferredCommandHandler } from "@nestjs/cqrs";
 import { DomainError } from "@t1fr/backend/ddd-types";
 import { Result } from "ts-results-es";
 import { MemberRepo } from "../../domain";
-import { Backup, BackupOutput } from "./Backup";
+import { Backup, type BackupOutput } from "./Backup";
 
 @CommandHandler(Backup)
 export class BackupHandler implements IInferredCommandHandler<Backup> {

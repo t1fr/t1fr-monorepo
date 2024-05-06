@@ -1,4 +1,4 @@
-import { Enum, isEnum } from "@t1fr/backend/ddd-types";
+import type { Enum } from "@t1fr/backend/ddd-types";
 
 export const Country = {
     England: "country_britain",
@@ -62,4 +62,3 @@ export const Country = {
 } as const;
 
 export type Country = Enum<typeof Country>;
-export const isValidCountry = isEnum(Country);

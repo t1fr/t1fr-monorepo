@@ -1,4 +1,4 @@
-import { Enum } from "@t1fr/backend/ddd-types";
+import type { Enum } from "@t1fr/backend/ddd-types";
 
 export const ObtainSource = {
     Gift: "gift",

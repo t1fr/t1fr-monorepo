@@ -5,7 +5,7 @@ import { Account, AccountId } from "./Account";
 import { AccountType } from "./AccountType";
 import { InvalidAccountTypeCountError } from "./DomainError";
 import { MemberType } from "./MemberType";
-import { PointLog, PointSummary } from "./PointLog";
+import { PointLog, type PointSummary } from "./PointLog";
 import { PointType } from "./PointType";
 
 interface RequiredMemberProps {

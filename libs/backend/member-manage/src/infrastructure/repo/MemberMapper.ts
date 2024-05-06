@@ -1,4 +1,4 @@
-import { Undefinedable } from "@t1fr/backend/ddd-types";
+import type { Undefinedable } from "@t1fr/backend/ddd-types";
 import { countBy, get, pickBy } from "lodash-es";
 import { Account, AccountId, Member, MemberId, PointType } from "../../domain";
 import { AccountSchema, MemberSchema } from "../mongoose";

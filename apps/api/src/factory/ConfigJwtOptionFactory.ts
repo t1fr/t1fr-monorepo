@@ -1,4 +1,4 @@
-import { JwtModuleOptions, JwtOptionsFactory } from "@nestjs/jwt";
+import type { JwtModuleOptions, JwtOptionsFactory } from "@nestjs/jwt";
 import { Configuration } from "@t1fr/backend/configs";
 
 export class ConfigJwtOptionFactory implements JwtOptionsFactory {

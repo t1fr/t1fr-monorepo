@@ -1,10 +1,11 @@
 import { Inject, Injectable, UseInterceptors } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { AdvancedI18nService } from "@t1fr/backend/i18n";
-import { FindById, FindByIdOutput, ScrapeDatamine } from "@t1fr/backend/wiki";
+import { FindById, type FindByIdOutput, ScrapeDatamine } from "@t1fr/backend/wiki";
 import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 import { range } from "lodash-es";
-import { Context, createCommandGroupDecorator, NumberOption, Options, SlashCommandContext, StringOption, Subcommand } from "necord";
+import type { SlashCommandContext } from "necord";
+import { Context, createCommandGroupDecorator, NumberOption, Options, StringOption, Subcommand } from "necord";
 import { WikiAutocompleteInterceptor } from "./WikiAutocomplete";
 
 const WikiCommandGroup = createCommandGroupDecorator({

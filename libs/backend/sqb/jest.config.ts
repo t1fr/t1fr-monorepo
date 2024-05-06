@@ -1,5 +1,5 @@
 /* eslint-disable */
-export default {
+module.exports = {
     displayName: "backend-sqb",
     preset: "../../../jest.preset.js",
     testEnvironment: "node",

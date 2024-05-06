@@ -1,4 +1,4 @@
-import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, type IInferredCommandHandler } from "@nestjs/cqrs";
 import { Result } from "ts-results-es";
 import { Member, MemberId, MemberRepo } from "../../domain";
 import { SyncMember } from "./SyncMember";

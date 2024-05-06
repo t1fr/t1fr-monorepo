@@ -1,14 +1,14 @@
-import { DynamicModule, Global, Logger, Module, Provider } from "@nestjs/common";
+import { type DynamicModule, Global, Logger, Module, type Provider } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { existsSync, readFileSync } from "fs";
 import { load } from "js-yaml";
 import { get, isArray, merge, mergeWith } from "lodash-es";
 import { Error } from "mongoose";
-import * as path from "node:path";
+import path from "path";
 import { env } from "process";
 import { z } from "zod";
 import { ConfigHelper } from "./ConfigHelper";
-import { ConfigsModuleOptions } from "./ConfigsModuleOptions";
+import type { ConfigsModuleOptions } from "./ConfigsModuleOptions";
 
 @Global()
 @Module({})

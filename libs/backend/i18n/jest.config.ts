@@ -1,5 +1,5 @@
 /* eslint-disable */
-export default {
+module.exports = {
     displayName: "backend-i18n",
     preset: "../../../jest.preset.js",
     testEnvironment: "node",

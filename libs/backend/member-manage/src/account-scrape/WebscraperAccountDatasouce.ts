@@ -1,10 +1,10 @@
-import { Logger, Provider } from "@nestjs/common";
+import { Logger, type Provider } from "@nestjs/common";
 import { PromisePool } from "@supercharge/promise-pool";
 import { Configuration } from "@t1fr/backend/configs";
 import { ZodParseError } from "@t1fr/backend/ddd-types";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import _ from "lodash-es";
+import * as _ from "lodash-es";
 import { InjectBrowser } from "nestjs-puppeteer";
 import { Browser, Page } from "puppeteer";
 import { AsyncResult, Err, Ok, Result } from "ts-results-es";

@@ -1,4 +1,4 @@
-import { DynamicModule, Module } from "@nestjs/common";
+import { type DynamicModule, Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { union } from "lodash-es";
 import { AccountScrapeModule } from "./account-scrape";

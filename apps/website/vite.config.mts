@@ -2,7 +2,6 @@
 import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
 import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin";
 import Vue from "@vitejs/plugin-vue";
-import * as process from "node:process";
 import { resolve } from "path";
 import AutoImports from "unplugin-auto-import/vite";
 import IconsResolver from "unplugin-icons/resolver";
@@ -61,12 +60,9 @@ export default defineConfig(({ command }) => {
 
         test: {
             globals: true,
-            cache: {
-                dir: "../../node_modules/.vitest",
-            },
             environment: "jsdom",
             include: ["src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
-
+            passWithNoTests: true,
             reporters: ["default"],
             coverage: {
                 reportsDirectory: "../../coverage/apps/website",

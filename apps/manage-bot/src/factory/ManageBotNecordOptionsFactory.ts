@@ -1,6 +1,6 @@
 import { AbstractNecordOptionsFactory, Configuration } from "@t1fr/backend/configs";
 import { IntentsBitField } from "discord.js";
-import { NecordModuleOptions } from "necord";
+import type { NecordModuleOptions } from "necord";
 
 export class ManageBotNecordOptionsFactory extends AbstractNecordOptionsFactory {
     @Configuration({

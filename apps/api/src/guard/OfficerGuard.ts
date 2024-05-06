@@ -1,5 +1,5 @@
-import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common";
-import { Request } from "express";
+import { type CanActivate, type ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common";
+import type { Request } from "express";
 
 @Injectable()
 export class OfficerGuard implements CanActivate {

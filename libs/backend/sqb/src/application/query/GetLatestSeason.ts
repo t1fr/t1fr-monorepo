@@ -1,6 +1,6 @@
 import { Query } from "@t1fr/backend/ddd-types";
 import { z } from "zod";
-import { Season } from "./Season";
+import type { Season } from "./Season";
 
 export class GetLatestSeason extends Query<GetLatestSeason, Season> {
     constructor() {

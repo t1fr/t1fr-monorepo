@@ -1,9 +1,9 @@
-import { Injectable, Provider } from "@nestjs/common";
-import { AsyncActionResult } from "@t1fr/backend/ddd-types";
+import { Injectable, type Provider } from "@nestjs/common";
+import type { AsyncActionResult } from "@t1fr/backend/ddd-types";
 import { castArray } from "lodash-es";
 import { AsyncResult, Err, Ok } from "ts-results-es";
-import { BattleRating, EnumField, FindByNameOptions, FindVehicleByIdError, SearchCriteria, Vehicle, VehicleRepo } from "../domain";
-import { InjectVehicleModel, VehicleModel, VehicleSchema } from "./VehicleSchema";
+import { BattleRating, type EnumField, type FindByNameOptions, FindVehicleByIdError, type SearchCriteria, Vehicle, VehicleRepo } from "../domain";
+import { InjectVehicleModel, type VehicleModel, VehicleSchema } from "./VehicleSchema";
 
 @Injectable()
 export class MongoVehicleRepo implements VehicleRepo {

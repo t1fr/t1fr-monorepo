@@ -1,4 +1,4 @@
-import { Command as TypedCommand, IEvent, Query as TypedQuery } from "@nestjs-architects/typed-cqrs";
+import { Command as TypedCommand, Query as TypedQuery, type IEvent } from "@nestjs-architects/typed-cqrs";
 import { Err, Ok, Result } from "ts-results-es";
 import { z } from "zod";
 import { DomainError, ZodParseError } from "./DomainError";

@@ -1,4 +1,4 @@
-import { IInferredQueryHandler, QueryHandler } from "@nestjs/cqrs";
+import { type IInferredQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { VehicleRepo } from "../../domain";
 import { ListEnumableField } from "./ListEnumableField";
 

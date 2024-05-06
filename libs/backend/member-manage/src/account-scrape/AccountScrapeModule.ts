@@ -1,6 +1,5 @@
-import { DynamicModule } from "@nestjs/common";
+import type { DynamicModule } from "@nestjs/common";
 import { PuppeteerModule } from "nestjs-puppeteer";
-import * as process from "node:process";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { ScrapeAccountCommandToEvent, ScrapeAccountHandler } from "./ScrapeAccountHandler";
 import { WebscraperAccountDatasourceProvider } from "./WebscraperAccountDatasouce";
@@ -15,7 +14,6 @@ export class AccountScrapeModule {
                 ],
             };
         } else {
-            console.log(process.env["CHROME_PATH"]);
             return {
                 imports: [PuppeteerModule.forRoot({
                     headless: "new",

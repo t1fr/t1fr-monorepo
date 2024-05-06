@@ -1,4 +1,4 @@
-import { Module, Provider } from "@nestjs/common";
+import { Module, type Provider } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { concat } from "lodash-es";
 import { SqbCommandHandlers, SqbQueryHandlers } from "./application";

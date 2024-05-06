@@ -1,12 +1,11 @@
-import { INestApplication, Logger } from "@nestjs/common";
-import { CustomOrigin } from "@nestjs/common/interfaces/external/cors-options.interface";
+import { type INestApplication, Logger } from "@nestjs/common";
+import type { CustomOrigin } from "@nestjs/common/interfaces/external/cors-options.interface";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
-import { NestExpressApplication } from "@nestjs/platform-express";
+import type { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import cookieParser from "cookie-parser";
 import process from "process";
-import "tslib";
 import { AppModule } from "./AppModule";
 import { ResultTransformer } from "./ResultInterceptor";
 
@@ -48,7 +47,4 @@ async function bootstrap() {
 
 
 
-if (__BUILD__) bootstrap();
-
-
-export const appServer = createApp()
+export const appServer = __BUILD__ ? bootstrap() : createApp()

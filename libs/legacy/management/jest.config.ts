@@ -1,5 +1,5 @@
 /* eslint-disable */
-export default {
+module.exports = {
     displayName: "legacy-management",
     preset: "../../../jest.preset.js",
     testEnvironment: "node",

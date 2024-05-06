@@ -1,4 +1,4 @@
-import { Enum, isEnum } from "@t1fr/backend/ddd-types";
+import type { Enum } from "@t1fr/backend/ddd-types";
 
 export const Type = {
     Army: "army",
@@ -9,4 +9,3 @@ export const Type = {
 } as const;
 
 export type Type = Enum<typeof Type>
-export const isValidType = isEnum(Type);

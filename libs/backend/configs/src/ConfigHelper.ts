@@ -1,4 +1,4 @@
-import { ConfigObject } from "@nestjs/config";
+import type { ConfigObject } from "@nestjs/config";
 
 type Transform = (value: unknown) => unknown
 

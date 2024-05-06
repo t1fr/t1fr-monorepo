@@ -1,6 +1,6 @@
 import { ValueObject } from "@t1fr/backend/ddd-types";
 import { Ok } from "ts-results-es";
-import { PointType } from "./PointType";
+import type { PointType } from "./PointType";
 
 export type PointLogProps = {
     delta: number;

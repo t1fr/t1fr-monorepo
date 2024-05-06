@@ -1,8 +1,8 @@
-import { Injectable, Provider } from "@nestjs/common";
-import { AsyncActionResult, UnexpectedError } from "@t1fr/backend/ddd-types";
+import { Injectable, type Provider } from "@nestjs/common";
+import { type AsyncActionResult, UnexpectedError } from "@t1fr/backend/ddd-types";
 import { AsyncResult, Err, Ok } from "ts-results-es";
-import { SeasonMeta, SeasonNotFoundError, Section, SectionNotFoundError, SectionRepo } from "../domain";
-import { InjectSectionModel, SectionModel, SectionSchema } from "./SectionSchema";
+import { type SeasonMeta, SeasonNotFoundError, Section, SectionNotFoundError, SectionRepo } from "../domain";
+import { InjectSectionModel, type SectionModel, SectionSchema } from "./SectionSchema";
 
 @Injectable()
 class MongoSectionRepo implements SectionRepo {

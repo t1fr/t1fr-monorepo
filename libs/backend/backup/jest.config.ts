@@ -1,5 +1,5 @@
 /* eslint-disable */
-export default {
+module.exports = {
     displayName: "backend-backup",
     preset: "../../../jest.preset.js",
     testEnvironment: "node",

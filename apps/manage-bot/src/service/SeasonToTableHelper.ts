@@ -1,4 +1,4 @@
-import { Season } from "@t1fr/backend/sqb";
+import type { Season } from "@t1fr/backend/sqb";
 import dayjs from "dayjs";
 
 export class SeasonToTableHelper {

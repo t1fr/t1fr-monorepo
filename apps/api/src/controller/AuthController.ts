@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Headers, Inject, Post, Res, UseGuards } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Configuration } from "@t1fr/backend/configs";
-import { CookieOptions, Response } from "express";
+import type { CookieOptions, Response } from "express";
 import { UserToken } from "../decorator";
 import { JwtGuard } from "../guard";
 import { AuthService } from "../service";

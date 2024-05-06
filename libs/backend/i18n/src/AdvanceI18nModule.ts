@@ -1,6 +1,6 @@
-import { DynamicModule, Module } from "@nestjs/common";
+import { type DynamicModule, Module } from "@nestjs/common";
 import { I18nModule } from "nestjs-i18n";
-import { I18nOptions } from "nestjs-i18n/dist/interfaces/i18n-options.interface";
+import type { I18nOptions } from "nestjs-i18n/dist/interfaces/i18n-options.interface";
 import { AdvancedI18nService } from "./AdvancedI18nService";
 
 @Module({})

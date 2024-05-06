@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
 import { AdvancedI18nService } from "@t1fr/backend/i18n";
-import { ListEnumableField, Search, SearchOutput } from "@t1fr/backend/wiki";
-import { ApplicationCommandOptionChoiceData, AutocompleteInteraction } from "discord.js";
+import { ListEnumableField, Search, type SearchOutput } from "@t1fr/backend/wiki";
+import { type ApplicationCommandOptionChoiceData, AutocompleteInteraction } from "discord.js";
 import { AutocompleteInterceptor } from "necord";
 
 @Injectable()

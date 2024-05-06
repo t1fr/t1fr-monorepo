@@ -1,22 +1,11 @@
-import { Provider } from "@nestjs/common";
-import { AsyncActionResult } from "@t1fr/backend/ddd-types";
+import type { Provider } from "@nestjs/common";
+import type { AsyncActionResult } from "@t1fr/backend/ddd-types";
 import { castArray, isUndefined, omitBy } from "lodash-es";
-import { AnyBulkWriteOperation } from "mongoose";
+import type { AnyBulkWriteOperation } from "mongoose";
 import { AsyncResult, Err, Ok } from "ts-results-es";
-import {
-    Account,
-    AccountId,
-    AccountNoOwnerError,
-    AccountNotFoundError,
-    FindAccountByIdResult,
-    Member,
-    MemberId,
-    MemberNotFoundError,
-    MemberRepo,
-    SaveAccountsResult,
-} from "../../domain";
-import { AccountModel, AccountSchema, BackupModel, InjectAccountModel, InjectBackupModel, InjectMemberModel, MemberModel } from "../mongoose";
-import { AccountDoc, AccountMapper, MemberDoc, MemberMapper } from "./MemberMapper";
+import { Account, AccountId, AccountNoOwnerError, AccountNotFoundError, type FindAccountByIdResult, Member, MemberId, MemberNotFoundError, MemberRepo, type SaveAccountsResult, } from "../../domain";
+import { type AccountModel, AccountSchema, type BackupModel, InjectAccountModel, InjectBackupModel, InjectMemberModel, type MemberModel } from "../mongoose";
+import { type AccountDoc, AccountMapper, type MemberDoc, MemberMapper } from "./MemberMapper";
 
 class MongoMemberRepo implements MemberRepo {
     @InjectAccountModel()

@@ -1,4 +1,4 @@
-import { InjectModel, ModelDefinition, Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { InjectModel, type ModelDefinition, Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { MemberType } from "../../domain";
 import type { AccountSchema } from "./AccountSchema";

@@ -1,8 +1,8 @@
-import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, type IInferredCommandHandler } from "@nestjs/cqrs";
 import { DomainError } from "@t1fr/backend/ddd-types";
 import { Result } from "ts-results-es";
 import { AccountId, MemberRepo } from "../../domain";
-import { SetAccountType, SetAccountTypeOutput } from "./SetAccountType";
+import { SetAccountType, type SetAccountTypeOutput } from "./SetAccountType";
 
 @CommandHandler(SetAccountType)
 export class SetAccountTypeHandler implements IInferredCommandHandler<SetAccountType> {

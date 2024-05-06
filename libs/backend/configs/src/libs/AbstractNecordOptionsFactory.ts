@@ -1,6 +1,6 @@
-import { ConfigurableModuleOptionsFactory, Logger } from "@nestjs/common";
+import { type ConfigurableModuleOptionsFactory, Logger } from "@nestjs/common";
 import { Error } from "mongoose";
-import { NecordModuleOptions } from "necord";
+import type { NecordModuleOptions } from "necord";
 
 export abstract class AbstractNecordOptionsFactory implements ConfigurableModuleOptionsFactory<NecordModuleOptions, "createNecordOptions"> {
 

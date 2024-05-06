@@ -1,5 +1,5 @@
 import { Logger } from "@nestjs/common";
-import { MongooseModuleOptions, MongooseOptionsFactory } from "@nestjs/mongoose";
+import type { MongooseModuleOptions, MongooseOptionsFactory } from "@nestjs/mongoose";
 import { castArray, zip } from "lodash-es";
 import { Error } from "mongoose";
 import { z } from "zod";

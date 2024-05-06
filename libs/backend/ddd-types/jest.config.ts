@@ -1,5 +1,5 @@
 /* eslint-disable */
-export default {
+module.exports = {
   displayName: 'backend-ddd-types',
   preset: '../../../jest.preset.js',
   testEnvironment: 'node',

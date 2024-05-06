@@ -2,7 +2,8 @@ import { Injectable } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { DisbandMember, MemberType, UpdateMemberType } from "@t1fr/backend/member-manage";
 import { GuildMember, User } from "discord.js";
-import { Context, TargetUser, UserCommand, UserCommandContext } from "necord";
+import type { UserCommandContext } from "necord";
+import { Context, TargetUser, UserCommand } from "necord";
 
 @Injectable()
 export class MemberUserCommand {

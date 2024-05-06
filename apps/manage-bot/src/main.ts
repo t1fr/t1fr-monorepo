@@ -1,7 +1,6 @@
 import { Logger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import { NestExpressApplication } from "@nestjs/platform-express";
-import "tslib";
+import type { NestExpressApplication } from "@nestjs/platform-express";
 import { AppModule } from "./AppModule";
 
 
@@ -16,7 +15,5 @@ async function bootstrap() {
     Logger.log(`🚀 聯隊管理 BOT 執行中`);
 }
 
-if (__BUILD__) bootstrap();
 
-
-export const appServer = createApp(false)
+export const appServer = __BUILD__ ? bootstrap() : createApp(false)

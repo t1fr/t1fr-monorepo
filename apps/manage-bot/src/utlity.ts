@@ -1,4 +1,5 @@
-import { ActionRowBuilder, APIEmbedField, ModalActionRowComponentBuilder, RestOrArray, TextInputBuilder } from "discord.js";
+import type { APIEmbedField, ModalActionRowComponentBuilder, RestOrArray, } from "discord.js";
+import { ActionRowBuilder, TextInputBuilder } from "discord.js";
 
 export function arrayToChoices(array: readonly string[]) {
     return array.map(value => ({ name: value, value }));

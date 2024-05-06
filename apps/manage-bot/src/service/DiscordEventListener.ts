@@ -1,8 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { UpdateMemberInfo } from "@t1fr/backend/member-manage";
-import { Context, ContextOf, On, Once } from "necord";
-import * as process from "node:process";
+import { Context, type ContextOf, On, Once } from "necord";
 
 @Injectable()
 export class DiscordListener {

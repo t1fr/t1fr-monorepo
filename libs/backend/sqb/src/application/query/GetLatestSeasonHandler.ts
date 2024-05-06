@@ -1,9 +1,9 @@
-import { IInferredQueryHandler, QueryHandler } from "@nestjs/cqrs";
+import { type IInferredQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { DomainError } from "@t1fr/backend/ddd-types";
 import { Result } from "ts-results-es";
 import { SectionRepo } from "../../domain";
 import { GetLatestSeason } from "./GetLatestSeason";
-import { Season } from "./Season";
+import type { Season } from "./Season";
 import { SeasonMapper } from "./SeasonMapper";
 
 @QueryHandler(GetLatestSeason)

@@ -1,5 +1,6 @@
 import { Injectable, UseInterceptors } from "@nestjs/common";
-import { Context, createCommandGroupDecorator, Options, SlashCommand, SlashCommandContext, Subcommand } from "necord";
+import type { SlashCommandContext } from "necord";
+import { Context, createCommandGroupDecorator, Options, SlashCommand, Subcommand } from "necord";
 import { AccountAutocompleteInterceptor } from "../autocomplete";
 import { AwardData, MemberInfoOption, SeasonSummary } from "./PointOption";
 

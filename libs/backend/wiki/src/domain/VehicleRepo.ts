@@ -1,5 +1,5 @@
 import { Inject } from "@nestjs/common";
-import { AsyncActionResult } from "@t1fr/backend/ddd-types";
+import type { AsyncActionResult } from "@t1fr/backend/ddd-types";
 import { Vehicle } from "./model";
 
 export const VehicleRepo = () => Inject(VehicleRepo);

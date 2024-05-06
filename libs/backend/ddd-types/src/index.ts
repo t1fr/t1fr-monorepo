@@ -1,9 +1,9 @@
 export * from "./AggregateRoot";
-export * from "./EntityId";
-export * from "./Entity";
-export * from "./ValueObject";
 export * from "./Command";
-export * from "./Adapter";
-export * from "./Enum";
 export * from "./DomainError";
+export * from "./Entity";
+export * from "./EntityId";
+export * from "./Enum";
 export * from "./UtilityTypes";
+export * from "./ValueObject";
+

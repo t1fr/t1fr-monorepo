@@ -2,7 +2,7 @@ import { Inject, Injectable, UseInterceptors } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { AssignAccountOwner, InvalidAccountTypeCountError, MemberNotFoundError, ScrapeAccount } from "@t1fr/backend/member-manage";
 import { MessageFlagsBitField } from "discord.js";
-import { Context, createCommandGroupDecorator, Options, SlashCommandContext, Subcommand } from "necord";
+import { Context, createCommandGroupDecorator, Options, type SlashCommandContext, Subcommand } from "necord";
 import { AccountAutocompleteInterceptor } from "../autocomplete";
 import { SetOwnershipOption } from "./AccountOption";
 

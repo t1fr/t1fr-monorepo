@@ -1,9 +1,10 @@
-export { GetPointLogDTO } from "./GetPointLogDTO";
+export type { GetPointLogDTO } from "./GetPointLogDTO";
 export { ListAccountDTO } from "./ListAccountDTO";
 export { ListExistMemberDTO } from "./ListExistMemberDTO";
-export { MemberDetail } from "./MemberDetail";
+export type { MemberDetail } from "./MemberDetail";
 export { MemberInfo } from "./MemberInfo";
 export * from "./MemberQueryRepo";
-export { PageControl } from "./PageControl";
+export type { PageControl } from "./PageControl";
+export type { SearchAccountByNameDTO } from "./SearchAccountByNameDTO";
 
 export const MemberManageQueryHandlers = [];

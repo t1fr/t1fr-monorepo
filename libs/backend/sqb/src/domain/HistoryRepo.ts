@@ -1,5 +1,5 @@
 import { Inject } from "@nestjs/common";
-import { AsyncActionResult } from "@t1fr/backend/ddd-types";
+import type { AsyncActionResult } from "@t1fr/backend/ddd-types";
 import { History, HistoryId, Squad } from "./model";
 
 export const HistoryRepo = () => Inject(HistoryRepo);

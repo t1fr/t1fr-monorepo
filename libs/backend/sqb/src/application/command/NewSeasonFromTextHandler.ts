@@ -1,4 +1,4 @@
-import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, type IInferredCommandHandler } from "@nestjs/cqrs";
 import { uniqWith } from "lodash-es";
 import { Err } from "ts-results-es";
 import { SectionRepo, SectionSpanError } from "../../domain";
