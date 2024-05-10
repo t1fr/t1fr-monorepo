@@ -77,9 +77,6 @@ dependencies:
   js-yaml:
     specifier: ^4.1.0
     version: 4.1.0
-  lodash:
-    specifier: ^4.17.21
-    version: 4.17.21
   lodash-es:
     specifier: ^4.17.21
     version: 4.17.21
@@ -229,9 +226,6 @@ devDependencies:
   '@types/js-yaml':
     specifier: ^4.0.9
     version: 4.0.9
-  '@types/lodash':
-    specifier: ^4.17.0
-    version: 4.17.0
   '@types/lodash-es':
     specifier: ^4.17.12
     version: 4.17.12
