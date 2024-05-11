@@ -9,6 +9,8 @@ const toast = useToastService();
 
 const router = useRouter();
 
+useTitle("T1FR 前線遊騎兵團")
+
 if (router.currentRoute.value.name !== "/redirect") {
     auth.verify().then(status => {
         if (!status) auth.startOAuth();
