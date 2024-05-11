@@ -9,7 +9,11 @@ const toast = useToastService();
 
 const router = useRouter();
 
-auth.verify();
+if (router.currentRoute.value.name !== "/redirect") {
+    auth.verify().then(status => {
+        if (!status) auth.startOAuth();
+    });
+}
 
 onErrorCaptured(error => {
     toast.error({ detail: error });
@@ -57,4 +61,3 @@ const items = computed<MenuItem[]>(() =>
 </template>
 
 <style lang="scss"></style>
-
