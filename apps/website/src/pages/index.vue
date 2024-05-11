@@ -15,34 +15,34 @@ onMounted(async () => {
     image.src = SquadLogo;
     image.onload = () => (titleShow.value = true);
 });
+
+const root = ref();
+const header = ref();
+const { y } = useScroll(root);
+const { height } = useElementSize(header);
+const scrollHintOpacity = computed(() => `${Math.max((height.value / 2 - y.value) / (height.value / 2), 0) * 100}%`);
 </script>
 
 <template>
-    <ScrollPanel class="home-root">
-        <div class="home-root-content">
-            <div v-if="!titleShow" class="title-height"></div>
+    <div id="home-root" ref="root">
+        <header class="flex justify-content-center" ref="header">
             <TransitionSlide :offset="[0, '20%']" :duration="1000" @after-enter="isLogoEnter = true">
-                <div v-if="titleShow" class="relative">
-                    <div id="home-title-section" class="flex align-items-center title-height">
-                        <img :src="SquadLogo" alt="T1FR logo" class="home-title-t1fr-logo" />
-                        <TransitionExpand :duration="1500" axis="x" @after-enter="isScrollDownHintShow = true">
-                            <div v-if="isLogoEnter" class="flex flex-column justify-content-center ml-3">
-                                <div style="font-size: min(3rem, 5vw)">The First Frontline Rangers</div>
-                                <div class="font-bold" style="font-size: min(6rem, 10vw)">前線遊騎兵團</div>
-                                <div class="font-italic text-600" style="font-size: min(1rem, 1.5vw)">沒有正義的和平就是暴虐。</div>
-                            </div>
-                        </TransitionExpand>
-                    </div>
+                <div v-if="titleShow" class="flex relative align-items-center title-height">
+                    <img id="t1fr-logo" :src="SquadLogo" alt="T1FR logo" />
+                    <TransitionExpand :duration="1500" axis="x" @after-enter="isScrollDownHintShow = true">
+                        <div v-if="isLogoEnter" id="introduction">
+                            <div role="en-name">The First Frontline Rangers</div>
+                            <div role="name">前線遊騎兵團</div>
+                            <div role="slogan">沒有正義的和平就是暴虐。</div>
+                        </div>
+                    </TransitionExpand>
                     <TransitionFade>
-                        <MdiChevronDoubleDown
-                            v-if="isScrollDownHintShow"
-                            id="home-title-scroll-down-hint"
-                            class="w-full text-center absolute text-200"
-                            style="bottom: 16px; font-size: min(3.5rem, 6vw)"
-                        />
+                        <MdiChevronDoubleDown v-if="isScrollDownHintShow" class="scroll-down-hint w-full text-center absolute text-200" />
                     </TransitionFade>
                 </div>
             </TransitionSlide>
+        </header>
+        <article>
             <ArticleSection header="關於我們">
                 <div class="flex flex-column">
                     <p>
@@ -81,8 +81,8 @@ onMounted(async () => {
                     <img :src="BlurDiscordPreview" alt="Our community" class="border-round-2xl shadow-4" style="object-fit: cover" />
                 </div>
             </ArticleSection>
-        </div>
-        <div id="home-footer" class="mt-4 flex align-items-center p-2 gap-2">
+        </article>
+        <footer>
             <div class="text-400 mr-auto">© Copyright by T1FR@R&D</div>
             <ExternalLink href="https://discord.gg/t1fr" class="bg-discord border-round-2xl">
                 <MdiDiscord />
@@ -90,23 +90,19 @@ onMounted(async () => {
             <ExternalLink href="https://www.youtube.com/@t1fr.official" class="bg-youtube border-round-2xl">
                 <MdiYoutube />
             </ExternalLink>
-        </div>
-    </ScrollPanel>
+        </footer>
+    </div>
 </template>
 
-<style scoped>
-@keyframes home-title-scroll-down-hint-animation {
-    0% {
-        bottom: 16px;
-    }
+<style scoped lang="scss">
+@import "primeflex/primeflex.scss";
 
-    35% {
-        bottom: 32px;
-    }
-
-    70% {
-        bottom: 16px;
-    }
+.scroll-down-hint {
+    animation: 1.2s ease-in-out 0s infinite;
+    animation-name: bouncing;
+    bottom: 16px;
+    font-size: min(3.5rem, 6vw);
+    opacity: v-bind(scrollHintOpacity);
 }
 
 .bg-discord {
@@ -117,58 +113,64 @@ onMounted(async () => {
     background-color: red;
 }
 
-.title-height {
-    height: calc(100dvh - 3rem - 16px);
-}
-
-#home-title-section {
-    > div > div {
+#introduction {
+    @include styleclass("flex flex-column justify-content-center ml-3");
+    > div {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: clip;
     }
+
+    div[role="en-name"] {
+        font-size: min(3rem, 5vw);
+    }
+
+    div[role="name"] {
+        @include styleclass("font-bold");
+        font-size: min(6rem, 10vw);
+    }
+    div[role="slogan"] {
+        @include styleclass("font-italic text-600");
+        font-size: min(1rem, 1.5vw);
+    }
 }
 
-#home-title-scroll-down-hint {
-    animation-name: home-title-scroll-down-hint-animation;
-    animation-duration: 1.2s;
-    animation-iteration-count: 3;
-}
-
-#home-footer {
-    width: 100%;
-    height: 4rem;
-    background-color: var(--squadron-primary-color);
-}
-
-.home-title-t1fr-logo {
+#t1fr-logo {
     width: min(16rem, 28vw);
     height: min(16rem, 28vw);
 }
 
-.home-root {
-    background-image: url("../assets/images/squadron_banner_trans_bg.png");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-attachment: scroll;
-    background-color: #313131;
-    background-size: 70%;
+#home-root {
+    background-color: rgba(49, 49, 49, 100%);
+    z-index: 2;
+    overflow-y: auto;
 
     &::before {
+        background-image: url("../assets/images/squadron_banner_trans_bg.png");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 70%;
+        opacity: 15%;
+        z-index: -1;
         content: "";
         position: absolute;
+        inset: 0;
+    }
+
+    header {
+        height: calc(100dvh - 3rem - 16px);
+    }
+
+    article {
+        @include styleclass("flex flex-column gap-3 align-items-center");
+        background-color: rgba(49, 49, 49, 60%);
+    }
+
+    footer {
+        @include styleclass("mt-4 flex align-items-center p-2 gap-2");
         width: 100%;
-        height: 100%;
-        background-color: rgba(49, 49, 49, 90%);
+        height: 4rem;
+        background-color: var(--squadron-primary-color);
     }
 }
-
-.home-root-content {
-    display: flex;
-    flex-direction: column;
-    row-gap: 1rem;
-    align-items: center;
-    filter: none;
-}
 </style>
-
