@@ -1,5 +1,4 @@
 import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin";
-import generatePackageJson from "rollup-plugin-generate-package-json";
 import { defineConfig } from "vite";
 import { VitePluginNode } from "vite-plugin-node";
 import { viteStaticCopy } from 'vite-plugin-static-copy';
@@ -13,7 +12,7 @@ export default defineConfig(({ command }) => {
     return {
         root: __dirname,
         define,
-        build: { emptyOutDir: true, rollupOptions: { plugins: [generatePackageJson({ baseContents: { main: "main.mjs", name: "@t1fr/manage-bot" } })] } },
+        build: { emptyOutDir: true },
         plugins: [
             nxViteTsPaths(),
             viteStaticCopy({

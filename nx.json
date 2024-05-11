@@ -60,7 +60,8 @@
                 "^production"
             ],
             "options": {
-                "outputPath": "dist/{projectRoot}"
+                "outputPath": "dist/{projectRoot}",
+                "generatePackageJson": true
             },
             "cache": true
         },

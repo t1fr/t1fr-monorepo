@@ -9,7 +9,7 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
 RUN corepack enable
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 
 # Production image, copy all the files and run nest
 FROM docker.io/node:lts as runner
