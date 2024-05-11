@@ -66,6 +66,27 @@ export class Member extends AggregateRoot<MemberId, MemberProps> {
         },
     };
 
+    updatePoint(log: PointLog) {
+        switch (log.props.type) {
+            case PointType.Reward: {
+                if (this.props.point.summary.reward >= 60) return false;
+                this.props.point.logs.push(log)
+                break;
+            }
+            case PointType.Absense: {
+                this.props.point.logs.push(log)
+                break;
+            }
+            case PointType.Penalty: {
+                this.props.point.logs.push(log)
+                break;
+            }
+            default:
+                throw Error(`未知的點數類型 ${log.props.type}`)
+        }
+        return true;
+    }
+
     updateInfo(info: NonBussinessMemberProps) {
         if (info.isOfficer) this.props.isOfficer = info.isOfficer;
         if (info.onVacation) this.props.onVacation = info.onVacation;
@@ -161,6 +182,10 @@ export class Member extends AggregateRoot<MemberId, MemberProps> {
 
     get avatarUrl() {
         return this.props.avatarUrl;
+    }
+
+    get pointLogs() {
+        return this.props.point.logs;
     }
 
     disband() {

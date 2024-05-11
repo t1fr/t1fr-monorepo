@@ -1,10 +1,20 @@
 import type { Undefinedable } from "@t1fr/backend/ddd-types";
 import { countBy, get, pickBy } from "lodash-es";
-import { Account, AccountId, Member, MemberId, PointType } from "../../domain";
-import { AccountSchema, MemberSchema } from "../mongoose";
+import { Types } from "mongoose";
+import { Account, AccountId, Member, MemberId, PointLog, PointType } from "../../domain";
+import { AccountSchema, MemberSchema, PointLogSchema } from "../mongoose";
 
 export type MemberDoc = Undefinedable<Omit<MemberSchema, "accounts">, "avatarUrl" | "onVacation" | "isOfficer" | "nickname">;
 export type AccountDoc = Undefinedable<AccountSchema, "personalRating" | "name" | "activity" | "joinDate" | "owner">;
+export type PointDoc = Pick<PointLogSchema, "comment" | "category" | "delta" | "type" | "memberId">;
+
+export class PointLogMapper {
+    static toMongo(memberId: MemberId, log: PointLog): PointDoc {
+        const { category, comment, delta, type } = log.props;
+        return { memberId: memberId.value, category, comment: comment ?? "", delta: new Types.Decimal128(delta.toString()), type }
+    }
+}
+
 
 export class AccountMapper {
     static fromMongo(doc: AccountSchema): Account {
@@ -26,7 +36,7 @@ export class AccountMapper {
 }
 
 export class MemberMapper {
-    static fromMongo(doc: MemberSchema): Member {
+    static fromMongo(doc: Pick<MemberSchema, "type" | "accounts" | "pointLogs" | "discordId" | "isSponsor" | "isLeave">): Member {
         const id = new MemberId(doc.discordId);
         const accounts = doc.accounts.map(account => AccountMapper.fromMongo(account));
         const pointCount = countBy(doc.pointLogs, it => it.type);
@@ -36,10 +46,6 @@ export class MemberMapper {
             accounts: accounts,
             isSponsor: doc.isSponsor,
             isLeave: doc.isLeave,
-            nickname: doc.nickname,
-            avatarUrl: doc.avatarUrl,
-            onVacation: doc.onVacation,
-            isOfficer: doc.isOfficer,
             point: {
                 summary: {
                     [PointType.Penalty]: get(pointCount, PointType.Penalty, 0),
@@ -52,8 +58,9 @@ export class MemberMapper {
         });
     }
 
-    static toMongo(member: Member): { doc: MemberDoc, accounts: AccountDoc[] } {
+    static toMongo(member: Member): { doc: MemberDoc, accounts: AccountDoc[], logs: PointDoc[] } {
         const accounts = member.accounts.map(account => AccountMapper.toMongo(member.id, account));
+        const logs = member.pointLogs.map(it => (PointLogMapper.toMongo(member.id, it)))
         const doc = pickBy({
             discordId: member.id.value,
             type: member.type,
@@ -64,6 +71,6 @@ export class MemberMapper {
             onVacation: member.onVacation,
             isOfficer: member.isOfficer,
         }, it => it !== undefined) as unknown as MemberDoc;
-        return { doc, accounts };
+        return { doc, accounts, logs };
     }
 }

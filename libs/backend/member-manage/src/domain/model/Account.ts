@@ -5,11 +5,11 @@ import { ViolateAccountTypeRuleError } from "./DomainError";
 
 export interface RequiredAccountProps {
     type: AccountType | null;
+    personalRating: number;
 }
 
 export interface NonRequiredAccountProps {
     name: string;
-    personalRating: number;
     activity: number;
     joinDate: Date;
 }

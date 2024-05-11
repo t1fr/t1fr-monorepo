@@ -1,11 +1,11 @@
 import type { Provider } from "@nestjs/common";
 import type { AsyncActionResult } from "@t1fr/backend/ddd-types";
-import { castArray, isUndefined, omitBy } from "lodash-es";
+import { castArray, groupBy, isUndefined, keyBy, mapValues, omitBy } from "lodash-es";
 import type { AnyBulkWriteOperation } from "mongoose";
 import { AsyncResult, Err, Ok } from "ts-results-es";
-import { Account, AccountId, AccountNoOwnerError, AccountNotFoundError, type FindAccountByIdResult, Member, MemberId, MemberNotFoundError, MemberRepo, type SaveAccountsResult, } from "../../domain";
-import { type AccountModel, AccountSchema, type BackupModel, InjectAccountModel, InjectBackupModel, InjectMemberModel, type MemberModel } from "../mongoose";
-import { type AccountDoc, AccountMapper, type MemberDoc, MemberMapper } from "./MemberMapper";
+import { Account, AccountId, AccountNoOwnerError, AccountNotFoundError, type FindAccountByIdResult, Member, MemberId, MemberNotFoundError, MemberRepo, type SaveAccountsResult } from "../../domain";
+import { type AccountModel, AccountSchema, type BackupModel, InjectAccountModel, InjectBackupModel, InjectMemberModel, InjectPointLogModel, type MemberModel, type PointLogModel, PointLogSchema } from "../mongoose";
+import { type AccountDoc, AccountMapper, type MemberDoc, MemberMapper, type PointDoc } from "./MemberMapper";
 
 class MongoMemberRepo implements MemberRepo {
     @InjectAccountModel()
@@ -14,18 +14,22 @@ class MongoMemberRepo implements MemberRepo {
     @InjectMemberModel()
     private readonly memberModel!: MemberModel;
 
-
     @InjectBackupModel()
     private readonly backupModel!: BackupModel;
+
+    @InjectPointLogModel()
+    private readonly pointLogModel!: PointLogModel;
 
     save<T extends Member | Member[]>(data: T, markLeaveOnNoUpdate?: true): AsyncActionResult<MemberId[]> {
         const memberDocs = new Array<MemberDoc>();
         const accountDocs = new Array<AccountDoc>();
+        const pointDocs = new Array<PointDoc>();
         const models = castArray(data);
         models.forEach(member => {
-            const { doc, accounts } = MemberMapper.toMongo(member);
+            const { doc, accounts, logs } = MemberMapper.toMongo(member);
             memberDocs.push(doc);
             accountDocs.push(...accounts);
+            pointDocs.push(...logs)
         });
 
         const memberWrite: AnyBulkWriteOperation[] = memberDocs.map(({ discordId, ...other }) => ({
@@ -39,8 +43,39 @@ class MongoMemberRepo implements MemberRepo {
             this.accountModel.bulkWrite(accountDocs.map(({ gaijinId, ...other }) => ({
                 updateOne: { filter: { gaijinId }, update: { $set: other } },
             }))),
+            this.pointLogModel.insertMany(pointDocs)
         ])
             .then(() => Ok(models.map(it => it.id)));
+
+        return new AsyncResult(promise);
+    }
+
+    restoreFromBackup(year: number, seasonIndex: number): AsyncActionResult<Member[]> {
+        const timeBound = new Date(year, seasonIndex * 2)
+
+        const pointLogPromise = this.pointLogModel
+            .aggregate<{ _id: string, logs: PointLogSchema[] }>()
+            .match({ date: { $lt: timeBound } })
+            .group({ _id: "$memberId", logs: { $push: "$$ROOT" } })
+            .then(pointLogGroup => mapValues(keyBy(pointLogGroup, it => it._id), it => it.logs))
+
+        const backupPromise = this.backupModel.findOne({ year, seasonIndex }).lean()
+
+        const promise = Promise.all([backupPromise, pointLogPromise])
+            .then(([backup, pointLogIndex]) => {
+                if (backup === null) throw Error(`無法找到 ${year} 年第 ${seasonIndex} 賽季的歷史資料`)
+                const { accounts, members } = backup;
+                if (accounts.some(account => account.ownerId === null)) throw Error(`${year} 年第 ${seasonIndex} 賽季有帳號未設置擁有者`)
+
+                const accountsGroupByOwner = groupBy(accounts, it => it.ownerId)
+
+                return Ok(members.map(member => MemberMapper.fromMongo({
+                    ...member,
+                    isLeave: false,
+                    pointLogs: pointLogIndex[member.discordId] ?? [],
+                    accounts: accountsGroupByOwner[member.discordId] ?? []
+                })))
+            })
 
         return new AsyncResult(promise);
     }
@@ -70,6 +105,7 @@ class MongoMemberRepo implements MemberRepo {
         const promise = this.accountModel.find()
             .lean()
             .then(accounts => accounts.map(account => Account.rebuild(new AccountId(account.gaijinId), {
+                personalRating: account.personalRating,
                 name: account.name,
                 type: account.type,
             })))

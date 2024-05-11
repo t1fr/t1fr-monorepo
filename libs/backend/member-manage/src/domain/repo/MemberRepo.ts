@@ -13,6 +13,8 @@ export interface MemberRepo {
 
     save<T extends Member | Member[]>(data: T, markLeaveOnNoUpdate?: true): AsyncActionResult<MemberId[]>;
 
+    restoreFromBackup(year: number, seasonIndex: number): AsyncActionResult<Member[]>;
+
     findMemberById(memberId: MemberId): AsyncActionResult<Member>;
 
     findMemberByAccountId(accountId: AccountId): AsyncActionResult<Member>;

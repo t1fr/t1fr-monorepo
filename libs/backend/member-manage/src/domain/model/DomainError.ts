@@ -47,3 +47,12 @@ export class AccountNoOwnerError extends DomainError {
     }
 }
 
+export class MemberNoAccountError extends DomainError {
+    memberIds: string[] = [];
+    static create(memberIds: MemberId[]) {
+        const error = new MemberNoAccountError({ context: MemberNoAccountError, message: `有 ${memberIds.length} 位成員沒有帳號` })
+        error.memberIds = memberIds.map(it => it.value);
+        return error;
+    }
+}
+

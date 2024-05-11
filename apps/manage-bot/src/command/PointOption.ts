@@ -1,3 +1,4 @@
+import { PointType } from "@t1fr/backend/member-manage";
 import { BooleanOption, NumberOption, StringOption } from "necord";
 
 export class AwardData {
@@ -23,10 +24,16 @@ export class MemberInfoOption {
     member!: string;
 }
 
-export class SeasonSummary {
-    @StringOption({ name: "type", description: "積分類型", required: true })
+export class SeasonSummaryOption {
+    @StringOption({ name: "type", description: "積分類型", required: true, choices: [{ value: PointType.Reward, name: "獎勵" }] })
     type!: string;
 
-    @BooleanOption({ name: "write", description: "結果是否寫入資料庫" })
-    writeInToDb!: boolean | null;
+    @NumberOption({ name: "year", description: "年份", required: true })
+    year!: number;
+
+    @NumberOption({ name: "season", description: "年份", required: true, choices: [1, 2, 3, 4, 5, 6].map(it => ({ value: it, name: `${it}` })) })
+    seasonIndex!: number;
+
+    @BooleanOption({ name: "write", description: "結果是否寫入資料庫，預設為否" })
+    write!: boolean | null;
 }

@@ -1,14 +1,19 @@
-import { Injectable, UseInterceptors } from "@nestjs/common";
+import { Inject, Injectable, UseInterceptors } from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
+import { CalculateSeasonResult, type CalculateSeasonResultOutput, MemberNoAccountError, PointType } from "@t1fr/backend/member-manage";
 import type { SlashCommandContext } from "necord";
 import { Context, createCommandGroupDecorator, Options, SlashCommand, Subcommand } from "necord";
 import { AccountAutocompleteInterceptor } from "../autocomplete";
-import { AwardData, MemberInfoOption, SeasonSummary } from "./PointOption";
+import { AwardData, MemberInfoOption, SeasonSummaryOption } from "./PointOption";
 
 const PointCommandDecorator = createCommandGroupDecorator({ name: "point", description: "點數相關命令" });
 
 @PointCommandDecorator()
 @Injectable()
 export class PointCommand {
+
+    @Inject()
+    private readonly commandBus!: CommandBus;
 
     @SlashCommand({ name: "me", description: "顯示個人資訊、擁有帳號、各項點數" })
     async summary(@Context() [interaction]: SlashCommandContext) {
@@ -36,19 +41,63 @@ export class PointCommand {
     }
 
     @Subcommand({ name: "season-summary", description: "計算賽季結果並產生獎勵名單內容" })
-    async seasonSummary(@Context() [interaction]: SlashCommandContext, @Options() { writeInToDb, type }: SeasonSummary) {
-        // if (type === "懲罰") return interaction.reply({ content: "未實裝功能" });
-        //
-        // await interaction.deferReply();
-        // const content = await this.pointService.calculate(type, writeInToDb);
-        // await interaction.followUp({ content: "報表如下" });
-        // const channel = interaction.channel;
-        // if (!channel) return;
-        //
-        // for (let i = 0; i < content.length; i += 10) {
-        //     await channel.send({ content: content.slice(i, i + 10).join("\n") });
-        // }
+    async seasonSummary(@Context() [interaction]: SlashCommandContext, @Options() { write, seasonIndex, year, type }: SeasonSummaryOption) {
+        if (type === "懲罰") return interaction.reply({ content: "未實裝功能" });
+
+        const channel = interaction.channel;
+        if (!channel) return interaction.reply("請在文字頻道使用此命令以顯示報表");
+
+        await interaction.deferReply();
+        const normalizedWriteOption = write ?? false;
+        const result = await this.commandBus.execute(new CalculateSeasonResult({ year, seasonIndex, write: normalizedWriteOption, type: PointType.Reward }))
+
+        if (result.isErr()) {
+            const messages = [result.error.toString()]
+            if (result.error instanceof MemberNoAccountError) messages.push(`${result.error.memberIds.map(it => `<@${it}>`).join("\n")}`)
+            return interaction.followUp(messages.join("\n"));
+        }
+
+        await interaction.followUp("報表如下");
+
+        const messages = this.pointCalculateResultToMessage(result.value, PointType.Reward)
+
+        let buffer = ""
+        for (const message of messages) {
+            if (buffer.length + message.length <= 2048) {
+                buffer += `\n${message}`
+            } else {
+                channel.send(buffer);
+                buffer = ""
+            }
+        }
+
+        if (buffer.length > 0) channel.send(buffer)
     }
+
+    private pointCalculateResultToMessage(data: CalculateSeasonResultOutput, type: PointType) {
+
+        if (type === PointType.Reward) {
+
+            let total = 0;
+
+            const messages = data
+                .toSorted((a, b) => (b.group as number) - (a.group as number))
+                .map(({ group, records }) => {
+                    const point = group as number;
+                    total += (point * records.length)
+                    const recordsContent = records.map(record => `> <@${record.memberId}>：${record.comment}`)
+                    return [`## 獲得積分：${group}`].concat(recordsContent).join("\n")
+                })
+
+
+            messages.push(`\n**本賽季結算發放總量：${total} 點**`)
+
+            return messages;
+        }
+
+        throw Error("尚未實裝")
+    }
+
 
     @Subcommand({ name: "award", description: "更改成員獎勵積分" })
     @UseInterceptors(AccountAutocompleteInterceptor)

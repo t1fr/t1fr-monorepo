@@ -12,10 +12,10 @@ export class AccountSchema {
     @Prop({ index: true, unique: true })
     name!: string;
 
-    @Prop({ type: String })
+    @Prop({ type: String, default: null })
     ownerId!: string | null;
 
-    @Prop({ type: String, enum: AccountType })
+    @Prop({ type: String, enum: AccountType, default: null })
     type!: AccountType | null;
 
     @Prop()
