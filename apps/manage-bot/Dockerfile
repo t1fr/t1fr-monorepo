@@ -4,10 +4,10 @@ FROM docker.io/node:lts-alpine as deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /usr/src/app
 COPY dist/apps/manage-bot/package*.json ./
+COPY dist/apps/manage-bot/*lock.yaml ./
 
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
+RUN corepack prepare pnpm@8.10.5 --activate
 RUN pnpm install --frozen-lockfile
 
 # Production image, copy all the files and run nest
