@@ -2,7 +2,6 @@
 const summaryStore = useSummaryStore();
 const { summary } = storeToRefs(summaryStore);
 
-onMounted(() => summaryStore.fetch());
 </script>
 
 <template>
