@@ -27,19 +27,18 @@ defineProps<{
 <style scoped lang="scss">
 @import "primeflex/primeflex.scss";
 
-$content-percentage: 60%;
-$title-percentage: calc(100% - $content-percentage);
-
 section {
-    background-color: rgba(28, 28, 28, 0.55);
+    background-color: #1c1c1c8c;
+
     display: grid;
+    overflow: hidden;
     @media screen and (min-width: $lg) {
-        grid-template-columns: $title-percentage $content-percentage;
+        grid-template-columns: 1fr 2fr;
         grid-template-areas:
             "title content"
             "item content";
         &.reverse {
-            grid-template-columns: $content-percentage $title-percentage;
+            grid-template-columns: 2fr 1fr;
             grid-template-areas:
                 "content title"
                 "content item";
@@ -55,22 +54,20 @@ section {
     }
 
     > div[role="title"] {
-        @include styleclass("font-semibold flex justify-content-center");
+        @include styleclass("font-semibold p-3 flex justify-content-center align-items-center");
         grid-area: title;
-        margin: 1rem 0;
         font-size: 36px;
-        letter-spacing: 1rem;
     }
 
     > div[role="content"] {
-        background-color: #00000036;
         grid-area: content;
-        @include styleclass("flex p-5 flex-column justify-content-center text-xl gap-2");
+        background-color: #00000036;
+        @include styleclass("flex flex-column justify-content-center text-xl gap-2 p-5");
     }
 
     > div[role="item"] {
+        min-width: 0;
         grid-area: item;
-        @include styleclass("px-3 pb-3");
     }
 }
 </style>

@@ -56,12 +56,7 @@ const scrollHintOpacity = computed(() => `${Math.max((height.value / 2 - y.value
                     <SquadMedalCarousel />
                 </template>
             </ArticleSection>
-            <ArticleSection item-class="flex flex-column gap-3" title-class="flex align-items-center" reverse>
-                <template #title>
-                    <span>我們的</span>
-                    <MdiDiscord class="mr-3" />
-                    <span>社群</span>
-                </template>
+            <ArticleSection item-class="flex  gap-3 " title="我們的社群" reverse>
                 <div class="font-italic">想找人一起組隊玩遊戲嗎？想要找人聊天打屁嗎？玩遊戲太無聊想聽別人玩遊戲當背景音樂嗎？</div>
                 <div>
                     我們的社群有非常多活躍的隊員！無論您只是想文字聊天，或者想要和我們語音閒聊，我們都有許多隊員很樂意和您聊天、交朋友（只要您不違反我們的版規），歡迎各路好手來和我們蕉流蕉流！
@@ -76,7 +71,7 @@ const scrollHintOpacity = computed(() => `${Math.max((height.value / 2 - y.value
                     <span class="text-2xl line-height-1">加入我們的 Discord</span>
                 </ExternalLink>
                 <template #item>
-                    <img :src="BlurDiscordPreview" alt="Our community" style="object-fit: cover" />
+                    <img :src="BlurDiscordPreview" alt="Our community" class="w-full" style="object-fit: cover" />
                 </template>
             </ArticleSection>
         </article>
