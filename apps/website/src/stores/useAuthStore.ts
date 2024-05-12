@@ -7,7 +7,10 @@ export const useAuthStore = defineStore("auth", () => {
     const httpService = useHttpService();
     const router = useRouter()
     async function logout() {
-        return httpService.delete("auth", null, { withCredentials: true }).then(() => (userData.value = undefined));
+        return httpService.delete("auth", null, { withCredentials: true }).then(() => {
+            localStorage.removeItem("has-login")
+            userData.value = undefined
+        });
     }
 
     function setInfoToMember({ id, name, isOfficer, avatarUrl }: RemoteMemberInfo) {
@@ -27,6 +30,7 @@ export const useAuthStore = defineStore("auth", () => {
     async function login(code: string, state: string) {
         if (state !== localStorage.getItem("state")) return false;
         setInfoToMember(await httpService.post<MemberInfo>("auth/login", { code }, { withCredentials: true }));
+        localStorage.setItem("has-login", "true")
         return true;
     }
 

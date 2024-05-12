@@ -9,9 +9,9 @@ const toast = useToastService();
 
 const router = useRouter();
 
-useTitle("T1FR 前線遊騎兵團")
+useTitle("T1FR 前線遊騎兵團");
 
-if (router.currentRoute.value.name !== "/redirect") {
+if (router.currentRoute.value.name !== "/redirect" && localStorage.getItem("has-login") !== null) {
     auth.verify().then(status => {
         if (!status) auth.startOAuth();
     });
