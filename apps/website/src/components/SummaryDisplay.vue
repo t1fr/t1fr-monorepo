@@ -12,10 +12,10 @@ const focusType = ref<PointType>("reward");
     <TabView>
         <TabPanel header="帳號清單">
             <DataTable :value="summary?.accounts ?? []" show-gridlines>
-                <Column field="name" header="遊戲 ID" />
-                <Column field="typeLabel" header="帳號類型" />
-                <Column field="personalRating" header="個人評分" />
-                <Column field="activity" header="活躍度" />
+                <Column field="name" header="遊戲 ID" class="center"/>
+                <Column field="typeLabel" header="帳號類型" class="center"/>
+                <Column field="personalRating" header="個人評分" class="center"/>
+                <Column field="activity" header="活躍度" class="center"/>
             </DataTable>
         </TabPanel>
         <TabPanel header="點數明細">

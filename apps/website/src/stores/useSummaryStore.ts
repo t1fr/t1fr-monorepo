@@ -5,6 +5,8 @@ export const useSummaryStore = defineStore("個人資訊與統計", () => {
     const summary = ref<Summary>();
     const httpService = useHttpService();
 
+    fetch()
+
     function fetch() {
         httpService
             .get<MemberDetail>("/members/me/summary", { withCredentials: true })

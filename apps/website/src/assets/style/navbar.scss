@@ -4,6 +4,7 @@
     border-radius: 0;
     padding: 0 0.5rem;
     gap: 0.5rem;
+    z-index: 6000;
 
     >*:not(.p-menubar-root-list) {
         padding: 0.5rem 0;
@@ -12,7 +13,6 @@
     .p-submenu-list {
         z-index: 2 !important;
         padding: 0;
-
     }
 
     .p-menubar-root-list {

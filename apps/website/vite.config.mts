@@ -69,5 +69,8 @@ export default defineConfig(({ command }) => {
                 provider: "v8",
             },
         },
+        optimizeDeps: {
+            exclude: ["primevue"]
+        }
     }
 });
