@@ -12,20 +12,29 @@ const focusType = ref<PointType>("reward");
     <TabView>
         <TabPanel header="帳號清單">
             <DataTable :value="summary?.accounts ?? []" show-gridlines>
-                <Column field="name" header="遊戲 ID" class="center"/>
-                <Column field="typeLabel" header="帳號類型" class="center"/>
-                <Column field="personalRating" header="個人評分" class="center"/>
-                <Column field="activity" header="活躍度" class="center"/>
+                <Column field="name" header="遊戲 ID" class="center" />
+                <Column field="typeLabel" header="帳號類型" class="center" />
+                <Column field="personalRating" header="個人評分" class="center" />
+                <Column field="activity" header="活躍度" class="center" />
             </DataTable>
         </TabPanel>
         <TabPanel header="點數明細">
-            <DataTable id="log-table" :value="summary.point[focusType].logs ?? []" show-gridlines>
+            <DataTable  :value="summary.point[focusType].logs ?? []" show-gridlines>
                 <template #header>
-                    <div class="flex justify-content-evenly py-2">
-                        <PointMeter point-name="獎勵" @click="focusType = 'reward'" :max="70" :value="summary.point['reward'].total" reverse />
-                        <PointMeter point-name="請假" @click="focusType = 'absense'" :max="2" :value="summary.point['absense'].total" />
-                        <PointMeter point-name="懲處" @click="focusType = 'penalty'" :max="5" :value="summary.point['penalty'].total" reverse :max-hue="60" />
-                    </div>
+                    <ScrollPanel>
+                        <div class="flex justify-content-evenly py-2 white-space-nowrap">
+                            <PointMeter point-name="獎勵" @click="focusType = 'reward'" :max="70" :value="summary.point['reward'].total" reverse />
+                            <PointMeter point-name="請假" @click="focusType = 'absense'" :max="2" :value="summary.point['absense'].total" />
+                            <PointMeter
+                                point-name="懲處"
+                                @click="focusType = 'penalty'"
+                                :max="5"
+                                :value="summary.point['penalty'].total"
+                                reverse
+                                :max-hue="60"
+                            />
+                        </div>
+                    </ScrollPanel>
                     <Divider />
                     <div>{{ PointTypeNameMap[focusType] }}點數明細</div>
                 </template>
@@ -44,16 +53,4 @@ const focusType = ref<PointType>("reward");
     </TabView>
 </template>
 
-<style scoped lang="scss">
-#log-table {
-    :deep(.p-datatable-header) {
-        padding: 1rem 0;
-
-        > span,
-        div {
-            padding: 0 1rem;
-        }
-    }
-}
-</style>
-
+<style scoped lang="scss"></style>
