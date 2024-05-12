@@ -43,43 +43,41 @@ const scrollHintOpacity = computed(() => `${Math.max((height.value / 2 - y.value
             </TransitionSlide>
         </header>
         <article>
-            <ArticleSection header="關於我們">
-                <div class="flex flex-column">
-                    <p>
-                        歡迎來到 T1FR
-                        前線遊騎兵團。我們聯隊的核心目標是成為來自台灣的聯隊戰聯隊。自創隊以來，我們的隊員們在不斷的努力下，持續獲得世界前百的殊榮，使我們得以成為台灣唯一一個有持續獲得世界排名的聯隊，並且目前正朝世界前五十穩步邁進中。因此，我們非常歡迎您加入我們，共同為了台灣聯隊的榮譽奮鬥，創造台灣僅有的聯隊戰環境。
-                    </p>
-                    <p>
-                        除此之外，每當世界大戰開始時，我們也積極參與。在過去「WWM: Operation
-                        Nordwind」中，我們在各位隊員的積極參與下，更拿下了該賽季第一名的優秀成績！因此，如果您未來也不想錯過世界大戰的話，我們也非常歡迎您的加入！
-                    </p>
-                    <div class="text-center text-2xl font-bold text-600">我們的成就</div>
+            <ArticleSection title="關於我們">
+                <span>
+                    歡迎來到 T1FR
+                    前線遊騎兵團。我們聯隊的核心目標是成為來自台灣的聯隊戰聯隊。自創隊以來，我們的隊員們在不斷的努力下，持續獲得世界前百的殊榮，使我們得以成為台灣唯一一個有持續獲得世界排名的聯隊，並且目前正朝世界前五十穩步邁進中。因此，我們非常歡迎您加入我們，共同為了台灣聯隊的榮譽奮鬥，創造台灣僅有的聯隊戰環境。
+                </span>
+                <span>
+                    除此之外，每當世界大戰開始時，我們也積極參與。在過去「WWM: Operation
+                    Nordwind」中，我們在各位隊員的積極參與下，更拿下了該賽季第一名的優秀成績！因此，如果您未來也不想錯過世界大戰的話，我們也非常歡迎您的加入！
+                </span>
+                <template #item>
                     <SquadMedalCarousel />
-                </div>
+                </template>
             </ArticleSection>
-            <ArticleSection>
-                <template #header> 我們的 <MdiDiscord class="mx-2" /> 社群 </template>
-                <div class="flex lg:flex-row flex-column w-full gap-4">
-                    <div class="flex flex-column justify-content-between gap-3">
-                        <div class="flex flex-column gap-3">
-                            <div class="font-italic">想找人一起組隊玩遊戲嗎？想要找人聊天打屁嗎？玩遊戲太無聊想聽別人玩遊戲當背景音樂嗎？</div>
-                            <div>
-                                我們的社群有非常多活躍的隊員！無論您只是想文字聊天，或者想要和我們語音閒聊，我們都有許多隊員很樂意和您聊天、交朋友（只要您不違反我們的版規），歡迎各路好手來和我們蕉流蕉流！
-                            </div>
-                            <div class="text-600 vertical-align-bottom">
-                                <strong>請注意：</strong>為了維護其他使用者的帳號安全，我們的 <MdiDiscord class="mx-1" style="margin-bottom: -4px" /> Discord
-                                社群需要您的帳號進行手機驗證，造成不便敬請見諒
-                            </div>
-                        </div>
-                        <ExternalLink href="https://discord.gg/t1fr" class="align-self-center bg-discord w-full">
-                            <template #icon>
-                                <MdiDiscord />
-                            </template>
-                            <span class="text-2xl line-height-1">加入我們的 Discord</span>
-                        </ExternalLink>
-                    </div>
-                    <img :src="BlurDiscordPreview" alt="Our community" class="border-round-2xl shadow-4" style="object-fit: cover" />
+            <ArticleSection item-class="flex flex-column gap-3" title-class="flex align-items-center" reverse>
+                <template #title>
+                    <span>我們的</span>
+                    <MdiDiscord class="mr-3" />
+                    <span>社群</span>
+                </template>
+                <div class="font-italic">想找人一起組隊玩遊戲嗎？想要找人聊天打屁嗎？玩遊戲太無聊想聽別人玩遊戲當背景音樂嗎？</div>
+                <div>
+                    我們的社群有非常多活躍的隊員！無論您只是想文字聊天，或者想要和我們語音閒聊，我們都有許多隊員很樂意和您聊天、交朋友（只要您不違反我們的版規），歡迎各路好手來和我們蕉流蕉流！
                 </div>
+                <div class="text-600 mt-auto">
+                    <strong>請注意：</strong>為了維護其他使用者的帳號安全，我們的 Discord 社群需要您的帳號進行手機驗證，造成不便敬請見諒
+                </div>
+                <ExternalLink href="https://discord.gg/t1fr" class="align-self-center bg-discord w-full mt-3">
+                    <template #icon>
+                        <MdiDiscord />
+                    </template>
+                    <span class="text-2xl line-height-1">加入我們的 Discord</span>
+                </ExternalLink>
+                <template #item>
+                    <img :src="BlurDiscordPreview" alt="Our community" style="object-fit: cover" />
+                </template>
             </ArticleSection>
         </article>
         <footer>
@@ -162,8 +160,12 @@ const scrollHintOpacity = computed(() => `${Math.max((height.value / 2 - y.value
     }
 
     article {
-        @include styleclass("flex flex-column gap-3 align-items-center");
+        @include styleclass("flex flex-column gap-3 align-items-center p-4");
         background-color: rgba(49, 49, 49, 60%);
+
+        section {
+            width: 100%;
+        }
     }
 
     footer {
