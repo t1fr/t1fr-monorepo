@@ -1,5 +1,6 @@
 import { Entity, EntityId } from "@t1fr/backend/ddd-types";
 import { Err, Ok } from "ts-results-es";
+import { v4 as uuidV4 } from "uuid";
 import { AccountType } from "./AccountType";
 import { ViolateAccountTypeRuleError } from "./DomainError";
 
@@ -17,6 +18,9 @@ export interface NonRequiredAccountProps {
 export type AccountProps = Required<RequiredAccountProps> & Partial<NonRequiredAccountProps>
 
 export class AccountId extends EntityId<string> {
+    constructor(value: string | undefined) {
+        super(value ?? uuidV4())
+    }
 }
 
 export type CreateAccountOptions = Omit<AccountProps, "type">

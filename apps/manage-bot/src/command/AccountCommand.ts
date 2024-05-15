@@ -1,6 +1,6 @@
 import { Inject, Injectable, UseInterceptors } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
-import { AssignAccountOwner, InvalidAccountTypeCountError, MemberNotFoundError, ScrapeAccount } from "@t1fr/backend/member-manage";
+import { AssignAccountOwner, InvalidAccountTypeCountError, MemberNotFoundError } from "@t1fr/backend/member-manage";
 import { MessageFlagsBitField } from "discord.js";
 import { Context, createCommandGroupDecorator, Options, type SlashCommandContext, Subcommand } from "necord";
 import { AccountAutocompleteInterceptor } from "../autocomplete";
@@ -16,16 +16,16 @@ export class AccountCommand {
 
     @Subcommand({ name: "sync", description: "從網頁上爬帳號資料" })
     private async sync(@Context() [interaction]: SlashCommandContext) {
-        await interaction.deferReply();
-        const result = await this.commandBus.execute(new ScrapeAccount());
-        result
-            .map(info => interaction.followUp([
-                "同步聯隊遊戲帳號完畢",
-                `新增 ${info.inserted} 個帳號`,
-                `修改 ${info.modified} 個帳號`,
-                `刪除 ${info.deleted} 個帳號`,
-            ].join("\n")))
-            .mapErr(error => interaction.followUp(error.toString()));
+        await interaction.reply("同步聯隊遊戲帳號完畢");
+        // const result = await this.commandBus.execute(new ScrapeAccount());
+        // result
+        //     .map(info => interaction.followUp([
+        //         "同步聯隊遊戲帳號完畢",
+        //         `新增 ${info.inserted} 個帳號`,
+        //         `修改 ${info.modified} 個帳號`,
+        //         `刪除 ${info.deleted} 個帳號`,
+        //     ].join("\n")))
+        //     .mapErr(error => interaction.followUp(error.toString()));
     }
 
 

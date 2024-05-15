@@ -6,12 +6,12 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ConfigsModule, MongooseConfig } from "@t1fr/backend/configs";
 import { MemberManageModule, MemberManageMongooseConnection } from "@t1fr/backend/member-manage";
+import { PuppeteerModule } from "nestjs-puppeteer";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { z } from "zod";
 import { Controllers } from "./controller";
 import { ConfigJwtOptionFactory, ManageMongooseOptionsFactory } from "./factory";
-import { AuthService } from "./service";
-
-console.log(`dirname: ${import.meta.dirname}`)
+import { AccountDataScraper, AuthService } from "./service";
 
 @Module({
     imports: [
@@ -48,9 +48,15 @@ console.log(`dirname: ${import.meta.dirname}`)
         CqrsModule.forRoot(),
         ScheduleModule.forRoot(),
         MongooseModule.forRootAsync({ useClass: ManageMongooseOptionsFactory, connectionName: MemberManageMongooseConnection }),
-        MemberManageModule.register(false),
+        MemberManageModule,
+        PuppeteerModule.forRoot({
+            headless: "new",
+            args: ["--disable-notifications"],
+            executablePath: process.env["CHROME_PATH"],
+            plugins: [StealthPlugin()],
+        })
     ],
-    providers: [AuthService],
+    providers: [AuthService, AccountDataScraper],
     controllers: Controllers,
 })
 export class AppModule {

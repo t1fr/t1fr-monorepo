@@ -48,7 +48,6 @@ export class ConfigsModule {
         };
 
         const normalize = options ? merge(defaultOptions, options) : defaultOptions;
-        console.log(`configs module: ${import.meta.dirname}`)
         normalize.configDir = path.resolve(import.meta.dirname, normalize.configDir);
         return normalize;
     }

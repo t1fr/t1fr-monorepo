@@ -1,8 +1,9 @@
 import { BadRequestException, Body, Controller, Get, Inject, Param, Patch, UseGuards } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { ApiResponse } from "@nestjs/swagger";
-import { AssignAccountOwner, ListAccountDTO, MemberQueryRepo, ScrapeAccount, SetAccountType } from "@t1fr/backend/member-manage";
+import { AssignAccountOwner, ListAccountDTO, MemberQueryRepo, SetAccountType, SyncAccount } from "@t1fr/backend/member-manage";
 import { JwtGuard, OfficerGuard } from "../guard";
+import { AccountDataScraper } from "../service";
 
 type UpdateAccountDTO = { type?: string | null; ownerId?: string; }
 
@@ -15,9 +16,13 @@ export class AccountController {
     @MemberQueryRepo()
     private readonly memberRepo!: MemberQueryRepo;
 
+    @Inject()
+    private readonly accountDataScraper!: AccountDataScraper;
+
     @Get("sync")
-    private sync() {
-        this.commandBus.execute(new ScrapeAccount())
+    private async sync() {
+        const data = await this.accountDataScraper.fetch();
+        this.commandBus.execute(new SyncAccount(data))
     }
 
 

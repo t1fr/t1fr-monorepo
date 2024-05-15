@@ -38,7 +38,7 @@ import { DiscordClientConfig, DiscordClientService, DiscordListener } from "./se
         NecordModule.forRootAsync({ useClass: ManageBotNecordOptionsFactory }),
         MongooseModule.forRootAsync({ useClass: ManageMongooseOptionsFactory, connectionName: MemberManageMongooseConnection }),
         MongooseModule.forRootAsync({ useClass: SqbMongooseOptionsFactory, connectionName: SqbMongooseConnection }),
-        MemberManageModule.register(false),
+        MemberManageModule,
         SqbModule,
     ],
     providers: concat<Provider>(DiscordCommands, DiscordClientService, AccountAutocompleteInterceptor, DiscordListener),

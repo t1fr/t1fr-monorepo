@@ -114,22 +114,19 @@ class MongoMemberRepo implements MemberRepo {
     }
 
     saveAccounts(accounts: Account[]): AsyncActionResult<SaveAccountsResult> {
-        const ids = accounts.map(it => it.id.value);
         const updateOnes = accounts.map<AnyBulkWriteOperation<AccountSchema>>(it => ({
             updateOne: {
                 filter: { gaijinId: it.id.value },
-                update: { $set: omitBy({ name: it.name, joinDate: it.joinDate, activity: it.activity, personalRating: it.personalRating }, isUndefined) },
+                update: { $set: omitBy({ name: it.name, joinDate: it.joinDate, activity: it.activity, personalRating: it.personalRating, active: true }, isUndefined) },
                 upsert: true,
             },
         }));
-        const promise = this.accountModel.find({}, { gaijinId: true })
-            .then(exists => {
-                const needRemove = exists.filter(it => !ids.includes(it.gaijinId));
-                return this.accountModel.bulkWrite([
-                    { deleteMany: { filter: { gaijinId: { $in: needRemove } } } },
-                    ...updateOnes,
-                ]);
-            })
+
+        const promise = this.accountModel
+            .bulkWrite([
+                { deleteMany: { filter: { gaijinId: { $nin: accounts.map(it => it.id.value) } } } },
+                ...updateOnes,
+            ])
             .then<Ok<SaveAccountsResult>>(bulkWriteResult => Ok({
                 inserted: bulkWriteResult.insertedCount + bulkWriteResult.upsertedCount,
                 modified: bulkWriteResult.modifiedCount,
