@@ -51,7 +51,7 @@ import { AccountDataScraper, AuthService } from "./service";
         MemberManageModule,
         PuppeteerModule.forRoot({
             headless: "new",
-            args: ["--disable-notifications"],
+            args: ["--disable-notifications", '--no-sandbox'],
             executablePath: process.env["CHROME_PATH"],
             plugins: [StealthPlugin()],
         })
