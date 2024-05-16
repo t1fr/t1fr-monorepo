@@ -20,7 +20,8 @@ RUN apk add --no-cache --virtual \
     udev \
     ttf-opensans \
     chromium \
-    ca-certificates
+    ca-certificates \
+    dumb-init
 
 ENV NODE_ENV production
 WORKDIR /usr/src/app
