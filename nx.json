@@ -77,6 +77,12 @@
                 "engine": "docker",
                 "load": true,
                 "push": true,
+                "cache-from": [
+                    "type=gha"
+                ],
+                "cache-to": [
+                    "type=gha,mode=max"
+                ],
                 "metadata": {
                     "images": [
                         "ghcr.io/t1fr/{projectName}"
