@@ -168,20 +168,36 @@ export class Member extends AggregateRoot<MemberId, MemberProps> {
         return this.props.isLeave;
     }
 
-    get nickname() {
+    get nickname(): string | undefined {
         return this.props.nickname;
     }
 
-    get isOfficer() {
+    set nickname(value: string) {
+        this.props.nickname = value;
+    }
+
+    get isOfficer(): boolean | undefined {
         return this.props.isOfficer;
     }
 
-    get onVacation() {
+    set isOfficer(value: boolean) {
+        this.props.isOfficer = value;
+    }
+
+    get onVacation(): boolean | undefined {
         return this.props.onVacation;
     }
 
-    get avatarUrl() {
+    set onVacation(value: boolean) {
+        this.props.onVacation = value;
+    }
+
+    get avatarUrl(): string | undefined {
         return this.props.avatarUrl;
+    }
+
+    set avatarUrl(newUrl: string) {
+        this.props.avatarUrl = newUrl;
     }
 
     get pointLogs() {

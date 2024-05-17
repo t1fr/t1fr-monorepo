@@ -25,6 +25,11 @@ export class DiscordListener {
         await this.commandBus.execute(new UpdateMemberInfo({ discordId: member.id, nickname: newNickname }));
     }
 
+    @On("guildMemberAvatarUpdate")
+    async onGuildMemberAvatarUpdate(@Context() [member, , newAvatarUrl]: ContextOf<"guildMemberAvatarUpdate">) {
+        await this.commandBus.execute(new UpdateMemberInfo({ discordId: member.id, avatarUrl: newAvatarUrl }));
+    }
+
     @On("voiceChannelJoin")
     async onVoiceChannelJoin(@Context() [member, channel]: ContextOf<"voiceChannelJoin">) {
         if (member.id !== "963984439027855460") return;

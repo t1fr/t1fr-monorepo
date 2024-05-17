@@ -4,6 +4,7 @@ import { CalculateSeasonResultHandler } from "./CalculateSeasonResultHandler";
 import { SetAccountTypeHandler } from "./SetAccountTypeHandler";
 import { SyncAccountHandler } from "./SyncAccountHandler";
 import { SyncMemberHandler } from "./SyncMemberHandler";
+import { UpdateMemberInfoHandler } from "./UpdateMemberInfoHandler";
 
 export * from "./AssignAccountOwner";
 export * from "./Backup";
@@ -22,5 +23,6 @@ export const MemberManageCommandHandler = [
     BackupHandler,
     SetAccountTypeHandler,
     CalculateSeasonResultHandler,
-    SyncAccountHandler
+    SyncAccountHandler,
+    UpdateMemberInfoHandler
 ];

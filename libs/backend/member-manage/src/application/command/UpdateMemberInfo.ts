@@ -1,7 +1,7 @@
 import { Command } from "@t1fr/backend/ddd-types";
 import { z } from "zod";
 
-export class UpdateMemberInfo extends Command<UpdateMemberInfo, UpdateMemberInfoOutput> {
+export class UpdateMemberInfo extends Command<UpdateMemberInfo, void> {
     override get schema() {
         return UpdateMemberInfo.schema;
     }
@@ -15,5 +15,3 @@ export class UpdateMemberInfo extends Command<UpdateMemberInfo, UpdateMemberInfo
         avatarUrl: z.string().optional(),
     });
 }
-
-export type UpdateMemberInfoOutput = { id: string, message: string; }
