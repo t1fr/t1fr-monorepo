@@ -1,5 +1,6 @@
 import { BadRequestException, Body, Controller, Get, Inject, Param, Patch, UseGuards } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
+import { Cron, CronExpression } from "@nestjs/schedule";
 import { ApiResponse } from "@nestjs/swagger";
 import { AssignAccountOwner, ListAccountDTO, MemberQueryRepo, SetAccountType, SyncAccount } from "@t1fr/backend/member-manage";
 import { JwtGuard, OfficerGuard } from "../guard";
@@ -20,7 +21,8 @@ export class AccountController {
     private readonly accountDataScraper!: AccountDataScraper;
 
     @Get("sync")
-    private async sync() {
+    @Cron(CronExpression.EVERY_8_HOURS)
+    async sync() {
         const data = await this.accountDataScraper.fetch();
         this.commandBus.execute(new SyncAccount(data))
     }

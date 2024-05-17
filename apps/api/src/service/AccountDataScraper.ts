@@ -97,22 +97,17 @@ export class AccountDataScraper {
 
     async fetch() {
         this.logger.verbose("開始爬蟲");
-        const results = await
-            this.browser.pages()
-                .then((pages) => pages.length === 0 ? this.browser.newPage() : pages[0])
-                .then(async page => {
-                    await this.login(page);
-                    this.logger.verbose("登入成功");
-                    const rawAccounts = await this.fetchSquadronAccountList(page);
-                    this.logger.verbose(`獲取 ${rawAccounts.length} 個帳號當前狀態`);
-                    return PromisePool
-                        .for(rawAccounts)
-                        .withConcurrency(5)
-                        .process(rawAccount => this.fetchUidFromReplay(rawAccount.name, rawAccount.link).then(id => ({ ...omit(rawAccount, "link"), id })))
-                        .then(it => it.results)
-                });
-        this.logger.verbose("爬蟲完畢");
+        const pages = await this.browser.pages();
+        const page = pages.length === 0 ? (await this.browser.newPage()) : pages[0];
+        await this.login(page);
+        this.logger.verbose("登入成功");
+        const rawAccounts = await this.fetchSquadronAccountList(page);
+        this.logger.verbose(`獲取 ${rawAccounts.length} 個帳號當前狀態`);
+        const { results } = await PromisePool.for(rawAccounts)
+            .withConcurrency(5)
+            .process(rawAccount => this.fetchUidFromReplay(rawAccount.name, rawAccount.link).then(id => ({ ...omit(rawAccount, "link"), id })))
 
+        this.logger.verbose("爬蟲完畢");
         return results;
     }
 }
