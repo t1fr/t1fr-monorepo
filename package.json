@@ -1,5 +1,15 @@
 {
   "name": "@t1fr/source",
+  "author": {
+    "name": "T1FR@R&D",
+    "url": "https://t1fr.club"
+  },
+  "contributors": [
+    {
+      "name": "OuO",
+      "url": "https://github.com/zvn2060"
+    }
+  ],
   "version": "0.0.0",
   "license": "MIT",
   "packageManager": "pnpm@8.15.7",
@@ -77,6 +87,7 @@
     "@nestjs/testing": "^10.0.2",
     "@nx-tools/container-metadata": "^5.3.1",
     "@nx-tools/nx-container": "^5.3.1",
+    "@nx/devkit": "^18.3.4",
     "@nx/eslint": "18.3.4",
     "@nx/eslint-plugin": "18.3.4",
     "@nx/jest": "18.3.4",
@@ -118,6 +129,7 @@
     "jsdom": "~22.1.0",
     "nx": "18.3.4",
     "prettier": "^2.6.2",
+    "rollup": "^4.17.2",
     "rollup-plugin-generate-package-json": "^3.2.0",
     "rollup-plugin-typescript2": "^0.36.0",
     "sass": "1.62.1",
