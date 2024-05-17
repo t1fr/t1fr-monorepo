@@ -1,5 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
+import { Cron, CronExpression } from "@nestjs/schedule";
 import { Configuration } from "@t1fr/backend/configs";
 import { SyncMember } from "@t1fr/backend/member-manage";
 import { FindCurrentSection } from "@t1fr/backend/sqb";
@@ -63,6 +64,7 @@ export class DiscordClientService {
         return this.commandBus.execute(new SyncMember(syncData));
     }
 
+    @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
     async updateSqbChannelName(): Promise<Result<void, string>> {
         const category = this.client.channels.resolve(this.constants.channels.sqb.category);
         const channel = this.client.channels.resolve(this.constants.channels.sqb.battlerating);
