@@ -1,3 +1,5 @@
+import NProgress from "nprogress";
+import 'nprogress/nprogress.css'; // progress bar style
 import { setupLayouts } from "virtual:generated-layouts";
 import { createRouter, createWebHistory } from "vue-router/auto";
 
@@ -17,5 +19,10 @@ router.beforeEach((to, from) => {
         if (meta.officerOnly || meta.memberOnly) return from;
     }
 });
+
+
+NProgress.configure({ showSpinner: false })
+router.beforeEach(() => { NProgress.start() })
+router.afterEach(() => { NProgress.done() })
 
 export default router;
