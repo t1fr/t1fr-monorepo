@@ -28,15 +28,15 @@ export class AxiosClient {
         return this.call<TResponse>({ method: "GET", url, ...config });
     }
 
-    patch<TResponse, TData = unknown>(url: string, data: TData, config: AxiosRequestConfig = {}) {
+    patch<TResponse, TData = unknown>(url: string, data?: TData, config: AxiosRequestConfig = {}) {
         return this.call<TResponse>({ method: "PATCH", url, data, ...config });
     }
 
-    post<TResponse, TData = unknown>(url: string, data: TData, config: AxiosRequestConfig = {}) {
+    post<TResponse, TData = unknown>(url: string, data?: TData, config: AxiosRequestConfig = {}) {
         return this.call<TResponse>({ method: "POST", url, data, ...config });
     }
 
-    put<TResponse, TData = unknown>(url: string, data: TData, config: AxiosRequestConfig = {}) {
+    put<TResponse, TData = unknown>(url: string, data?: TData, config: AxiosRequestConfig = {}) {
         return this.call<TResponse>({ method: "PUT", url, data, ...config });
     }
 
