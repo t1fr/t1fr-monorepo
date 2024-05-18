@@ -6,7 +6,7 @@ import { FilterMatchMode, FilterOperator } from "primevue/api";
 
 const { accounts, mutateAccountOwner, mutateAccountType, isFetching, refetch } = useAccounts();
 
-useRefresh(refetch);
+useF5Key(refetch);
 
 const showNoOwner = ref(false);
 const filters = useLocalStorage(

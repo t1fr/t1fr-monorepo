@@ -8,7 +8,7 @@ const first = ref(0);
 const rows = ref(20);
 const params = computed(() => ({ rows: rows.value, skip: first.value, type: pointType.value, memberId: focusMemberId.value }));
 const { data, isFetching, refetch } = usePointLogs(params);
-useRefresh(refetch);
+useF5Key(refetch);
 const tableProps: DataTableProps = {
     scrollable: true,
     scrollHeight: "flex",

@@ -11,7 +11,7 @@ const filters = useLocalStorage<{ global: { value: boolean | null; matchMode: st
     global: { value: null, matchMode: FilterMatchMode.EQUALS },
 });
 
-useRefresh(refetch);
+useF5Key(refetch);
 
 const summaryPanelVisible = computed({
     get: () => inspectMember.value !== null,
