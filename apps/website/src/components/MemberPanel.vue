@@ -12,7 +12,7 @@ async function logout() {
     isDialogVisible.value = false;
     await authStore.logout();
     const meta = router.currentRoute.value.meta;
-    if (meta.officerOnly || meta.memberOnly) router.push("/home");
+    if (meta.officerOnly || meta.memberOnly) router.push("/");
 }
 </script>
 
@@ -42,7 +42,7 @@ async function logout() {
         <template v-else>
             <Button label="登入" icon-pos="right" text @click="authStore.startOAuth()">
                 <template #icon>
-                    <MdiLogin class="mx-2"/>
+                    <MdiLogin class="mx-2" />
                 </template>
             </Button>
         </template>

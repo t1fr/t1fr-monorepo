@@ -1,7 +1,5 @@
 <script setup lang="ts">
-const summaryStore = useSummaryStore();
-const { summary } = storeToRefs(summaryStore);
-
+const { summary } = useMySummary();
 </script>
 
 <template>
@@ -11,4 +9,3 @@ const { summary } = storeToRefs(summaryStore);
 </template>
 
 <style scoped></style>
-

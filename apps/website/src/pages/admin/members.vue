@@ -1,23 +1,21 @@
 <script setup lang="ts">
 import type { DataTableProps, DataTableRowDoubleClickEvent } from "primevue/datatable";
 import { FilterMatchMode } from "primevue/api";
-import type { Member, Summary } from "../../types";
+import type { Member } from "../../types";
 
-const memberStore = useMemberStore();
-const { members } = storeToRefs(memberStore);
-const filters = useLocalStorage<{
-    global: { value: boolean | null; matchMode: string };
-}>("member.filters", { global: { value: null, matchMode: FilterMatchMode.EQUALS } });
+const { members, isFetching, refetch } = useMembers();
+const inspectMember = ref<Member | null>(null);
+const inspectMemberId = computed(() => inspectMember.value?.id ?? null);
+const { summary } = useMemberSummary(inspectMemberId);
+const filters = useLocalStorage<{ global: { value: boolean | null; matchMode: string } }>("member.filters", {
+    global: { value: null, matchMode: FilterMatchMode.EQUALS },
+});
 
-const inspectingMemberSummary = ref<{ member: Member; summary: Summary } | null>(null);
+useF5Key(refetch);
 
 const summaryPanelVisible = computed({
-    get() {
-        return inspectingMemberSummary.value !== null;
-    },
-    set(newValue) {
-        if (newValue === false) inspectingMemberSummary.value = null;
-    },
+    get: () => inspectMember.value !== null,
+    set: newValue => (inspectMember.value = newValue ? inspectMember.value : null),
 });
 
 const tableProps: DataTableProps = {
@@ -35,12 +33,12 @@ const tableProps: DataTableProps = {
 };
 
 async function onDoubleClick(event: DataTableRowDoubleClickEvent) {
-    inspectingMemberSummary.value = await memberStore.getSummary(event.data.id).then(summary => ({ member: event.data, summary }));
+    inspectMember.value = event.data;
 }
 </script>
 
 <template>
-    <DataTable v-bind="tableProps" @row-dblclick="onDoubleClick" v-model:filters="filters" :value="members">
+    <DataTable v-bind="tableProps" @row-dblclick="onDoubleClick" v-model:filters="filters" :value="members" :loading="isFetching">
         <template #header>
             <div class="table-header-content">
                 <span role="title" class="mr-auto">成員清單</span>
@@ -81,8 +79,8 @@ async function onDoubleClick(event: DataTableRowDoubleClickEvent) {
             </template>
         </Column>
         <Dialog id="summaryPanel" v-model:visible="summaryPanelVisible" maximizable class="summaryPanel" content-class="w-full h-full">
-            <template #header>{{ inspectingMemberSummary?.member.callsign }} 的詳細資訊</template>
-            <SummaryDisplay :summary="inspectingMemberSummary!.summary" />
+            <template #header>{{ inspectMember?.callsign }} 的詳細資訊</template>
+            <SummaryDisplay v-if="summary" :summary="summary" />
         </Dialog>
     </DataTable>
 </template>

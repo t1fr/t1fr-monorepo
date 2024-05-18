@@ -4,10 +4,9 @@ import { MemberInfo } from "../types";
 
 export const useAuthStore = defineStore("auth", () => {
     const userData = ref<MemberInfo>();
-    const httpService = useHttpService();
     const router = useRouter()
     async function logout() {
-        return httpService.delete("auth", null, { withCredentials: true }).then(() => {
+        return BackendClient.delete("auth").then(() => {
             localStorage.removeItem("has-login")
             userData.value = undefined
         });
@@ -18,8 +17,8 @@ export const useAuthStore = defineStore("auth", () => {
     }
 
     async function verify() {
-        return httpService
-            .post<RemoteMemberInfo>("auth/verify", null, { withCredentials: true })
+        return BackendClient
+            .post<RemoteMemberInfo>("auth/verify")
             .then((value) => {
                 setInfoToMember(value)
                 return true;
@@ -29,7 +28,7 @@ export const useAuthStore = defineStore("auth", () => {
 
     async function login(code: string, state: string) {
         if (state !== localStorage.getItem("state")) return false;
-        setInfoToMember(await httpService.post<MemberInfo>("auth/login", { code }, { withCredentials: true }));
+        setInfoToMember(await BackendClient.post<MemberInfo>("auth/login", { code }));
         localStorage.setItem("has-login", "true")
         return true;
     }

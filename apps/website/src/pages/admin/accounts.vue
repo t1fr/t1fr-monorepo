@@ -4,16 +4,25 @@ import type { ColumnProps } from "primevue/column";
 import type { Account } from "../../types";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
 
-const memberStore = useMemberStore();
-const { updateAccount } = memberStore;
-const { accounts } = storeToRefs(memberStore);
+const { accounts, mutateAccountOwner, mutateAccountType, isFetching, refetch } = useAccounts();
 
-const toast = useToastService();
+useF5Key(refetch);
+
 const showNoOwner = ref(false);
+const filters = useLocalStorage(
+    "accounts.filter",
+    {
+        hasOwner: { value: [true, false], matchMode: FilterMatchMode.IN },
+        type: { operator: FilterOperator.OR, constraints: [{ value: [], matchMode: FilterMatchMode.IN }] },
+    } satisfies DataTableFilterMeta,
+    { mergeDefaults: true },
+);
 
-const editingAccounts = ref<Account[]>([]);
+watch(showNoOwner, value => {
+    filters.value.hasOwner.value = value ? [false] : [true, false];
+});
+
 const showChart = ref(false);
-const showAccounts = computed(() => (showNoOwner.value ? accounts.value.filter(value => value.ownerId === null) : accounts.value));
 const tableProps: DataTableProps = {
     rowHover: true,
     stripedRows: true,
@@ -24,19 +33,15 @@ const tableProps: DataTableProps = {
     removableSort: true,
     showGridlines: true,
     resizableColumns: true,
+    globalFilterFields: ["ownerId"],
     paginator: true,
     rows: 20,
     currentPageReportTemplate: "{first} - {last} / {totalRecords}",
     paginatorTemplate: "CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown",
     rowsPerPageOptions: [10, 20, 50, 100, 128],
     filterDisplay: "menu",
-    rowClass: (data: Account) => ({ "bg-red-900": data.ownerId === null }),
+    rowClass: (data: Account) => ({ "bg-red-900": !data.hasOwner }),
 };
-const filters = useLocalStorage<DataTableFilterMeta>(
-    "accounts.filter",
-    { type: { operator: FilterOperator.OR, constraints: [{ value: [], matchMode: FilterMatchMode.IN }] } },
-    { mergeDefaults: true },
-);
 
 const hideFilter: ColumnProps = {
     showAddButton: false,
@@ -48,16 +53,13 @@ async function save(event: DataTableCellEditCompleteEvent) {
     if (event.value === event.newValue || event.newValue === undefined) return;
     const id = event.data.id;
     if (typeof id !== "string") return;
-    if (event.field === "type") {
-        updateAccount.type(id, event.newValue).then(result => result.mapErr(error => toast.error({ detail: error })));
-    } else if (event.field === "ownerId") {
-        updateAccount.ownerId(id, event.newValue).then(result => result.mapErr(error => toast.error({ detail: error })));
-    }
+    if (event.field === "type") mutateAccountType({ id, type: event.newValue });
+    else if (event.field === "ownerId") mutateAccountOwner({ id, ownerId: event.newValue });
 }
 </script>
 
 <template>
-    <DataTable v-model:editing-rows="editingAccounts" v-model:filters="filters" :value="showAccounts" v-bind="tableProps" @cell-edit-complete="save">
+    <DataTable v-model:filters="filters" :value="accounts" v-bind="tableProps" @cell-edit-complete="save" :loading="isFetching">
         <template #header>
             <div class="table-header-content">
                 <span role="title">隊員帳號清單</span>
@@ -66,11 +68,11 @@ async function save(event: DataTableCellEditCompleteEvent) {
                 <span>僅顯示沒有擁有者的帳號</span>
             </div>
             <Dialog v-model:visible="showChart" modal header="帳號統計" style="width: 550px; height: fit-content" content-class="flex justify-content-center">
-                <PieChart field="type" :value="accounts" />
+                <PieChart v-if="accounts" field="type" :value="accounts" />
             </Dialog>
         </template>
-        <Column field="name" header="遊戲 ID" :sortable="true" style="min-width: 14rem" />
-        <Column field="ownerId" header="擁有者">
+        <Column field="name" header="遊戲 ID" :sortable="true" class="w-15rem" />
+        <Column field="ownerId" header="擁有者" filter-field="hasOwner">
             <template #body="{ data, field }">
                 <MemberSnippet :id="data[field]" />
             </template>
@@ -104,4 +106,3 @@ async function save(event: DataTableCellEditCompleteEvent) {
 </template>
 
 <style scoped></style>
-

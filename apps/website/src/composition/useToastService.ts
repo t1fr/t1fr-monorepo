@@ -9,7 +9,7 @@ export function useToastService() {
     return { ...baseConfig, ...config, }
   }
 
-  function success(config: ToastMessageOptions) {
+  function success(config: ToastMessageOptions | string) {
     toast.add({ ...normalizeOption(config), severity: 'success' })
   }
 

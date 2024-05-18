@@ -34,18 +34,15 @@ export class MemberInfo {
             isOfficer: this.isOfficer,
         } = props);
 
-        const match = this.name.match(/.*丨(?<callsign>.*)丨(?<id>.*)/);
-        this.callsign = match?.groups?.callsign ?? this.name;
+        const match = this.name.match(/^[^丨]*丨((?<callsign>.*)丨)?(?<id>.*)/);
         this.gameId = match?.groups?.id ?? this.name;
+        this.callsign = match?.groups?.callsign ?? this.gameId;
     }
 }
 
 export class Member extends MemberInfo {
-    private cachedTypeLabel?: string;
-    private cachedType?: MemberType;
-
-
     readonly type: MemberType;
+    readonly typeLabel: string;
     readonly isSponsor: boolean;
     readonly noAccount: boolean;
     readonly onVacation: boolean;
@@ -58,17 +55,8 @@ export class Member extends MemberInfo {
             noAccount: this.noAccount,
             onVacation: this.onVacation
         } = other);
-    }
 
-    get typeLabel() {
-        if (this.cachedType !== this.type) {
-            this.cachedTypeLabel = this.type === "relaxer" ? "休閒隊員" : "聯隊戰隊員";
-            this.cachedType = this.type;
-            return this.cachedTypeLabel;
-        } else {
-            if (this.cachedTypeLabel === undefined) this.cachedTypeLabel = this.type === "relaxer" ? "休閒隊員" : "聯隊戰隊員";
-            return this.cachedTypeLabel;
-        }
+        this.typeLabel = this.type === "relaxer" ? "休閒隊員" : "聯隊戰隊員";
     }
 }
 

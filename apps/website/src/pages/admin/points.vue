@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import type { DataTableProps } from "primevue/datatable";
-import type { ColumnProps } from "primevue/column";
 import type { PointType } from "@t1fr/backend/member-manage";
 
-const pointLogStore = usePointLogStore();
-const { total, logs, loading } = storeToRefs(pointLogStore);
-const currentTotal = computed(() => total.value.get(pointType.value) ?? 0);
-const currentLogs = computed(() => logs.value.get(pointType.value) ?? []);
 const pointType = useLocalStorage<PointType>("points", "reward");
 const focusMemberId = ref<string | null>(null);
-
+const first = ref(0);
+const rows = ref(20);
+const params = computed(() => ({ rows: rows.value, skip: first.value, type: pointType.value, memberId: focusMemberId.value }));
+const { data, isFetching, refetch } = usePointLogs(params);
+useF5Key(refetch);
 const tableProps: DataTableProps = {
     scrollable: true,
     scrollHeight: "flex",
@@ -20,26 +19,10 @@ const tableProps: DataTableProps = {
     currentPageReportTemplate: "{first} - {last} / {totalRecords}",
     paginatorTemplate: "CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown",
 };
-
-watchEffect(
-    () => {
-        pointLogStore.load(pointType.value, first.value, rows.value, focusMemberId.value);
-    },
-    { flush: "post" },
-);
-
-const first = ref(0);
-const rows = ref(20);
-
-const columnProps: ColumnProps = {
-    showFilterMatchModes: false,
-    showAddButton: false,
-    showFilterOperator: false,
-};
 </script>
 
 <template>
-    <DataTable v-bind="tableProps" :loading="loading" v-model:first="first" v-model:rows="rows" :value="currentLogs" :total-records="currentTotal">
+    <DataTable v-bind="tableProps" :loading="isFetching" v-model:first="first" v-model:rows="rows" :value="data?.logs ?? []" :total-records="data?.total ?? 0">
         <template #header>
             <div class="table-header-content">
                 <span role="title" class="mr-auto">點數紀錄</span>
@@ -48,7 +31,7 @@ const columnProps: ColumnProps = {
             </div>
         </template>
         <Column field="dateLabel" header="日期" class="center w-12rem" />
-        <Column field="memberId" header="對象" class="w-15rem" v-bind="columnProps">
+        <Column field="memberId" header="對象" class="w-15rem">
             <template #body="{ data, field }">
                 <MemberSnippet :id="data[field]" />
             </template>
@@ -65,4 +48,3 @@ const columnProps: ColumnProps = {
 </template>
 
 <style scoped></style>
-

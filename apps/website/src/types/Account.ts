@@ -26,15 +26,15 @@ export class Account {
 
     readonly id: string;
     readonly name: string;
-    ownerId: string | null;
+    readonly ownerId: string | null;
+    readonly hasOwner: boolean;
     readonly personalRating: number;
     readonly activity: number;
 
-    type: AccountType | null;
+    readonly type: AccountType | null;
 
-    private cachedTypeLabel?: string | null;
-    private cachedType?: AccountType | null;
-
+    readonly typeLabel: string | null;
+    readonly joinDate: string;
     readonly joinDateLabel: string;
     readonly joinDateUnix: number;
 
@@ -43,24 +43,26 @@ export class Account {
         this.id = id;
         this.name = name;
         this.type = type;
+        this.typeLabel = this.type ? AccountTypeMap[this.type] : null
+
         this.personalRating = personalRating;
         this.activity = activity;
         const dayjsJoinDate = dayjs(joinDate);
+        this.joinDate = joinDate;
         this.joinDateLabel = dayjsJoinDate.format("YYYY 年 MM 月 DD 日");
         this.joinDateUnix = dayjsJoinDate.unix();
+
         this.ownerId = ownerId;
+        this.hasOwner = ownerId !== null;
     }
 
-
-    get typeLabel() {
-        if (this.cachedType !== this.type) {
-            this.cachedTypeLabel = this.type ? AccountTypeMap[this.type] : null
-            this.cachedType = this.type;
-            return this.cachedTypeLabel;
-        } else {
-            if (this.cachedTypeLabel === undefined) this.cachedTypeLabel = this.type ? AccountTypeMap[this.type] : null
-            return this.cachedTypeLabel;
-        }
+    setType(value: AccountType) {
+        return new Account({ ...this, type: value })
     }
+
+    setOwner(value: string) {
+        return new Account({ ...this, ownerId: value })
+    }
+
 }
 
