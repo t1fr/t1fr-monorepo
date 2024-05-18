@@ -41,7 +41,7 @@ export default defineConfig(({ command }) => {
             AutoImports({
                 dts: "./dts/auto-imports.d.ts",
                 imports: ["vue", "@vueuse/core", "pinia", VueRouterAutoImports, "vue-i18n"],
-                dirs: ["./src/composition", "./src/tools", "./src/stores"],
+                dirs: ["./src/composition", "./src/tools", "./src/stores", "./src/api", "./src/types"],
                 vueTemplate: true,
             }),
             VueI18nPlugin({ include: resolve(__dirname, "./src/i18n/**") }),

@@ -1,11 +1,21 @@
 <script setup lang="ts">
-import Toast from "primevue/toast";
+import Toast, { type ToastMessageOptions } from "primevue/toast";
+
+const toast = useToastService();
+
+const toastBus = useEventBus<"error", ToastMessageOptions>("toast");
+
+toastBus.on((event, payload) => {
+    if (!payload) return;
+    if (event === "error") toast.error(payload);
+});
+
 </script>
 
 <template>
     <div id="root" class="w-screen min-w-screen flex flex-column">
         <RouterView />
-        <Toast />
+        <Toast position="bottom-center" style="bottom: 80px;"/>
     </div>
 </template>
 
