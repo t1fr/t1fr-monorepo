@@ -1,6 +1,7 @@
 import type { MemberDetail } from "@t1fr/backend/member-manage";
+import type { Serialized } from "@t1fr/frontend/http-client";
 import { mapValues } from "lodash-es";
-import { Account, PointLog, type Serialized, type Summary } from "../types";
+import { Account, PointLog, type Summary } from "../types";
 
 export function mapSummary(value: Serialized<MemberDetail>): Summary {
     const { accounts, point } = value

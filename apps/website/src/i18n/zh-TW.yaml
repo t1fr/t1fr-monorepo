@@ -9,3 +9,4 @@ path:
   /admin/accounts: 帳號列表
   /admin/members: 隊員列表
   /admin/points: 點數紀錄
+  /watcher: 戰鬥紀錄器

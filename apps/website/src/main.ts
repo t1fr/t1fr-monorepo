@@ -30,7 +30,6 @@ function errorToToast(error: Error): ToastMessageOptions {
     return { detail: error.message }
 }
 
-app.directive("tooltip", Tooltip);
 app
     .use(VueQueryPlugin, {
         queryClient: new QueryClient({
@@ -51,7 +50,7 @@ app
     .use(router)
     .use(i18n)
     .use(PrimeVue, { locale: PrimeVueZhTwLocale["zh-TW"] })
-    .use(ToastService);
-
-app.mount("#app");
+    .use(ToastService)
+    .directive("tooltip", Tooltip)
+    .mount("#app");
 

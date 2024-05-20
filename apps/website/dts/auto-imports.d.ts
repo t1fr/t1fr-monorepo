@@ -335,7 +335,6 @@ declare module 'vue' {
   interface ComponentCustomProperties {
     readonly Account: UnwrapRef<typeof import('../src/types/Account')['Account']>
     readonly AccountTypeMap: UnwrapRef<typeof import('../src/types/Account')['AccountTypeMap']>
-    readonly AxiosClient: UnwrapRef<typeof import('../src/tools/AxiosClient')['AxiosClient']>
     readonly BackendClient: UnwrapRef<typeof import('../src/api/BackendClient')['BackendClient']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly Member: UnwrapRef<typeof import('../src/types/Member')['Member']>
@@ -656,7 +655,6 @@ declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
     readonly Account: UnwrapRef<typeof import('../src/types/Account')['Account']>
     readonly AccountTypeMap: UnwrapRef<typeof import('../src/types/Account')['AccountTypeMap']>
-    readonly AxiosClient: UnwrapRef<typeof import('../src/tools/AxiosClient')['AxiosClient']>
     readonly BackendClient: UnwrapRef<typeof import('../src/api/BackendClient')['BackendClient']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly Member: UnwrapRef<typeof import('../src/types/Member')['Member']>

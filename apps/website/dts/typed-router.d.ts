@@ -29,5 +29,6 @@ declare module 'vue-router/auto-routes' {
     '/squadron-battle': RouteRecordInfo<'/squadron-battle', '/squadron-battle', Record<never, never>, Record<never, never>>,
     '/squadron-battle/metalist': RouteRecordInfo<'/squadron-battle/metalist', '/squadron-battle/metalist', Record<never, never>, Record<never, never>>,
     '/squadron-battle/overview': RouteRecordInfo<'/squadron-battle/overview', '/squadron-battle/overview', Record<never, never>, Record<never, never>>,
+    '/watcher': RouteRecordInfo<'/watcher', '/watcher', Record<never, never>, Record<never, never>>,
   }
 }
