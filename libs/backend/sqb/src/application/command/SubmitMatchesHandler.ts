@@ -32,7 +32,7 @@ export class SubmitMatchesHandler implements IInferredCommandHandler<SubmitMatch
                     }
                 )
             )
-            .filter(it => it.isOk())
+            .filter((it): it is Ok<SquadronMatch> => it.isOk())
             .map(it => it.value)
 
         const matchesNeedSave = new Array<SquadronMatch>()
@@ -59,11 +59,15 @@ export class SubmitMatchesHandler implements IInferredCommandHandler<SubmitMatch
         if (findPossibleOrError.isErr()) return findPossibleOrError;
 
         const possibleMatches = findPossibleOrError.value;
+        console.log(possibleMatches)
 
-        if (possibleMatches.length === 0) return Ok(true);
+        if (possibleMatches.length === 0) return Ok(false);
 
-        const similarities = possibleMatches.map(it => it.calcuateSimilarity(match)).toSorted()
+        // 降序
+        const similarities = possibleMatches
+            .map(it => it.calcuateSimilarity(match))
+            .toSorted((a, b) => b - a)
 
-        return Ok(similarities[similarities.length - 1] > 80)
+        return Ok(similarities[similarities.length - 1] >= 80)
     }
 }

@@ -8,18 +8,18 @@ async function fetchHudMessage(damageId: number) {
     return WarthunderLocalhostClient.get<HudMessage>("hudmsg", { params: { lastEvt: 0, lastDmg: damageId } })
 }
 
-async function uploadMatches(matches: Match[]) {
+async function uploadMatches(battleRating: string, matches: Match[]) {
     const completedMatches = matches.filter(it => it.isCompleted)
         .map(it => ({
             timestamp: it.timestamp,
-            enemy: it.enemyName,
+            enemyName: it.enemyName,
             timeSeries: uniq(it.timeSeries),
             ourTeam: Array.from(it.ourTeam.entries()).map(([id, vehicle]) => ({ id, vehicle })),
             enemyTeam: Array.from(it.enemyTeam.entries()).map(([id, vehicle]) => ({ id, vehicle })),
             isVictory: it.isVictory
         }))
 
-    return BackendClient.post("sqb-matches", completedMatches)
+    return BackendClient.post("sqb/matches", { battleRating, matches: completedMatches })
 }
 
 export function useMatches(enabled: Ref<boolean>) {
@@ -60,7 +60,7 @@ export function useMatches(enabled: Ref<boolean>) {
     }
 
     const { mutateAsync: upload } = useMutation({
-        mutationFn: () => uploadMatches(parsedMatches.value)
+        mutationFn: (battleRating: string) => uploadMatches(battleRating, parsedMatches.value)
     })
 
     return { matches: parsedMatches, reset, upload }

@@ -8,11 +8,13 @@ import { useMatches } from "../useMatches";
 import { computed, ref } from "vue";
 import { Match } from "../types";
 import OutcomeSelection from "./OutcomeSelection.vue";
+import BattleRatingDropdown from "./BattleRatingDropdown.vue";
 
 const enabled = ref(false);
 const { matches, reset, upload } = useMatches(enabled);
 const match = ref<Match | null>(null);
 const toast = useToast();
+const battleRating = ref<string>();
 
 function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     match.value = event.data;
@@ -30,7 +32,9 @@ const config: DataTableProps = {
 };
 
 function onClickUpload() {
-    upload().then(() => toast.add({ detail: "上傳成功", severity: "success", life: 4000, closable: true }));
+    if (matches.value.length === 0) return toast.add({ detail: "沒有可上傳的戰鬥", severity: "info", life: 1500, closable: true });
+    if (!battleRating.value) return toast.add({ detail: "請選擇分房", severity: "error", life: 3000, closable: true });
+    upload(battleRating.value).then(() => toast.add({ detail: "上傳成功", severity: "success", life: 2500, closable: true }));
 }
 </script>
 
@@ -61,6 +65,7 @@ function onClickUpload() {
                         <MdiUpload class="mr-2" />
                     </template>
                 </Button>
+                <BattleRatingDropdown v-model="battleRating" />
             </div>
         </template>
         <Column field="isCompleted" class="center w-7rem" header="不完整">
@@ -118,7 +123,7 @@ function onClickUpload() {
             margin-right: 1px;
             justify-content: end;
         }
-        
+
         &:nth-child(4n + 3) {
             margin-left: 1px;
         }
