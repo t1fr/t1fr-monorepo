@@ -59,8 +59,6 @@ export class SubmitMatchesHandler implements IInferredCommandHandler<SubmitMatch
         if (findPossibleOrError.isErr()) return findPossibleOrError;
 
         const possibleMatches = findPossibleOrError.value;
-        console.log(possibleMatches)
-
         if (possibleMatches.length === 0) return Ok(false);
 
         // 降序
