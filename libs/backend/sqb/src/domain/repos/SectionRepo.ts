@@ -1,6 +1,6 @@
 import { Inject } from "@nestjs/common";
 import type { AsyncActionResult } from "@t1fr/backend/ddd-types";
-import { type SeasonMeta, Section } from "./model";
+import { type SeasonMeta, Section } from "../model";
 
 export const SectionRepo = () => Inject(SectionRepo);
 

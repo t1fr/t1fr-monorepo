@@ -76,7 +76,7 @@ export class Match {
         readonly enemyName: string | undefined,
         readonly ourTeam: Map<string, string>,
         readonly enemyTeam: Map<string, string>,
-        readonly timestamp = new Date().getTime(),
+        readonly timestamp = new Date(),
         public isVictory: boolean | undefined = undefined
     ) {
 
