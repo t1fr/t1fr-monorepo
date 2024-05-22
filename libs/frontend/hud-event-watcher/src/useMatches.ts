@@ -1,3 +1,4 @@
+import type { SubmitMatchesOutput } from "@t1fr/backend/sqb";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 import { uniq } from "lodash-es";
 import { ref, toRaw, watch, type Ref } from "vue";
@@ -7,6 +8,8 @@ import { Match, type HudMessage } from "./types";
 async function fetchHudMessage(damageId: number) {
     return WarthunderLocalhostClient.get<HudMessage>("hudmsg", { params: { lastEvt: 0, lastDmg: damageId } })
 }
+
+
 
 async function uploadMatches(battleRating: string, matches: Match[]) {
     const completedMatches = matches.filter(it => it.isCompleted)
@@ -19,7 +22,7 @@ async function uploadMatches(battleRating: string, matches: Match[]) {
             isVictory: it.isVictory
         }))
 
-    return BackendClient.post("sqb/matches", { battleRating, matches: completedMatches })
+    return BackendClient.post<SubmitMatchesOutput>("sqb/matches", { battleRating, matches: completedMatches })
 }
 
 export function useMatches(enabled: Ref<boolean>) {
@@ -59,9 +62,16 @@ export function useMatches(enabled: Ref<boolean>) {
         parsedMatches.value = [];
     }
 
-    const { mutateAsync: upload } = useMutation({
-        mutationFn: (battleRating: string) => uploadMatches(battleRating, parsedMatches.value)
+    const { mutateAsync: upload, isPending: isUploading } = useMutation({
+        mutationFn: (battleRating: string) => uploadMatches(battleRating, parsedMatches.value),
+        onSuccess(data) {
+            for (const { index, ...other } of data) {
+                const match = parsedMatches.value[index]
+                if (match === undefined) continue;
+                match.uploadStatus = other;
+            }
+        }
     })
 
-    return { matches: parsedMatches, reset, upload }
+    return { matches: parsedMatches, reset, upload, isUploading }
 }

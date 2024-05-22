@@ -64,8 +64,10 @@ export class Match {
 
     readonly startTime: string;
 
+    uploadStatus?: { success: true } | { success: false, reason: string }
+
     get isCompleted(): boolean {
-        return this.ourTeam.size === 8 && this.enemyTeam.size === 8 && this.isVictory !== undefined;
+        return this.isVictory !== undefined;
     }
 
 

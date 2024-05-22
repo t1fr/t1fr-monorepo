@@ -1,9 +1,9 @@
 import { CommandHandler, type IInferredCommandHandler } from "@nestjs/cqrs";
-import type { ActionResult, DomainError } from "@t1fr/backend/ddd-types";
+import type { DomainError } from "@t1fr/backend/ddd-types";
 import dayjs from "dayjs";
 import { Ok, type Result } from "ts-results-es";
 import { SquadronMatch, SquadronMatchId, SquadronMatchRepo } from "../../domain";
-import { SubmitMatches } from "./SubmitMatches";
+import { SubmitMatches, type SubmitMatchesOutput } from "./SubmitMatches";
 
 @CommandHandler(SubmitMatches)
 export class SubmitMatchesHandler implements IInferredCommandHandler<SubmitMatches> {
@@ -11,19 +11,20 @@ export class SubmitMatchesHandler implements IInferredCommandHandler<SubmitMatch
     @SquadronMatchRepo()
     private readonly squadronMatchRepo!: SquadronMatchRepo;
 
-    async execute(command: SubmitMatches): Promise<Result<void, DomainError>> {
+    async execute(command: SubmitMatches): Promise<Result<SubmitMatchesOutput, DomainError>> {
         const parseOrError = command.parse()
 
         if (parseOrError.isErr()) return parseOrError;
 
         const { matches: matchData, battleRating } = parseOrError.value;
 
-        const matches = matchData
+        const createMatchOrError = matchData
             .map(it =>
                 SquadronMatch.create(
-                    new SquadronMatchId(it.timeSeries),
+                    new SquadronMatchId(),
                     {
                         battleRating,
+                        timeSeries: it.timeSeries,
                         enemyName: it.enemyName,
                         ourTeam: it.ourTeam,
                         enemyTeam: it.enemyTeam,
@@ -32,23 +33,29 @@ export class SubmitMatchesHandler implements IInferredCommandHandler<SubmitMatch
                     }
                 )
             )
-            .filter((it): it is Ok<SquadronMatch> => it.isOk())
-            .map(it => it.value)
 
-        const matchesNeedSave = new Array<SquadronMatch>()
+        const response = new Array<SubmitMatchesOutput[number]>()
 
-        for (const match of matches) {
-            const result = await this.hasSimilar(match)
-            if (result.isOk() && !result.value) matchesNeedSave.push(match)
+        for (let i = 0; i < createMatchOrError.length; i++) {
+            const result = createMatchOrError[i]
+            if (result.isOk()) {
+                await this.hasSimilar(result.value)
+                    .then(match => this.squadronMatchRepo.upsert(match))
+                    .then(() => {
+                        response.push({ index: i, success: true })
+                    })
+                    .catch(reason => {
+                        response.push({ index: i, success: false, reason })
+                    })
+            } else {
+                response.push({ index: i, success: false, reason: result.error.toString() })
+            }
         }
 
-
-        await this.squadronMatchRepo.save(matchesNeedSave).promise;
-
-        return Ok.EMPTY;
+        return Ok(response);
     }
 
-    private async hasSimilar(match: SquadronMatch): Promise<ActionResult<boolean>> {
+    private async hasSimilar(match: SquadronMatch): Promise<SquadronMatch> {
         const { timestamp, battleRating } = match.toObject()
         const timestampDayJs = dayjs(timestamp);
         const from = timestampDayJs.subtract(5, "minutes").toDate()
@@ -56,16 +63,17 @@ export class SubmitMatchesHandler implements IInferredCommandHandler<SubmitMatch
 
         const findPossibleOrError = await this.squadronMatchRepo.findWithinTimespan(battleRating, from, to).promise;
 
-        if (findPossibleOrError.isErr()) return findPossibleOrError;
+        if (findPossibleOrError.isErr()) throw Error(findPossibleOrError.error.toString())
 
         const possibleMatches = findPossibleOrError.value;
-        if (possibleMatches.length === 0) return Ok(false);
+        if (possibleMatches.length === 0) return match;
 
         // 降序
         const similarities = possibleMatches
-            .map(it => it.calcuateSimilarity(match))
-            .toSorted((a, b) => b - a)
+            .map(it => ({ similarity: it.calcuateSimilarity(match), match: it }))
+            .toSorted((a, b) => b.similarity - a.similarity)
 
-        return Ok(similarities[similarities.length - 1] >= 80)
+        const mostSimilar = similarities[0];
+        return mostSimilar.similarity >= 80 ? mostSimilar.match.merge(match) : match
     }
 }

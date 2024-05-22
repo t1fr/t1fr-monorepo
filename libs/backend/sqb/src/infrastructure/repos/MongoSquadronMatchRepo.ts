@@ -10,10 +10,11 @@ class MongoSquadronMatchRepo implements SquadronMatchRepo {
     @InjectSquadronMatchModel()
     private readonly matchModel!: SquadronMatchModel;
 
-    private docToModel(doc: SquadronMatchSchema) {
+    private docToModel(doc: SquadronMatchSchema & { _id: string }) {
         return SquadronMatch.rebuild(
-            new SquadronMatchId(doc.timeSeries),
+            new SquadronMatchId(doc._id),
             {
+                timeSeries: doc.timeSeries,
                 enemyName: doc.enemyName,
                 enemyTeam: doc.enemyTeam,
                 ourTeam: doc.ourTeam,
@@ -25,9 +26,10 @@ class MongoSquadronMatchRepo implements SquadronMatchRepo {
     }
 
     private modelToDoc(model: SquadronMatch): SquadronMatchSchema {
-        const { enemyName, enemyTeam, ourTeam, isVictory, battleRating, timestamp } = model.toObject()
+        const { enemyName, timeSeries, enemyTeam, ourTeam, isVictory, battleRating, timestamp } = model.toObject()
         return {
-            timeSeries: model.id.value,
+            _id: model.id.value,
+            timeSeries,
             enemyName,
             enemyTeam,
             ourTeam,
@@ -46,9 +48,11 @@ class MongoSquadronMatchRepo implements SquadronMatchRepo {
         return new AsyncResult(promise)
     }
 
-    save(matches: SquadronMatch[]): AsyncActionResult<void> {
+    upsert(match: SquadronMatch): AsyncActionResult<void> {
+        const { _id, ...other } = this.modelToDoc(match);
+
         const promise = this.matchModel
-            .insertMany(matches.map(it => this.modelToDoc(it)))
+            .findByIdAndUpdate(_id, { $set: other }, { upsert: true })
             .then(() => Ok.EMPTY)
 
         return new AsyncResult(promise)

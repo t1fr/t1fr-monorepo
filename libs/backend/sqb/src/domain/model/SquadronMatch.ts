@@ -1,9 +1,15 @@
 import { Entity, EntityId } from "@t1fr/backend/ddd-types";
+import { uniqBy } from "lodash-es";
 import { Err, Ok } from "ts-results-es";
+import { v4 } from "uuid";
 import { InvalidSquadronMatchError } from "./DomainError";
 
 
-export class SquadronMatchId extends EntityId<number[]> { }
+export class SquadronMatchId extends EntityId<string> {
+    constructor(value: string = v4()) {
+        super(value)
+    }
+}
 
 type Player = {
     id: string;
@@ -12,6 +18,7 @@ type Player = {
 
 type SquadronMatchProps = {
     enemyName: string;
+    timeSeries: number[]
     isVictory: boolean | undefined;
     timestamp: Date;
     ourTeam: Player[],
@@ -21,6 +28,7 @@ type SquadronMatchProps = {
 
 
 export class SquadronMatch extends Entity<SquadronMatchId, SquadronMatchProps> {
+
 
     static create(id: SquadronMatchId, props: SquadronMatchProps) {
         const { ourTeam, enemyTeam } = props;
@@ -34,9 +42,24 @@ export class SquadronMatch extends Entity<SquadronMatchId, SquadronMatchProps> {
         return new SquadronMatch(id, props)
     }
 
+    merge(match: SquadronMatch): SquadronMatch {
+        const timeSeries = match.props.timeSeries.length > this.props.timeSeries.length ? match.props.timeSeries : this.props.timeSeries;
+        const enemyTeam = uniqBy([...match.props.enemyTeam, ...this.props.enemyTeam], it => it.id)
+        const ourTeam = uniqBy([...match.props.ourTeam, ...this.props.ourTeam], it => it.id)
+        return new SquadronMatch(this.id, {
+            timeSeries,
+            enemyName: this.props.enemyName,
+            ourTeam,
+            enemyTeam,
+            isVictory: this.props.isVictory ?? match.props.isVictory,
+            timestamp: this.props.timestamp,
+            battleRating: this.props.battleRating
+        })
+    }
+
     calcuateSimilarity(b: SquadronMatch) {
-        const leftTimeseries = this.id.value;
-        const rightTimeseries = b.id.value;
+        const leftTimeseries = this.props.timeSeries;
+        const rightTimeseries = b.props.timeSeries;
         const leftTimeseriesLength = leftTimeseries.length;
         const rightTimeseriesLength = rightTimeseries.length;
 
@@ -61,8 +84,9 @@ export class SquadronMatch extends Entity<SquadronMatchId, SquadronMatchProps> {
     }
 
     toObject() {
-        const { enemyName, timestamp, battleRating, ourTeam, enemyTeam, isVictory, } = this.props;
+        const { timeSeries, enemyName, timestamp, battleRating, ourTeam, enemyTeam, isVictory, } = this.props;
         return {
+            timeSeries,
             enemyName,
             timestamp,
             battleRating,

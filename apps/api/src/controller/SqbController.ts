@@ -23,7 +23,7 @@ export class SqbController {
         if (typeof data !== "object" || data === null) throw new UnprocessableEntityException("資料格式錯誤，應包含 battleRating, matches")
         if (!("matches" in data && "battleRating" in data)) throw new UnprocessableEntityException("資料格式錯誤，應包含 battleRating, matches")
 
-        await this.commandBus.execute(new SubmitMatches(data))
+        return this.commandBus.execute(new SubmitMatches(data))
     }
 
     @Get("matches")

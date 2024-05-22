@@ -12,6 +12,9 @@ export class PlayerSchema {
 
 @Schema({ collection: "squadron-matches", versionKey: false })
 export class SquadronMatchSchema {
+    @Prop()
+    _id!: string;
+
     @Prop({ type: [Number] })
     timeSeries!: number[];
 

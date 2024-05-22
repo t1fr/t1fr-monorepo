@@ -11,7 +11,7 @@ import OutcomeSelection from "./OutcomeSelection.vue";
 import BattleRatingDropdown from "./BattleRatingDropdown.vue";
 
 const enabled = ref(false);
-const { matches, reset, upload } = useMatches(enabled);
+const { matches, reset, upload, isUploading } = useMatches(enabled);
 const match = ref<Match | null>(null);
 const toast = useToast();
 const battleRating = ref<string>();
@@ -45,7 +45,7 @@ function onClickUpload() {
         </template>
         <template #header>
             <div class="flex gap-2 align-items-center">
-                <Button label="重設" text size="small" severity="danger" @click="reset">
+                <Button label="重設" :disabled="isUploading" text size="small" severity="danger" @click="reset">
                     <template #icon>
                         <MdiDelete class="mr-2" />
                     </template>
@@ -68,6 +68,14 @@ function onClickUpload() {
                 <BattleRatingDropdown v-model="battleRating" />
             </div>
         </template>
+        <Column field="uploadStatus" class="center w-7rem" header="上傳狀態">
+            <template #body="{ data, field }">
+                <template v-if="data[field]">
+                    <MdiCheckboxMarkedCircleOutline v-if="data[field].success" class="text-green-500" />
+                    <span v-else class="p-error">{{ data[field].reason }}</span>
+                </template>
+            </template>
+        </Column>
         <Column field="isCompleted" class="center w-7rem" header="不完整">
             <template #body="{ data, field }">
                 <MdiExclamationThick class="text-yellow-500" v-if="!data[field]" />

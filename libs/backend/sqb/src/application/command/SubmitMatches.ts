@@ -1,7 +1,7 @@
 import { Command } from "@t1fr/backend/ddd-types";
 import { z } from "zod";
 
-export class SubmitMatches extends Command<SubmitMatches, void> {
+export class SubmitMatches extends Command<SubmitMatches, SubmitMatchesOutput> {
     override get schema() {
         return SubmitMatches.schema;
     }
@@ -19,3 +19,5 @@ export class SubmitMatches extends Command<SubmitMatches, void> {
     })
 }
 
+
+export type SubmitMatchesOutput = Array<{ index: number } & ({ success: true } | { success: false, reason: string })>
