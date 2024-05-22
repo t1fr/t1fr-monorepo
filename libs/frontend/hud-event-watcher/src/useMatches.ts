@@ -9,10 +9,8 @@ async function fetchHudMessage(damageId: number) {
     return WarthunderLocalhostClient.get<HudMessage>("hudmsg", { params: { lastEvt: 0, lastDmg: damageId } })
 }
 
-
-
 async function uploadMatches(battleRating: string, matches: Match[]) {
-    const completedMatches = matches.filter(it => it.isCompleted)
+    const completedMatches = matches.filter(it => it.isUploadable)
         .map(it => ({
             timestamp: it.timestamp,
             enemyName: it.enemyName,
@@ -23,6 +21,11 @@ async function uploadMatches(battleRating: string, matches: Match[]) {
         }))
 
     return BackendClient.post<SubmitMatchesOutput>("sqb/matches", { battleRating, matches: completedMatches })
+}
+
+type SubmitMatchesData = {
+    battleRating: string,
+    deleteUploaded: boolean
 }
 
 export function useMatches(enabled: Ref<boolean>) {
@@ -62,16 +65,25 @@ export function useMatches(enabled: Ref<boolean>) {
         parsedMatches.value = [];
     }
 
-    const { mutateAsync: upload, isPending: isUploading } = useMutation({
+    const { mutateAsync, isPending: isUploading } = useMutation({
         mutationFn: (battleRating: string) => uploadMatches(battleRating, parsedMatches.value),
         onSuccess(data) {
-            for (const { index, ...other } of data) {
-                const match = parsedMatches.value[index]
-                if (match === undefined) continue;
-                match.uploadStatus = other;
+            const map = new Map(data.map(({ index, ...other }) => [index, other]))
+            let i = 0;
+            for (const match of parsedMatches.value) {
+                if (!match.isUploadable) continue;
+                match.uploadStatus = map.get(i);
+                i++;
             }
         }
     })
+
+    async function upload(data: SubmitMatchesData) {
+        const result = await mutateAsync(data.battleRating)
+        if (data.deleteUploaded) parsedMatches.value = parsedMatches.value.filter(it => it.uploadStatus?.success !== true)
+        return result.filter(it => it.success).length;
+    }
+
 
     return { matches: parsedMatches, reset, upload, isUploading }
 }

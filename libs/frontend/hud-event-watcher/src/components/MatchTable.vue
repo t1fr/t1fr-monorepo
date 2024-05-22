@@ -3,6 +3,7 @@ import DataTable, { type DataTableProps, type DataTableRowDoubleClickEvent } fro
 import Dialog from "primevue/dialog";
 import Column from "primevue/column";
 import Button from "primevue/button";
+import InputSwitch from "primevue/inputswitch";
 import { useToast } from "primevue/usetoast";
 import { useMatches } from "../useMatches";
 import { computed, ref } from "vue";
@@ -15,6 +16,7 @@ const { matches, reset, upload, isUploading } = useMatches(enabled);
 const match = ref<Match | null>(null);
 const toast = useToast();
 const battleRating = ref<string>();
+const removeUploadSuccess = ref(true)
 
 function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     match.value = event.data;
@@ -31,10 +33,12 @@ const config: DataTableProps = {
     scrollHeight: "flex",
 };
 
-function onClickUpload() {
-    if (matches.value.length === 0) return toast.add({ detail: "沒有可上傳的戰鬥", severity: "info", life: 1500, closable: true });
+const canUpload = computed(() => matches.value.length > 0 && matches.value.some(it => it.isUploadable));
+
+async function onClickUpload() {
     if (!battleRating.value) return toast.add({ detail: "請選擇分房", severity: "error", life: 3000, closable: true });
-    upload(battleRating.value).then(() => toast.add({ detail: "上傳成功", severity: "success", life: 2500, closable: true }));
+    const length = await upload({ battleRating: battleRating.value, deleteUploaded: removeUploadSuccess.value });
+    toast.add({ detail: `已成功上傳 ${length} 場戰鬥`, severity: "success", life: 2500, closable: true });
 }
 </script>
 
@@ -60,11 +64,14 @@ function onClickUpload() {
                     <span>錄製中</span>
                     <div class="dot-flashing mx-4"></div>
                 </div>
-                <Button label="上傳" text size="small" @click="onClickUpload">
+                
+                <Button label="上傳" text size="small" :disabled="!canUpload" @click="onClickUpload">
                     <template #icon>
                         <MdiUpload class="mr-2" />
                     </template>
                 </Button>
+                <InputSwitch v-model="removeUploadSuccess"/>
+                <span class="ml-1 mr-3">自動移除上傳成功的戰鬥</span>
                 <BattleRatingDropdown v-model="battleRating" />
             </div>
         </template>

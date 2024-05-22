@@ -66,6 +66,10 @@ export class Match {
 
     uploadStatus?: { success: true } | { success: false, reason: string }
 
+    get isUploadable() {
+        return this.isCompleted && this.uploadStatus?.success !== true;
+    }
+
     get isCompleted(): boolean {
         return this.isVictory !== undefined;
     }
@@ -88,7 +92,7 @@ export class Match {
             (a, b) => ({ our: a, enemy: b })
         )
 
-        this.startTime = dayjs(timestamp).format("YYYY 年 MM 月 DD 日 HH:mm")
+        this.startTime = dayjs(timestamp).format("YYYY 年 MM 月 DD 日 HH 時 mm 分 ss 秒")
     }
 
 

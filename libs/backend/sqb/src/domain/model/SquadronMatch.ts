@@ -17,7 +17,7 @@ type Player = {
 }
 
 type SquadronMatchProps = {
-    enemyName: string;
+    enemyName?: string;
     timeSeries: number[]
     isVictory: boolean | undefined;
     timestamp: Date;

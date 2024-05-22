@@ -10,7 +10,7 @@ export class SubmitMatches extends Command<SubmitMatches, SubmitMatchesOutput> {
         battleRating: z.string(),
         matches: z.object({
             timestamp: z.coerce.date(),
-            enemyName: z.string().min(2),
+            enemyName: z.string().optional(),
             timeSeries: z.number().array().min(1),
             ourTeam: z.object({ id: z.string(), vehicle: z.string() }).array(),
             enemyTeam: z.object({ id: z.string(), vehicle: z.string() }).array(),

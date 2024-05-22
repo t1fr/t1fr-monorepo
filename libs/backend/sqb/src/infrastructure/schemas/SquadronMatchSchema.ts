@@ -25,7 +25,7 @@ export class SquadronMatchSchema {
     battleRating!: string;
 
     @Prop()
-    enemyName!: string;
+    enemyName?: string;
 
     @Prop()
     isVictory?: boolean
