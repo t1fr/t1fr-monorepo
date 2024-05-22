@@ -37,7 +37,7 @@ export function useMember(memberId: Ref<string | null>) {
 export function useMemberSummary(memberId: Ref<string | null>) {
     const { data: summary } = useQuery({
         queryKey: ["member-detail", { memberId }],
-        queryFn: () => memberId.value ? BackendClient.get<MemberDetail>(`/members/${memberId}/summary`) : null,
+        queryFn: () => memberId.value ? BackendClient.get<MemberDetail>(`/members/${memberId.value}/summary`) : null,
         enabled: () => memberId.value !== null,
         select: data => data ? mapSummary(data) : null,
         staleTime: 60000
