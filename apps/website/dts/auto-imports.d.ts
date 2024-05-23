@@ -7,7 +7,6 @@ export {}
 declare global {
   const Account: typeof import('../src/types/Account')['Account']
   const AccountTypeMap: typeof import('../src/types/Account')['AccountTypeMap']
-  const AxiosClient: typeof import('../src/tools/AxiosClient')['AxiosClient']
   const BackendClient: typeof import('../src/api/BackendClient')['BackendClient']
   const EffectScope: typeof import('vue')['EffectScope']
   const Member: typeof import('../src/types/Member')['Member']

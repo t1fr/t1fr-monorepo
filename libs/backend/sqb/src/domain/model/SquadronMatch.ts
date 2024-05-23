@@ -17,7 +17,8 @@ type Player = {
 }
 
 type SquadronMatchProps = {
-    enemyName?: string;
+    enemyName: string;
+    ourName: string;
     timeSeries: number[]
     isVictory: boolean | undefined;
     timestamp: Date;
@@ -49,6 +50,7 @@ export class SquadronMatch extends Entity<SquadronMatchId, SquadronMatchProps> {
         return new SquadronMatch(this.id, {
             timeSeries,
             enemyName: this.props.enemyName,
+            ourName: this.props.ourName,
             ourTeam,
             enemyTeam,
             isVictory: this.props.isVictory ?? match.props.isVictory,
@@ -84,15 +86,23 @@ export class SquadronMatch extends Entity<SquadronMatchId, SquadronMatchProps> {
     }
 
     toObject() {
-        const { timeSeries, enemyName, timestamp, battleRating, ourTeam, enemyTeam, isVictory, } = this.props;
+        const { timeSeries, enemyName, ourName, timestamp, battleRating, ourTeam, enemyTeam, isVictory, } = this.props;
         return {
             timeSeries,
             enemyName,
+            ourName,
             timestamp,
             battleRating,
             ourTeam: ourTeam.map(it => ({ ...it })),
             enemyTeam: enemyTeam.map(it => ({ ...it })),
             isVictory
+        }
+    }
+
+    toRecord() {
+        return {
+            enemyTeam: this.props.enemyTeam.map(it => ({ ...it })),
+            isVictory: this.props.isVictory
         }
     }
 }

@@ -24,6 +24,7 @@ export class SubmitMatchesHandler implements IInferredCommandHandler<SubmitMatch
                     new SquadronMatchId(),
                     {
                         battleRating,
+                        ourName: it.ourName,
                         timeSeries: it.timeSeries,
                         enemyName: it.enemyName,
                         ourTeam: it.ourTeam,

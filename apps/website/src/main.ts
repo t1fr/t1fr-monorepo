@@ -15,9 +15,9 @@ import { createApp } from "vue";
 import App from "./App.vue";
 
 import type { ToastMessageOptions } from "primevue/toast";
+import "./dayjs";
 import i18n from "./i18n";
 import router from "./router";
-
 
 Chart.register(ChartDataLabels);
 

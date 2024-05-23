@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Get, Inject, Post, Query, UnprocessableEntityException } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
-import { FindCurrentSeason, SubmitMatches } from "@t1fr/backend/sqb";
+import { FindCurrentSeason, SearchMatchRecords, SubmitMatches } from "@t1fr/backend/sqb";
 
 @Controller("sqb")
 export class SqbController {
@@ -27,12 +27,13 @@ export class SqbController {
     }
 
     @Get("matches")
-    async searchMatches(@Query("br") br?: string, @Query("name") enemyName?: string) {
+    async searchMatches(@Query() query: Record<"br" | "enemyName" | "ourName", string | undefined>) {
 
-        if (!br) throw new BadRequestException("應該提供分房 br 參數")
-        if (!enemyName) throw new BadRequestException("應該提供聯隊名稱 name 參數")
+        if (!query.br) throw new BadRequestException("應該提供分房 br 參數")
+        if (!query.ourName) throw new BadRequestException("應該提供我方聯隊名稱 ourName 參數")
+        if (!query.enemyName) throw new BadRequestException("應該提供敵方聯隊名稱 enemyName 參數")
 
-        throw Error("Not Implemented")
+        return this.queryBus.execute(new SearchMatchRecords(query))
     }
 
 }

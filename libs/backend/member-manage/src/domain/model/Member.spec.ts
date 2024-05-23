@@ -22,13 +22,13 @@ function isMemberEqual(member: Member, props: MemberObjectLiteral) {
 
 describe("設置隊員類型", () => {
     it("當休閒隊員 => 聯隊戰隊員時，應當將所擁有的休閒主帳變為聯隊戰主帳，並自動發給 1 點請假點數", () => {
-        const member = createMember({ type: MemberType.Relaxer, accounts: [{ type: AccountType.N_RelaxMain }], isSponsor: false, isLeave: true, point: defaultPoint() });
+        const member = createMember({ type: MemberType.Relaxer, accounts: [{ type: AccountType.N_RelaxMain, personalRating: 400 }], isSponsor: false, isLeave: true, point: defaultPoint() });
         const result = member.changeType(MemberType.SquadFighter);
         expect(result.isOk()).toBeTruthy();
         expect(isMemberEqual(member, {
             type: MemberType.SquadFighter,
             accounts: [
-                { type: AccountType.S_SqbMain },
+                { type: AccountType.S_SqbMain, personalRating: 400 },
             ],
             isSponsor: false,
             isLeave: true,
@@ -38,7 +38,7 @@ describe("設置隊員類型", () => {
     });
 
     it("當聯隊戰隊員 => 聯隊戰隊員時，做一次 NOOP", () => {
-        const member = createMember({ type: MemberType.SquadFighter, accounts: [{ type: AccountType.S_SqbMain }], isSponsor: false, isLeave: true, point: defaultPoint() });
+        const member = createMember({ type: MemberType.SquadFighter, accounts: [{ type: AccountType.S_SqbMain, personalRating: 400 }], isSponsor: false, isLeave: true, point: defaultPoint() });
 
         const result = member.changeType(MemberType.SquadFighter);
 
@@ -46,14 +46,14 @@ describe("設置隊員類型", () => {
         expect(isMemberEqual(member, {
             type: MemberType.SquadFighter,
             accounts: [
-                { type: AccountType.S_SqbMain },
+                { type: AccountType.S_SqbMain, personalRating: 400 },
             ],
             isSponsor: false, isLeave: true, point: defaultPoint()
         })).toBeTruthy();
     });
 
     it("當聯隊戰隊員 => 休閒隊員時，若只有一個遊戲帳號，應當將該聯隊戰主帳變為休閒主帳，並沖銷獎勵點數", () => {
-        const member = createMember({ type: MemberType.SquadFighter, accounts: [{ type: AccountType.S_SqbMain }], isSponsor: false, isLeave: true, point: defaultPoint() });
+        const member = createMember({ type: MemberType.SquadFighter, accounts: [{ type: AccountType.S_SqbMain, personalRating: 400 }], isSponsor: false, isLeave: true, point: defaultPoint() });
 
         const result = member.changeType(MemberType.Relaxer);
 
@@ -61,7 +61,7 @@ describe("設置隊員類型", () => {
         expect(isMemberEqual(member, {
             type: MemberType.Relaxer,
             accounts: [
-                { type: AccountType.N_RelaxMain },
+                { type: AccountType.N_RelaxMain, personalRating: 400 },
             ],
             isSponsor: false, isLeave: true, point: defaultPoint()
         })).toBeTruthy();
@@ -70,7 +70,7 @@ describe("設置隊員類型", () => {
     it("當聯隊戰隊員 => 休閒隊員時，若有複數個遊戲帳號，則應該回傳錯誤，並且不得變更任何屬性", () => {
         const member = createMember({
             type: MemberType.SquadFighter,
-            accounts: [{ type: AccountType.S_SqbMain }, { type: AccountType.A_PrivateAlt }],
+            accounts: [{ type: AccountType.S_SqbMain, personalRating: 400 }, { type: AccountType.A_PrivateAlt, personalRating: 400 }],
             isSponsor: false, isLeave: true, point: defaultPoint()
         });
 
@@ -80,8 +80,8 @@ describe("設置隊員類型", () => {
         expect(isMemberEqual(member, {
             type: MemberType.SquadFighter,
             accounts: [
-                { type: AccountType.S_SqbMain },
-                { type: AccountType.A_PrivateAlt },
+                { type: AccountType.S_SqbMain, personalRating: 400 },
+                { type: AccountType.A_PrivateAlt, personalRating: 400 },
             ],
             isSponsor: false, isLeave: true, point: defaultPoint()
         })).toBeTruthy();

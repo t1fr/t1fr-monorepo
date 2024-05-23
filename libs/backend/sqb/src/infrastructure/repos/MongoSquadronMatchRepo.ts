@@ -1,6 +1,7 @@
 import { Injectable, type Provider } from "@nestjs/common";
 import type { AsyncActionResult } from "@t1fr/backend/ddd-types";
 import { AsyncResult, Ok } from "ts-results-es";
+import type { SearchMatchRecordsOutput } from "../../application";
 import { SquadronMatch, SquadronMatchId, SquadronMatchRepo } from "../../domain";
 import { InjectSquadronMatchModel, SquadronMatchSchema, type SquadronMatchModel } from "../schemas";
 
@@ -17,6 +18,7 @@ class MongoSquadronMatchRepo implements SquadronMatchRepo {
                 timeSeries: doc.timeSeries,
                 enemyName: doc.enemyName,
                 enemyTeam: doc.enemyTeam,
+                ourName: doc.ourName,
                 ourTeam: doc.ourTeam,
                 isVictory: doc.isVictory,
                 battleRating: doc.battleRating,
@@ -26,10 +28,11 @@ class MongoSquadronMatchRepo implements SquadronMatchRepo {
     }
 
     private modelToDoc(model: SquadronMatch): SquadronMatchSchema {
-        const { enemyName, timeSeries, enemyTeam, ourTeam, isVictory, battleRating, timestamp } = model.toObject()
+        const { enemyName, timeSeries, enemyTeam, ourName, ourTeam, isVictory, battleRating, timestamp } = model.toObject()
         return {
             _id: model.id.value,
             timeSeries,
+            ourName,
             enemyName,
             enemyTeam,
             ourTeam,
@@ -58,11 +61,25 @@ class MongoSquadronMatchRepo implements SquadronMatchRepo {
         return new AsyncResult(promise)
     }
 
-    async findByEnemyNameAndBr(battleRating: string, name: string): Promise<SquadronMatch[]> {
-        return this.matchModel
-            .find({ battleRating, enemyName: name })
+    findByEnemyNameAndBr(battleRating: string, ourName: string, enemyName: string): AsyncActionResult<SearchMatchRecordsOutput> {
+        const promise = this.matchModel
+            .find({ battleRating, enemyName, ourName })
             .lean()
-            .then(docs => docs.map(doc => this.docToModel(doc)))
+            .then(docs => Ok(docs.map(doc => {
+                const { enemyTeam, isVictory } = doc;
+                return {
+                    isVictory,
+                    enemy1: enemyTeam[0]?.vehicle,
+                    enemy2: enemyTeam[1]?.vehicle,
+                    enemy3: enemyTeam[2]?.vehicle,
+                    enemy4: enemyTeam[3]?.vehicle,
+                    enemy5: enemyTeam[4]?.vehicle,
+                    enemy6: enemyTeam[5]?.vehicle,
+                    enemy7: enemyTeam[6]?.vehicle,
+                    enemy8: enemyTeam[7]?.vehicle,
+                }
+            })))
+        return new AsyncResult(promise)
     }
 }
 

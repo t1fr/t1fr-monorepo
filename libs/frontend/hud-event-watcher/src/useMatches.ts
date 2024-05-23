@@ -13,6 +13,7 @@ async function uploadMatches(battleRating: string, matches: Match[]) {
     const completedMatches = matches.filter(it => it.isUploadable)
         .map(it => ({
             timestamp: it.timestamp,
+            ourName: it.ourName,
             enemyName: it.enemyName,
             timeSeries: uniq(it.timeSeries),
             ourTeam: Array.from(it.ourTeam.entries()).map(([id, vehicle]) => ({ id, vehicle })),

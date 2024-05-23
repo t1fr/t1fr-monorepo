@@ -37,14 +37,17 @@ export class Match {
 
         if (squadronsInMatch.has(null) || squadronsInMatch.size > 2) return Err("非聯隊戰");
 
-        const [t1frers, enemies] = partition(players, it => it.squadron === "T1FR")
+        const ourName = squadronsInMatch.has("T1FR") ? "T1FR" : squadronsInMatch.has("AEFI") ? "AEFI" : "T1FR";
+
+        const [allies, enemies] = partition(players, it => it.squadron === ourName)
 
         return Ok(new Match(
             events[0].id,
             events[events.length - 1].id,
             events.map(it => it.time),
+            allies.at(0)?.squadron as string | undefined,
             enemies.at(0)?.squadron as string | undefined,
-            new Map(t1frers.map(it => [it.id, it.vehicle])),
+            new Map(allies.map(it => [it.id, it.vehicle])),
             new Map(enemies.map(it => [it.id, it.vehicle])),
         ))
     }
@@ -71,7 +74,7 @@ export class Match {
     }
 
     get isCompleted(): boolean {
-        return this.isVictory !== undefined;
+        return this.isVictory !== undefined && this.enemyName !== undefined && this.ourName !== undefined;
     }
 
 
@@ -79,6 +82,7 @@ export class Match {
         readonly firstId: number,
         readonly lastId: number,
         readonly timeSeries: number[],
+        readonly ourName: string | undefined,
         readonly enemyName: string | undefined,
         readonly ourTeam: Map<string, string>,
         readonly enemyTeam: Map<string, string>,
@@ -101,6 +105,7 @@ export class Match {
             Math.min(this.firstId, other.firstId),
             Math.max(this.lastId, other.lastId),
             this.timeSeries.concat(other.timeSeries),
+            other.ourName ?? this.ourName,
             other.enemyName ?? this.enemyName,
             new Map([...this.ourTeam, ...other.ourTeam]),
             new Map([...this.enemyTeam, ...other.enemyTeam]),
