@@ -1,5 +1,7 @@
-export * from "./Section";
 export * from "./DomainError";
-export * from "./Performance";
 export * from "./History";
+export * from "./Performance";
+export * from "./Section";
 export * from "./Squad";
+export * from "./SquadronMatch";
+

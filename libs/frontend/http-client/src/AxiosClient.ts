@@ -1,7 +1,6 @@
 import type { AxiosInstance, AxiosRequestConfig, CreateAxiosDefaults, } from "axios";
 import axios, { isAxiosError } from "axios";
-import type { Serialized } from "../types";
-
+import type { Serialized } from "./Serialized";
 
 export class AxiosClient {
 
@@ -18,7 +17,7 @@ export class AxiosClient {
             .catch((error) => {
                 if (isAxiosError(error)) {
                     if (error.response) throw new Error(error.response.data.message, { cause: error.response.data.error });
-                    else if (error.request) throw new Error(error.request);
+                    else if (error.request) throw new Error(error.message);
                 }
                 throw new Error(error.message);
             });

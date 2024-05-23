@@ -6,11 +6,12 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ConfigsModule, MongooseConfig } from "@t1fr/backend/configs";
 import { MemberManageModule, MemberManageMongooseConnection } from "@t1fr/backend/member-manage";
+import { SqbModule, SqbMongooseConnection } from "@t1fr/backend/sqb";
 import { PuppeteerModule } from "nestjs-puppeteer";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { z } from "zod";
 import { Controllers } from "./controller";
-import { ConfigJwtOptionFactory, ManageMongooseOptionsFactory } from "./factory";
+import { ConfigJwtOptionFactory, ManageMongooseOptionsFactory, SqbMongooseOptionsFactory } from "./factory";
 import { AccountDataScraper, AuthService } from "./service";
 
 @Module({
@@ -35,6 +36,7 @@ import { AccountDataScraper, AuthService } from "./service";
                 database: z.object({
                     mongo: z.object({
                         manage: MongooseConfig,
+                        sqb: MongooseConfig,
                     }),
                 }),
                 gaijin: z.object({
@@ -48,7 +50,9 @@ import { AccountDataScraper, AuthService } from "./service";
         CqrsModule.forRoot(),
         ScheduleModule.forRoot(),
         MongooseModule.forRootAsync({ useClass: ManageMongooseOptionsFactory, connectionName: MemberManageMongooseConnection }),
+        MongooseModule.forRootAsync({ useClass: SqbMongooseOptionsFactory, connectionName: SqbMongooseConnection }),
         MemberManageModule,
+        SqbModule,
         PuppeteerModule.forRoot({
             headless: "new",
             args: ["--disable-notifications", '--no-sandbox'],

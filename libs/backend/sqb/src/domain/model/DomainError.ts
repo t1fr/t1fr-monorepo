@@ -46,3 +46,9 @@ export class NotFoundOurPositionError extends DomainError {
         return new NotFoundOurPositionError({ context: NotFoundOurPositionError });
     }
 }
+
+export class InvalidSquadronMatchError extends DomainError {
+    static create(message: string) {
+        return new InvalidSquadronMatchError({ context: InvalidSquadronMatchError, message })
+    }
+}

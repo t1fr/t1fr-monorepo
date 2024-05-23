@@ -1,50 +1,63 @@
 .p-datatable {
 
-    $editing-padding-y: 0.5rem;
-    $editing-padding-x: 0.5rem;
+    --editing-padding-y: 0.5rem;
+    --editing-padding-x: 0.5rem;
 
-    .p-cell-editing[data-p-editable-column=true] {
-        padding: $editing-padding-y $editing-padding-x !important;
+    &.p-datatable-sm {
+        --editing-padding-y: 0.2rem;
+        --editing-padding-x: 0.2rem;
     }
 
+    .p-cell-editing[data-p-editable-column=true] {
+        padding: var(--editing-padding-y) var(--editing-padding-x) !important;
+    }
+
+    th,
     tr,
     td {
-        padding: calc(0.75rem + $editing-padding-y + 0.8px) calc($editing-padding-x + 0.75rem + 0.8px) !important;
+        padding: calc(0.75rem + var(--editing-padding-y) + 0.8px) calc(var(--editing-padding-x) + 0.75rem + 0.8px) !important;
     }
 
     th {
-        &.center {
-            .p-column-header-content {
-                display: grid;
-                grid-template-columns: auto;
+        &.center .p-column-header-content {
+            display: grid;
+            grid-template-columns: auto;
 
-                &:has(div[data-pc-section="columnfilter"]) {
-                    grid-template-columns: 1fr auto 1fr;
+            &:has(div[data-pc-section="columnfilter"]) {
+                grid-template-columns: 1fr auto 1fr;
 
-                    .p-column-title {
-                        grid-column: 2;
-                    }
+                .p-column-title {
+                    grid-column: 2;
                 }
+            }
 
-                &:has(span[data-pc-section="sort"]) {
-                    grid-template-columns: 1fr 1fr auto 1fr 1fr;
+            &:has(span[data-pc-section="sort"]) {
+                grid-template-columns: 1fr 1fr auto 1fr 1fr;
 
-                    span[data-pc-section="sort"] {
-                        text-align: left;
-                    }
-
-                    .p-column-title {
-                        grid-column: 3;
-                    }
+                span[data-pc-section="sort"] {
+                    text-align: left;
                 }
 
                 .p-column-title {
-                    text-align: center;
+                    grid-column: 3;
                 }
+            }
+
+            .p-column-title {
+                text-align: center;
             }
         }
 
-        &.fit {
+        &.start .p-column-header-content {
+            justify-content: start;
+        }
+
+
+        &.end .p-column-header-content {
+            justify-content: end;
+        }
+
+        &.fit .p-column-header-content {
             white-space: nowrap;
             width: 0;
         }
@@ -53,6 +66,15 @@
     td {
         &.center {
             text-align: center;
+        }
+
+        &.start {
+            text-align: start;
+        }
+
+
+        &.end {
+            text-align: end;
         }
 
         &.fit {

@@ -3,3 +3,5 @@
 @forward 'datatable';
 @forward 'navbar';
 @forward 'animation';
+
+@use 'three-dots' with ($dot-color: white);

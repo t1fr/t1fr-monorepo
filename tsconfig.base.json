@@ -25,6 +25,8 @@
             "@t1fr/backend/sqb": ["libs/backend/sqb/src/index.ts"],
             "@t1fr/backend/sqb-analysis": ["libs/backend/sqb-analysis/src/index.ts"],
             "@t1fr/backend/wiki": ["libs/backend/wiki/src/index.ts"],
+            "@t1fr/frontend/http-client": ["libs/frontend/http-client/src/index.ts"],
+            "@t1fr/frontend/hud-event-watcher": ["libs/frontend/hud-event-watcher/src/index.ts"],
             "@t1fr/legacy/management": ["libs/legacy/management/src/index.ts"],
             "@t1fr/legacy/schedule": ["libs/legacy/schedule/src/index.ts"],
             "@t1fr/rollup-plugins": ["libs/rollup-plugins/src/index.ts"]
