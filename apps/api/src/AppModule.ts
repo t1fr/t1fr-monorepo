@@ -8,7 +8,6 @@ import { ConfigsModule, MongooseConfig } from "@t1fr/backend/configs";
 import { MemberManageModule, MemberManageMongooseConnection } from "@t1fr/backend/member-manage";
 import { SqbModule, SqbMongooseConnection } from "@t1fr/backend/sqb";
 import { PuppeteerModule } from "nestjs-puppeteer";
-import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { z } from "zod";
 import { Controllers } from "./controller";
 import { ConfigJwtOptionFactory, ManageMongooseOptionsFactory, SqbMongooseOptionsFactory } from "./factory";
@@ -57,7 +56,6 @@ import { AccountDataScraper, AuthService } from "./service";
             headless: "new",
             args: ["--disable-notifications", '--no-sandbox'],
             executablePath: process.env["CHROME_PATH"],
-            plugins: [StealthPlugin()],
         })
     ],
     providers: [AuthService, AccountDataScraper],

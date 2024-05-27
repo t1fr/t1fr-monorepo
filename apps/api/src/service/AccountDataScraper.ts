@@ -38,8 +38,8 @@ export class AccountDataScraper {
 
 
     private async login(page: Page) {
-        await page.goto("https://login.gaijin.net/en/sso/login")
-            .then(() => page.waitForXPath("//*[@id=\"__container\"]/div[2]/div[1]/form/div[3]/button", { timeout: 3000 }))
+        await page.goto("https://login.gaijin.net/en/sso/login", { waitUntil: "domcontentloaded" })
+            .then(() => page.waitForXPath("//*[@id=\"__container\"]/div[2]/div[1]/form/div[3]/button"))
             .then(() => page.$x("//*[@id=\"email\"]"))
             .then(([element]) => element.focus())
             .then(() => page.keyboard.type(this.credential.username))
