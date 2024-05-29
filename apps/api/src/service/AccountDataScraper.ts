@@ -39,8 +39,12 @@ export class AccountDataScraper {
 
     private async login(page: Page) {
         await page.goto("https://login.gaijin.net/en/sso/login", { waitUntil: "domcontentloaded" })
-            .then(() => page.waitForXPath("//*[@id=\"__container\"]/div[2]/div[1]/form/div[3]/button"))
-            .then(() => page.$x("//*[@id=\"email\"]"))
+        await page.waitForXPath("//*[@id=\"__container\"]/div[1]/div")
+
+        const isLogined = await page.$eval(".section-name.section-name__title", it => it.classList.contains("js-account-login-title"))
+        if (isLogined) return;
+
+        await page.$x("//*[@id=\"email\"]")
             .then(([element]) => element.focus())
             .then(() => page.keyboard.type(this.credential.username))
             .then(() => page.$x("//*[@id=\"password\"]"))
