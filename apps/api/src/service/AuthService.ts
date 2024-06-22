@@ -2,7 +2,6 @@ import { HttpService } from "@nestjs/axios";
 import { Inject, Injectable, InternalServerErrorException, UnauthorizedException } from "@nestjs/common";
 import { MemberQueryRepo } from "@t1fr/backend/member-manage";
 import { AsyncResult, Ok } from "ts-results-es";
-import { User } from "../types";
 
 type DiscordTokenResponse = { access_token: string }
 type DiscordIdentityResponse = { id: string }
@@ -15,7 +14,7 @@ export class AuthService {
     @MemberQueryRepo()
     private readonly memberRepo!: MemberQueryRepo;
 
-    async login(referer: string, code: string | undefined): Promise<User> {
+    async login(referer: string, code: string | undefined) {
         if (!code) throw new UnauthorizedException("無效的授權");
         const userOrError = await this.getToken(referer, code)
             .andThen(token => this.getUserId(token))
@@ -66,7 +65,7 @@ export class AuthService {
         const promise = this.memberRepo.findExistMemberInfo(id)
             .then(info => {
                 if (info === null) throw new UnauthorizedException(`無法尋找到您的隊員紀錄`);
-                return Ok(new User(info));
+                return Ok(info);
             });
         return new AsyncResult(promise);
     }

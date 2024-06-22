@@ -1,6 +1,7 @@
-export class MemberInfo {
-    id!: string;
-    name!: string;
-    avatarUrl!: string;
-    isOfficer!: boolean;
+export interface MemberInfo {
+    id: string;
+    gameId: string;
+    callsign: string;
+    avatarUrl: string;
+    isOfficer: boolean;
 }

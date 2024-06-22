@@ -3,7 +3,7 @@ import type { AsyncActionResult } from "@t1fr/backend/ddd-types";
 import type { FilterQuery, ProjectionType } from "mongoose";
 import { AsyncResult, Err, Ok } from "ts-results-es";
 import type { GetPointLogDTO, MemberDetail, PageControl, SearchAccountByNameDTO } from "../../application";
-import { ListAccountDTO, ListExistMemberDTO, MemberInfo, MemberQueryRepo, } from "../../application";
+import { ListAccountDTO, ListExistMemberDTO, type MemberInfo, MemberQueryRepo, } from "../../application";
 import { MemberNotFoundError, PointType } from "../../domain";
 import type { AccountModel, MemberModel, PointLogModel } from "../mongoose";
 import { AccountSchema, InjectAccountModel, InjectMemberModel, InjectPointLogModel, PointLogSchema } from "../mongoose";
@@ -35,7 +35,13 @@ class MongoMemberQueryRepo implements MemberQueryRepo {
             .findOne({ discordId: memberId }, { avatarUrl: true, isOfficer: true, discordId: true, nickname: true })
             .lean();
 
-        return doc ? { id: doc.discordId, name: doc.nickname, avatarUrl: doc.avatarUrl, isOfficer: doc.isOfficer } : null;
+        if (!doc) return null;
+
+        const match = doc.nickname.match(/^[^丨]*丨((?<callsign>.*)丨)?(?<id>.*)/);
+        const gameId = match?.groups?.["id"] ?? doc.nickname;
+        const callsign = match?.groups?.["callsign"] ?? gameId;
+
+        return { id: doc.discordId, gameId, callsign, avatarUrl: doc.avatarUrl, isOfficer: doc.isOfficer };
     }
 
     async listAccounts(): Promise<ListAccountDTO[]> {

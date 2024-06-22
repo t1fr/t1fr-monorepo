@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { RouteRecordRaw } from "vue-router";
 import type { MenuItem } from "primevue/menuitem";
+import type { RouteRecordRaw } from "vue-router";
 import SquadronLogoUrl from "../assets/images/squadron_logo.webp";
 
-const auth = useAuthStore();
+const { info } = useInfo();
 const { t } = useI18n();
 const toast = useToastService();
 
@@ -11,20 +11,15 @@ const router = useRouter();
 
 useTitle("T1FR 前線遊騎兵團");
 
-if (router.currentRoute.value.name !== "/redirect" && localStorage.getItem("has-login") !== null) {
-    auth.verify().then(status => {
-        if (!status) auth.startOAuth();
-    });
-}
-
 onErrorCaptured(error => {
     toast.error({ detail: error });
 });
 
+
 function checkPermission(route: RouteRecordRaw): boolean {
     if (route.meta?.exclude) return false;
-    if (!auth.userData) return !(route.meta?.memberOnly ?? route.meta?.officerOnly);
-    if (auth.userData.isOfficer) return true;
+    if (!info.value) return !(route.meta?.memberOnly ?? route.meta?.officerOnly);
+    if (info.value.isOfficer) return true;
     return !route.meta?.officerOnly;
 }
 

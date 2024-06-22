@@ -1,16 +1,16 @@
 <script setup lang="ts">
-const authStore = useAuthStore();
+const { startOAuth, logout } = useAuth();
+const { info } = useInfo();
 const router = useRouter();
-const { userData } = storeToRefs(authStore);
 const isDialogVisible = ref(false);
 
 function onLogoutClick() {
     isDialogVisible.value = true;
 }
 
-async function logout() {
+async function onConfirmLogout() {
     isDialogVisible.value = false;
-    await authStore.logout();
+    await logout();
     const meta = router.currentRoute.value.meta;
     if (meta.officerOnly || meta.memberOnly) router.push("/");
 }
@@ -27,12 +27,12 @@ async function logout() {
             </template>
             <template #default>
                 <Button label="否" class="w-full" size="small" outlined @click="isDialogVisible = false" />
-                <Button label="是" class="w-full" size="small" severity="danger" @click="logout" />
+                <Button label="是" class="w-full" size="small" severity="danger" @click="onConfirmLogout" />
             </template>
         </Dialog>
-        <template v-if="userData">
-            <span id="callsign" class="text-xl white-space-nowrap font-bold mr-2">{{ userData.callsign }}</span>
-            <Avatar shape="circle" size="large" :image="userData.avatarUrl" />
+        <template v-if="info">
+            <span id="callsign" class="text-xl white-space-nowrap font-bold mr-2">{{ info.callsign }}</span>
+            <Avatar shape="circle" size="large" :image="info.avatarUrl" />
             <Button label="登出" icon-pos="right" text @click="onLogoutClick">
                 <template #icon>
                     <MdiLogout class="mx-2" />
@@ -40,7 +40,7 @@ async function logout() {
             </Button>
         </template>
         <template v-else>
-            <Button label="登入" icon-pos="right" text @click="authStore.startOAuth()">
+            <Button label="登入" icon-pos="right" text @click="startOAuth()">
                 <template #icon>
                     <MdiLogin class="mx-2" />
                 </template>
