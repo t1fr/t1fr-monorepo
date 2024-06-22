@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/vue-query";
 export function useMySummary() {
     const { data: summary, refetch, isFetching } = useQuery({
         queryKey: ["my-summary"],
-        queryFn: () => BackendClient.get<MemberDetail>("/members/me/summary"),
+        queryFn: () => BackendClient.get<MemberDetail>("/me/summary"),
         select: data => mapSummary(data),
     })
 

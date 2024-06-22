@@ -1,10 +1,10 @@
 import { BadRequestException, Body, Controller, Param, Post, UseGuards } from "@nestjs/common";
 import { MemberQueryRepo, PointType } from "@t1fr/backend/member-manage";
 import { z } from "zod";
-import { JwtGuard, OfficerGuard } from "../guard";
+import { OfficerGuard } from "../guard";
 
 @Controller("point-logs")
-@UseGuards(JwtGuard, OfficerGuard)
+@UseGuards(OfficerGuard)
 export class PointLogController {
 
     @MemberQueryRepo()

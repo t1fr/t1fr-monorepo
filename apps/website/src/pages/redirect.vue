@@ -3,7 +3,7 @@ definePage({ meta: { exclude: true } });
 
 const route = useRoute("/redirect");
 const router = useRouter();
-const authStore = useAuthStore();
+const { login } = useAuth();
 const toast = useToastService();
 
 onMounted(async () => {
@@ -13,7 +13,7 @@ onMounted(async () => {
     const error_description = route.query.error_description as string | undefined;
 
     if (error || !code || !state) toast.error(error_description ?? "授權錯誤");
-    else await authStore.login(code, state);
+    else await login(code, state);
     router.replace(localStorage.getItem("last-visit") ?? "/");
 });
 </script>

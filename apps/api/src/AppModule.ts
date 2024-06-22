@@ -1,35 +1,30 @@
 import { HttpModule } from "@nestjs/axios";
 import { Module } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { CqrsModule } from "@nestjs/cqrs";
-import { JwtModule } from "@nestjs/jwt";
 import { MongooseModule } from "@nestjs/mongoose";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ConfigsModule, MongooseConfig } from "@t1fr/backend/configs";
 import { MemberManageModule, MemberManageMongooseConnection } from "@t1fr/backend/member-manage";
 import { SqbModule, SqbMongooseConnection } from "@t1fr/backend/sqb";
+import { CookieSessionModule, } from 'nestjs-cookie-session';
 import { PuppeteerModule } from "nestjs-puppeteer";
 import { z } from "zod";
 import { Controllers } from "./controller";
-import { ConfigJwtOptionFactory, ManageMongooseOptionsFactory, SqbMongooseOptionsFactory } from "./factory";
+import { ManageMongooseOptionsFactory, SqbMongooseOptionsFactory } from "./factory";
 import { AccountDataScraper, AuthService } from "./service";
-
 @Module({
     imports: [
         ConfigsModule.forRoot({
             schema: z.object({
-                http: z.object({
-                    cookie: z.object({
+                app: z.object({
+                    port: z.number(),
+                    "cookie-session": z.object({
+                        secret: z.string(),
                         httpOnly: z.boolean(),
                         path: z.string(),
                         sameSite: z.string(),
-                        maxAge: z.number(),
                         domain: z.string(),
-                    }),
-                }),
-                jwt: z.object({
-                    secret: z.string(),
-                    signOptions: z.object({
-                        expiresIn: z.string(),
                     }),
                 }),
                 database: z.object({
@@ -44,7 +39,11 @@ import { AccountDataScraper, AuthService } from "./service";
                 }),
             }),
         }),
-        JwtModule.registerAsync({ useClass: ConfigJwtOptionFactory, global: true }),
+        CookieSessionModule.forRootAsync({
+            inject: [ConfigService],
+            useFactory: (configService: ConfigService) => ({ session: configService.getOrThrow("app.cookie-session"), })
+        }),
+
         { ...HttpModule.register({}), global: true },
         CqrsModule.forRoot(),
         ScheduleModule.forRoot(),

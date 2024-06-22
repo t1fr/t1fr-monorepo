@@ -5,7 +5,7 @@ import type { GetPointLogDTO } from "./GetPointLogDTO";
 import { ListAccountDTO } from "./ListAccountDTO";
 import { ListExistMemberDTO } from "./ListExistMemberDTO";
 import type { MemberDetail } from "./MemberDetail";
-import { MemberInfo } from "./MemberInfo";
+import type { MemberInfo } from "./MemberInfo";
 import type { PageControl } from "./PageControl";
 import type { SearchAccountByNameDTO } from "./SearchAccountByNameDTO";
 

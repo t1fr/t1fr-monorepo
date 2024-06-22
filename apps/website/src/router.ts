@@ -1,3 +1,5 @@
+import type { MemberInfo } from "@t1fr/backend/member-manage";
+import { useQueryClient } from "@tanstack/vue-query";
 import NProgress from "nprogress";
 import 'nprogress/nprogress.css'; // progress bar style
 import { setupLayouts } from "virtual:generated-layouts";
@@ -8,16 +10,13 @@ const router = createRouter({
     extendRoutes: (routes) => setupLayouts(routes),
 });
 
+
 router.beforeEach((to, from) => {
-    const { userData } = useAuthStore();
     const meta = to.meta;
-    if (userData) {
-        // login
-        if (meta.officerOnly && !userData.isOfficer) return from;
-    } else {
-        // not login
-        if (meta.officerOnly || meta.memberOnly) return from;
-    }
+    const queryClient = useQueryClient()
+    const info = queryClient.getQueryData<MemberInfo>(["info"])
+    if (meta.memberOnly && info === undefined) return from;
+    if (meta.officerOnly && info?.isOfficer !== true) return from;
 });
 
 

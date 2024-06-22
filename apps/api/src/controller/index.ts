@@ -1,5 +1,6 @@
 import { AccountController } from "./AccountController";
 import { AuthController } from "./AuthController";
+import { MeController } from "./MeController";
 import { MemberController } from "./MemberController";
 import { PointLogController } from "./PointController";
 import { SqbController } from "./SqbController";
@@ -11,5 +12,6 @@ export const Controllers = [
     MemberController,
     PointLogController,
     SummaryController,
-    SqbController
+    SqbController,
+    MeController
 ];

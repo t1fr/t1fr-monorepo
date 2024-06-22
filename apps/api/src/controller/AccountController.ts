@@ -3,7 +3,7 @@ import { CommandBus } from "@nestjs/cqrs";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { ApiResponse } from "@nestjs/swagger";
 import { AssignAccountOwner, ListAccountDTO, MemberQueryRepo, SetAccountType, SyncAccount } from "@t1fr/backend/member-manage";
-import { JwtGuard, OfficerGuard } from "../guard";
+import { OfficerGuard } from "../guard";
 import { AccountDataScraper } from "../service";
 
 type UpdateAccountDTO = { type?: string | null; ownerId?: string; }
@@ -29,14 +29,14 @@ export class AccountController {
 
 
     @Get()
-    @UseGuards(JwtGuard, OfficerGuard)
+    @UseGuards(OfficerGuard)
     @ApiResponse({ description: "聯隊內的帳號資訊，延遲最長 4 小時", type: ListAccountDTO, isArray: true })
     async getAccounts() {
         return this.memberRepo.listAccounts();
     }
 
     @Patch(":id")
-    @UseGuards(JwtGuard, OfficerGuard)
+    @UseGuards(OfficerGuard)
     updateAccount(@Param("id") id: string, @Body() data: UpdateAccountDTO) {
         if (data.type !== undefined && data.ownerId !== undefined) throw new BadRequestException("不可同時設定帳號類型與擁有者");
         if (data.type === undefined && data.ownerId === undefined) throw new BadRequestException("無效的請求");
