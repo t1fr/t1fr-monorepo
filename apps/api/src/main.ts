@@ -29,6 +29,7 @@ async function createApp() {
     app.disable("x-powered-by");
     app.use(cookieParser());
     app.setGlobalPrefix("api");
+    app.set("trust proxy")
 
     if (process.env["NODE_ENV"] !== "production") configSwagger(app);
 
