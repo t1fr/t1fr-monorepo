@@ -10,7 +10,7 @@ export class SummaryController {
 
     @UseGuards(OfficerGuard)
     @Get(":memberId/summary")
-    async getMemberSummary(@Param("memberId") id: string) {
-        return this.memberRepo.getMemberDetail(id).orElse(error => { throw new NotFoundException(error); });
+    getMemberSummary(@Param("memberId") id: string) {
+        return this.memberRepo.getMemberDetail(id).orElse(error => { throw new NotFoundException(error); }).promise;
     }
 }
