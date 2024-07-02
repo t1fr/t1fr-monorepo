@@ -1,9 +1,11 @@
 import dayjs from "dayjs";
+import customParse from "dayjs/plugin/customParseFormat";
 import utc from "dayjs/plugin/utc";
 import { Err, Result } from "ts-results-es";
 import { InvalidSectionFormatError, Section } from "./model";
 
 dayjs.extend(utc);
+dayjs.extend(customParse);
 
 export class TextToSectionHelper {
     private static readonly matcher = /(\d*\.\d*)\s*\((\d*\.\d*).*?(\d*\.\d*)\)/;
