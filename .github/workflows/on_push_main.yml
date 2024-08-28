@@ -99,7 +99,7 @@ jobs:
               with:
                   ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
             - name: 在 KCL 機器執行部屬指令
-              run: ssh t1fr_server@114.32.177.157 "bash -s" < scripts.txt
+              run: ssh t1fr_server@114.32.177.157 < scripts.txt
 
             - name: 部屬前端專案
               run: pnpm run frontend-deploy:affect
