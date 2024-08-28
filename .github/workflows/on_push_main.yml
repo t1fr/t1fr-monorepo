@@ -86,6 +86,8 @@ jobs:
             # 建立部屬指令
             - name: 進入服務資料夾
               run: echo cd Documents/services >> scripts.txt
+            - name: 進入服務資料夾
+              run: echo security unlock-keychain >> scripts.txt
             - name: 建立遠端登入 GHCR 指令
               run: echo docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ghcr.io >> scripts.txt
             - name: 產生後端專案部屬指令
@@ -100,6 +102,7 @@ jobs:
                   ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
             - name: 在 KCL 機器執行部屬指令
               run: ssh t1fr_server@114.32.177.157 < scripts.txt
-
+            - name: Setup rsync
+              uses: GuillaumeFalourd/setup-rsync@v1.2
             - name: 部屬前端專案
               run: pnpm run frontend-deploy:affect
