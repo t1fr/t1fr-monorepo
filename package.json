@@ -12,7 +12,7 @@
     ],
     "version": "0.0.0",
     "license": "MIT",
-    "packageManager": "pnpm@9.9.0+sha256.7a4261e50d9a44d9240baf6c9d6e10089dcf0a79d0007f2a26985a6927324177",
+    "packageManager": "pnpm@8.15.9+sha256.daa27a0b541bc635323ff96c2ded995467ff9fe6d69ff67021558aa9ad9dcc36",
     "scripts": {
         "build": "nx run-many -t build",
         "lint": "nx run-many -t lint",
