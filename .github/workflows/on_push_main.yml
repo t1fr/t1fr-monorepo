@@ -87,7 +87,7 @@ jobs:
             - name: 進入服務資料夾
               run: echo cd Documents/services >> scripts.txt
             - name: 進入服務資料夾
-              run: echo security unlock-keychain >> scripts.txt
+              run: echo security unlock-keychain -p ${{ secrets.SERVER_PASSWORD }} >> scripts.txt
             - name: 建立遠端登入 GHCR 指令
               run: echo docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ghcr.io >> scripts.txt
             - name: 產生後端專案部屬指令
