@@ -76,6 +76,9 @@
                 "engine": "docker",
                 "load": true,
                 "push": true,
+                "platforms": [
+                    "linux/arm64"
+                ],
                 "cache-from": [
                     "type=gha"
                 ],
