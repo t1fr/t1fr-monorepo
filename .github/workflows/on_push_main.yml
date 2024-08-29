@@ -16,8 +16,6 @@ permissions:
 
 jobs:
     build:
-        needs:
-            - "test-affected"
         name: 測試與建置
         runs-on: ubuntu-latest
         steps:
