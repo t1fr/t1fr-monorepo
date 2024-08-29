@@ -15,26 +15,6 @@ permissions:
     packages: write
 
 jobs:
-    test-affected:
-        name: 測試是否有專案變動，若無則取消此次 workflow
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
-            - name: 設置環境
-              uses: ./.github/actions/setup-env
-
-            - name: 測試 Affected，若無則取消 workflow
-              run: |
-                  AFFECTED=$(pnpm nx show projects --affected --type app);
-                  if [ -z "$AFFECTED" ]; then
-                    echo "no affected"
-                    gh run cancel ${{ github.run_id }}
-                    gh run watch ${{ github.run_id }}
-                  fi
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     build:
         needs:
             - "test-affected"
