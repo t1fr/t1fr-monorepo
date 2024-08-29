@@ -8,7 +8,7 @@ function decompose(filename) {
 
     const content = readFileSync(filename, { encoding: "utf-8" });
 
-    console.log(decomposerize(content, { detach: true, command: "docker --config ./tmp run" }));
+    console.log(decomposerize(content, { detach: true, command: "docker run" }));
 }
 
 decompose(process.argv[2]);
