@@ -17,12 +17,12 @@ async function onConfirmLogout() {
 </script>
 
 <template>
-    <div class="relative flex align-items-center">
-        <Dialog v-model:visible="isDialogVisible" modal class="w-25rem" content-class="flex gap-2">
+    <div class="relative flex items-center">
+        <Dialog v-model:visible="isDialogVisible" modal class="w-[25rem]" content-class="flex gap-2">
             <template #header>
-                <div class="flex align-items-center">
-                    <MdiAlert class="mr-3" />
-                    <span class="line-height-1">確定要登出嗎</span>
+                <div class="flex items-center">
+                    <MdiAlert class="mr-4" />
+                    <span class="leading-none">確定要登出嗎</span>
                 </div>
             </template>
             <template #default>
@@ -31,7 +31,7 @@ async function onConfirmLogout() {
             </template>
         </Dialog>
         <template v-if="info">
-            <span id="callsign" class="text-xl white-space-nowrap font-bold mr-2">{{ info.callsign }}</span>
+            <span id="callsign">{{ info.callsign }}</span>
             <Avatar shape="circle" size="large" :image="info.avatarUrl" />
             <Button label="登出" icon-pos="right" text @click="onLogoutClick">
                 <template #icon>
@@ -51,8 +51,6 @@ async function onConfirmLogout() {
 
 <style scoped lang="scss">
 #callsign {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    @apply text-xl font-bold mr-2 overflow-hidden whitespace-nowrap text-ellipsis;
 }
 </style>

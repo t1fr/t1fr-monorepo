@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { DataTableCellEditCompleteEvent, DataTableFilterMeta, DataTableProps } from "primevue/datatable";
 import type { ColumnProps } from "primevue/column";
+import type { DataTableCellEditCompleteEvent, DataTableFilterMeta, DataTableProps } from "primevue/datatable";
 import type { Account } from "../../types";
-import { FilterMatchMode, FilterOperator } from "primevue/api";
 
 const { accounts, mutateAccountOwner, mutateAccountType, isFetching, refetch } = useAccounts();
 
@@ -12,8 +11,8 @@ const showNoOwner = ref(false);
 const filters = useLocalStorage(
     "accounts.filter",
     {
-        hasOwner: { value: [true, false], matchMode: FilterMatchMode.IN },
-        type: { operator: FilterOperator.OR, constraints: [{ value: [], matchMode: FilterMatchMode.IN }] },
+        hasOwner: { value: [true, false], matchMode: "in" },
+        type: { operator: "or", constraints: [{ value: [], matchMode: "in" }] },
     } satisfies DataTableFilterMeta,
     { mergeDefaults: true },
 );
@@ -63,15 +62,15 @@ async function save(event: DataTableCellEditCompleteEvent) {
         <template #header>
             <div class="table-header-content">
                 <span role="title">隊員帳號清單</span>
-                <span class="text-color-secondary mr-auto">排序時按 Ctrl 可以進行多級排序</span>
+                <span class="text-muted-color mr-auto">排序時按 Ctrl 可以進行多級排序</span>
                 <Checkbox v-model="showNoOwner" binary />
                 <span>僅顯示沒有擁有者的帳號</span>
             </div>
-            <Dialog v-model:visible="showChart" modal header="帳號統計" style="width: 550px; height: fit-content" content-class="flex justify-content-center">
+            <Dialog v-model:visible="showChart" modal header="帳號統計" style="width: 550px; height: fit-content" content-class="flex justify-center">
                 <PieChart v-if="accounts" field="type" :value="accounts" />
             </Dialog>
         </template>
-        <Column field="name" header="遊戲 ID" :sortable="true" class="w-15rem" />
+        <Column field="name" header="遊戲 ID" :sortable="true" class="w-60" />
         <Column field="ownerId" header="擁有者" filter-field="hasOwner">
             <template #body="{ data, field }">
                 <MemberSnippet :id="data[field]" />
@@ -80,9 +79,9 @@ async function save(event: DataTableCellEditCompleteEvent) {
                 <MembersDropdown v-model="data.ownerId" scroll-height="min(50vw, 400px)" />
             </template>
         </Column>
-        <Column field="personalRating" header="個人評分" :sortable="true" class="center w-6rem" />
-        <Column field="activity" header="活躍度" :sortable="true" class="center w-6rem" />
-        <Column field="type" filter-field="type" header="帳號類型" class="white-space-nowrap w-12rem" v-bind="hideFilter">
+        <Column field="personalRating" header="個人評分" :sortable="true" class="center w-24" />
+        <Column field="activity" header="活躍度" :sortable="true" class="center w-24" />
+        <Column field="type" filter-field="type" header="帳號類型" class="whitespace-nowrap w-48" v-bind="hideFilter">
             <template #body="{ data }">{{ data.typeLabel }}</template>
             <template #editor="{ data }">
                 <AccountTypeSelection class="w-full" v-model="data.type" render-as="dropdown" />
@@ -91,7 +90,7 @@ async function save(event: DataTableCellEditCompleteEvent) {
                 <AccountTypeSelection v-model="filterModel.value" render-as="listbox" />
             </template>
         </Column>
-        <Column field="joinDateLabel" sort-field="joinDateUnix" header="入隊日期" :sortable="true" class="center w-10rem" />
+        <Column field="joinDateLabel" sort-field="joinDateUnix" header="入隊日期" :sortable="true" class="center w-40" />
         <template #paginatorstart>
             <Button label="類型統計" text @click="showChart = true">
                 <template #icon>
@@ -104,5 +103,3 @@ async function save(event: DataTableCellEditCompleteEvent) {
         </template>
     </DataTable>
 </template>
-
-<style scoped></style>

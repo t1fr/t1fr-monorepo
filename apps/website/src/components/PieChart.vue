@@ -1,7 +1,7 @@
 <script setup lang="ts" generic="T">
 import type { Chart, ChartOptions, LegendItem, PieMetaExtensions, TooltipItem } from "chart.js";
-import { countBy, get } from "lodash-es";
 import type { Context } from "chartjs-plugin-datalabels";
+import { countBy, get } from "lodash-es";
 
 const props = defineProps<{ value: T[]; field: string }>();
 const documentStyle = getComputedStyle(document.body);
@@ -61,5 +61,3 @@ const chartOption: ChartOptions = {
 <template>
   <Chart :data="pieData" type="pie" style="width: 400px; height: 400px" :options="chartOption" />
 </template>
-
-<style scoped></style>

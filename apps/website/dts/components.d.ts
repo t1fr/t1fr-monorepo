@@ -18,7 +18,6 @@ declare module 'vue' {
     DataTable: typeof import('primevue/datatable')['default']
     Dialog: typeof import('primevue/dialog')['default']
     Divider: typeof import('primevue/divider')['default']
-    Dropdown: typeof import('primevue/dropdown')['default']
     ExternalLink: typeof import('./../src/components/ExternalLink.vue')['default']
     Knob: typeof import('primevue/knob')['default']
     Listbox: typeof import('primevue/listbox')['default']
@@ -48,17 +47,22 @@ declare module 'vue' {
     PieChart: typeof import('./../src/components/PieChart.vue')['default']
     PointMeter: typeof import('./../src/components/PointMeter.vue')['default']
     PointTypeSelection: typeof import('./../src/components/PointTypeSelection.vue')['default']
-    ProgressSpinner: typeof import('primevue/progressspinner')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     ScrollPanel: typeof import('primevue/scrollpanel')['default']
-    SelectButton: typeof import('primevue/selectbutton')['default']
+    Select: typeof import('primevue/select')['default']
     SQBBadgeGalleryItem: typeof import('./../src/components/SQBBadgeGalleryItem.vue')['default']
     SquadMedalCarousel: typeof import('./../src/components/SquadMedalCarousel.vue')['default']
     SummaryDisplay: typeof import('./../src/components/SummaryDisplay.vue')['default']
+    Tab: typeof import('primevue/tab')['default']
+    TabList: typeof import('primevue/tablist')['default']
     TabPanel: typeof import('primevue/tabpanel')['default']
-    TabView: typeof import('primevue/tabview')['default']
+    TabPanels: typeof import('primevue/tabpanels')['default']
+    Tabs: typeof import('primevue/tabs')['default']
     Tag: typeof import('primevue/tag')['default']
     TopNavigationBar: typeof import('./../src/components/TopNavigationBar.vue')['default']
+  }
+  export interface ComponentCustomProperties {
+    Tooltip: typeof import('primevue/tooltip')['default']
   }
 }

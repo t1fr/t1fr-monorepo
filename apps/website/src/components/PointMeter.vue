@@ -27,7 +27,7 @@ const meterColor = computed(() => {
 </script>
 
 <template>
-    <div class="flex flex-column align-items-center">
+    <div class="flex flex-col items-center">
         <Knob v-if="ratio < 0" text-color="red" :value-template="valueTemplate" />
         <Knob
             v-else
@@ -45,5 +45,3 @@ const meterColor = computed(() => {
         </Button>
     </div>
 </template>
-
-<style scoped></style>

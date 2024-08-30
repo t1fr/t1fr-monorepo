@@ -5,7 +5,7 @@ import 'nprogress/nprogress.css'; // progress bar style
 import { setupLayouts } from "virtual:generated-layouts";
 import { createRouter, createWebHistory } from "vue-router/auto";
 
-const router = createRouter({
+export const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     extendRoutes: (routes) => setupLayouts(routes),
 });
@@ -24,4 +24,3 @@ NProgress.configure({ showSpinner: false })
 router.beforeEach(() => { NProgress.start() })
 router.afterEach(() => { NProgress.done() })
 
-export default router;

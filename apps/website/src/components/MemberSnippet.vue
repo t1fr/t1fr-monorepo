@@ -28,10 +28,8 @@ const tooltip = computed<TooltipOptions>(() => ({
 </script>
 
 <template>
-    <div v-tooltip.top="tooltip" class="flex gap-2 align-items-center" :class="{ clickable: clickable }" @click="onClick">
+    <div v-tooltip.top="tooltip" class="flex gap-2 items-center" :class="{ clickable: clickable }" @click="onClick">
         <Avatar shape="circle" :image="member?.avatarUrl" />
         <span>{{ member?.callsign ?? "未知" }}</span>
     </div>
 </template>
-
-<style scoped></style>

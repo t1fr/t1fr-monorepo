@@ -1,7 +1,14 @@
 @forward 'medal';
 @forward 'style';
 @forward 'datatable';
-@forward 'navbar';
+// @forward 'navbar';
 @forward 'animation';
+@forward 'primevue';
 
 @use 'three-dots' with ($dot-color: white);
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+

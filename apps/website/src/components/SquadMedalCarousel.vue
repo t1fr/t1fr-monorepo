@@ -6,6 +6,9 @@ const achievements = ref(squadronBattleAchievements);
 const config: CarouselProps = {
     showIndicators: false,
     numScroll: 1,
+    pt: {
+        item: { class: ["w-full"] },
+    },
 };
 
 const container = ref();
@@ -26,7 +29,6 @@ const flexBasis = computed(() => `${100 / numVisible.value}%`);
 
 <style scoped lang="scss">
 :deep(.p-carousel-item) {
-    width: 100%;
     flex: 1 0 v-bind(flexBasis) !important;
 }
 </style>

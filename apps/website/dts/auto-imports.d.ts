@@ -7,13 +7,15 @@ export {}
 declare global {
   const Account: typeof import('../src/types/Account')['Account']
   const AccountTypeMap: typeof import('../src/types/Account')['AccountTypeMap']
+  const AccountTypeOptions: typeof import('../src/libs/account-type-options')['AccountTypeOptions']
+  const AccountTypeOptionsWithNull: typeof import('../src/libs/account-type-options')['AccountTypeOptionsWithNull']
   const BackendClient: typeof import('../src/api/BackendClient')['BackendClient']
   const EffectScope: typeof import('vue')['EffectScope']
   const Member: typeof import('../src/types/Member')['Member']
   const MemberInfo: typeof import('../src/types/Member')['MemberInfo']
   const PointLog: typeof import('../src/types/PointLog')['PointLog']
   const PointTypeNameMap: typeof import('../src/types/PointLog')['PointTypeNameMap']
-  const SquadronBattleAchievement: typeof import('../src/stores/squadron-battle-achievement')['SquadronBattleAchievement']
+  const SquadronBattleAchievement: typeof import('../src/libs/squadron-battle-achievement')['SquadronBattleAchievement']
   const acceptHMRUpdate: typeof import('pinia')['acceptHMRUpdate']
   const asyncComputed: typeof import('@vueuse/core')['asyncComputed']
   const autoResetRef: typeof import('@vueuse/core')['autoResetRef']
@@ -113,7 +115,7 @@ declare global {
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']
   const shallowRef: typeof import('vue')['shallowRef']
-  const squadronBattleAchievements: typeof import('../src/stores/squadron-battle-achievement')['squadronBattleAchievements']
+  const squadronBattleAchievements: typeof import('../src/libs/squadron-battle-achievement')['squadronBattleAchievements']
   const storeToRefs: typeof import('pinia')['storeToRefs']
   const syncRef: typeof import('@vueuse/core')['syncRef']
   const syncRefs: typeof import('@vueuse/core')['syncRefs']
@@ -335,13 +337,15 @@ declare module 'vue' {
   interface ComponentCustomProperties {
     readonly Account: UnwrapRef<typeof import('../src/types/Account')['Account']>
     readonly AccountTypeMap: UnwrapRef<typeof import('../src/types/Account')['AccountTypeMap']>
+    readonly AccountTypeOptions: UnwrapRef<typeof import('../src/libs/account-type-options')['AccountTypeOptions']>
+    readonly AccountTypeOptionsWithNull: UnwrapRef<typeof import('../src/libs/account-type-options')['AccountTypeOptionsWithNull']>
     readonly BackendClient: UnwrapRef<typeof import('../src/api/BackendClient')['BackendClient']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly Member: UnwrapRef<typeof import('../src/types/Member')['Member']>
     readonly MemberInfo: UnwrapRef<typeof import('../src/types/Member')['MemberInfo']>
     readonly PointLog: UnwrapRef<typeof import('../src/types/PointLog')['PointLog']>
     readonly PointTypeNameMap: UnwrapRef<typeof import('../src/types/PointLog')['PointTypeNameMap']>
-    readonly SquadronBattleAchievement: UnwrapRef<typeof import('../src/stores/squadron-battle-achievement')['SquadronBattleAchievement']>
+    readonly SquadronBattleAchievement: UnwrapRef<typeof import('../src/libs/squadron-battle-achievement')['SquadronBattleAchievement']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
@@ -441,7 +445,7 @@ declare module 'vue' {
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
-    readonly squadronBattleAchievements: UnwrapRef<typeof import('../src/stores/squadron-battle-achievement')['squadronBattleAchievements']>
+    readonly squadronBattleAchievements: UnwrapRef<typeof import('../src/libs/squadron-battle-achievement')['squadronBattleAchievements']>
     readonly storeToRefs: UnwrapRef<typeof import('pinia')['storeToRefs']>
     readonly syncRef: UnwrapRef<typeof import('@vueuse/core')['syncRef']>
     readonly syncRefs: UnwrapRef<typeof import('@vueuse/core')['syncRefs']>
@@ -656,13 +660,15 @@ declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
     readonly Account: UnwrapRef<typeof import('../src/types/Account')['Account']>
     readonly AccountTypeMap: UnwrapRef<typeof import('../src/types/Account')['AccountTypeMap']>
+    readonly AccountTypeOptions: UnwrapRef<typeof import('../src/libs/account-type-options')['AccountTypeOptions']>
+    readonly AccountTypeOptionsWithNull: UnwrapRef<typeof import('../src/libs/account-type-options')['AccountTypeOptionsWithNull']>
     readonly BackendClient: UnwrapRef<typeof import('../src/api/BackendClient')['BackendClient']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly Member: UnwrapRef<typeof import('../src/types/Member')['Member']>
     readonly MemberInfo: UnwrapRef<typeof import('../src/types/Member')['MemberInfo']>
     readonly PointLog: UnwrapRef<typeof import('../src/types/PointLog')['PointLog']>
     readonly PointTypeNameMap: UnwrapRef<typeof import('../src/types/PointLog')['PointTypeNameMap']>
-    readonly SquadronBattleAchievement: UnwrapRef<typeof import('../src/stores/squadron-battle-achievement')['SquadronBattleAchievement']>
+    readonly SquadronBattleAchievement: UnwrapRef<typeof import('../src/libs/squadron-battle-achievement')['SquadronBattleAchievement']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
@@ -762,7 +768,7 @@ declare module '@vue/runtime-core' {
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
-    readonly squadronBattleAchievements: UnwrapRef<typeof import('../src/stores/squadron-battle-achievement')['squadronBattleAchievements']>
+    readonly squadronBattleAchievements: UnwrapRef<typeof import('../src/libs/squadron-battle-achievement')['squadronBattleAchievements']>
     readonly storeToRefs: UnwrapRef<typeof import('pinia')['storeToRefs']>
     readonly syncRef: UnwrapRef<typeof import('@vueuse/core')['syncRef']>
     readonly syncRefs: UnwrapRef<typeof import('@vueuse/core')['syncRefs']>

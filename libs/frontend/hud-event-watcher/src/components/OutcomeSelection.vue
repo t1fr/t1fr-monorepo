@@ -23,20 +23,19 @@ const isVictory = defineModel<boolean | undefined>();
 </template>
 
 <style scoped lang="scss">
-@import "primeflex/primeflex.scss";
 
-.p-selectbutton {
-    > .p-button {
-        &[aria-checked="false"] {
-            > span {
-                &.lose {
-                    @include styleclass("text-red-400");
-                }
-                &.win {
-                    @include styleclass("text-green-400");
-                }
-            }
-        }
-    }
-}
+// .p-selectbutton {
+//     > .p-button {
+//         &[aria-checked="false"] {
+//             > span {
+//                 &.lose {
+//                     @include styleclass("text-red-400");
+//                 }
+//                 &.win {
+//                     @include styleclass("text-green-400");
+//                 }
+//             }
+//         }
+//     }
+// }
 </style>
