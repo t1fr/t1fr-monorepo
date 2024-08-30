@@ -1,0 +1,11 @@
+.bg-content {
+    background-color: var(--p-content-background);
+}
+
+.text-content {
+    color: var(--p-content-color)
+}
+
+.hover\:bg-content{
+    background-color: var(--p-content-hover-background);
+}

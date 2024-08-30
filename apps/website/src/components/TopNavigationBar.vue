@@ -29,8 +29,3 @@ defineProps<{ items: MenuItem[] }>();
         </template>
     </Menubar>
 </template>
-
-<style scoped>
-
-
-</style>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { DataTableProps, DataTableRowDoubleClickEvent } from "primevue/datatable";
-import { FilterMatchMode } from "primevue/api";
 import type { Member } from "../../types";
 
 const { members, isFetching, refetch } = useMembers();
@@ -8,7 +7,7 @@ const inspectMember = ref<Member | null>(null);
 const inspectMemberId = computed(() => inspectMember.value?.id ?? null);
 const { summary } = useMemberSummary(inspectMemberId);
 const filters = useLocalStorage<{ global: { value: boolean | null; matchMode: string } }>("member.filters", {
-    global: { value: null, matchMode: FilterMatchMode.EQUALS },
+    global: { value: null, matchMode: "equals" },
 });
 
 useF5Key(refetch);
@@ -46,36 +45,36 @@ async function onDoubleClick(event: DataTableRowDoubleClickEvent) {
                 <span>僅顯示沒有帳號的成員</span>
             </div>
         </template>
-        <Column field="isOfficer" class="center w-6rem" header="職位" :sortable="true">
+        <Column field="isOfficer" class="center w-24" header="職位" :sortable="true">
             <template #body="{ data, field }">
                 <Tag v-if="data[field]" value="軍官" severity="warning" />
             </template>
         </Column>
         <Column field="id" class="center">
             <template #header>
-                <div class="flex justify-content-center w-full">Discord ID</div>
+                <div class="flex justify-center w-full">Discord ID</div>
             </template>
             <template #body="{ data, field }">
                 <MemberSnippet :id="data[field]" />
             </template>
         </Column>
-        <Column field="type" class="w-12rem center" header="類型" :sortable="true">
+        <Column field="type" class="w-48 center" header="類型" :sortable="true">
             <template #body="{ data }">
-                <div class="flex align-items-center gap-2 w-fit mx-auto">
+                <div class="flex items-center gap-2 w-fit mx-auto">
                     <MdiCoffee v-if="data.type === 'relaxer'" />
                     <MdiSwordCross v-else />
                     <span>{{ data.typeLabel }}</span>
                 </div>
             </template>
         </Column>
-        <Column field="isSponsor" class="center w-7rem" header="贊助者" :sortable="true">
+        <Column field="isSponsor" class="center w-28" header="贊助者" :sortable="true">
             <template #body="{ data, field }">
-                <MdiCashUsd v-if="data[field]" class="text-lg vertical-align-middle" />
+                <MdiCashUsd v-if="data[field]" class="text-lg align-middle" />
             </template>
         </Column>
-        <Column field="onVacation" class="center w-7rem" header="請假中" :sortable="true">
+        <Column field="onVacation" class="center w-28" header="請假中" :sortable="true">
             <template #body="{ data, field }">
-                <MdiCalendarMultiselect v-if="data[field]" class="text-lg vertical-align-middle" />
+                <MdiCalendarMultiselect v-if="data[field]" class="text-lg align-middle" />
             </template>
         </Column>
         <Dialog id="summaryPanel" v-model:visible="summaryPanelVisible" maximizable class="summaryPanel" content-class="w-full h-full">

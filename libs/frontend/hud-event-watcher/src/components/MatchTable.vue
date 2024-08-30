@@ -1,15 +1,15 @@
 <script setup lang="ts">
+import Button from "primevue/button";
+import Column from "primevue/column";
 import DataTable, { type DataTableProps, type DataTableRowDoubleClickEvent } from "primevue/datatable";
 import Dialog from "primevue/dialog";
-import Column from "primevue/column";
-import Button from "primevue/button";
-import InputSwitch from "primevue/inputswitch";
+import ToggleSwitch from "primevue/toggleswitch";
 import { useToast } from "primevue/usetoast";
-import { useMatches } from "../useMatches";
 import { computed, ref } from "vue";
 import { Match } from "../types";
-import OutcomeSelection from "./OutcomeSelection.vue";
+import { useMatches } from "../useMatches";
 import BattleRatingDropdown from "./BattleRatingDropdown.vue";
+import OutcomeSelection from "./OutcomeSelection.vue";
 
 const enabled = ref(false);
 const { matches, reset, upload, isUploading } = useMatches(enabled);
@@ -70,7 +70,7 @@ async function onClickUpload() {
                         <MdiUpload class="mr-2" />
                     </template>
                 </Button>
-                <InputSwitch v-model="removeUploadSuccess"/>
+                <ToggleSwitch v-model="removeUploadSuccess"/>
                 <span class="ml-1 mr-3">自動移除上傳成功的戰鬥</span>
                 <BattleRatingDropdown v-model="battleRating" />
             </div>

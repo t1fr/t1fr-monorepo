@@ -2,7 +2,7 @@ import messages from '@intlify/unplugin-vue-i18n/messages';
 import { createI18n } from "vue-i18n";
 
 
-const i18n = createI18n({
+export const i18n = createI18n({
     legacy: false,
     locale: "zh-TW",
     fallbackLocale: "zh-TW",
@@ -10,5 +10,3 @@ const i18n = createI18n({
 })
 
 
-
-export default i18n;

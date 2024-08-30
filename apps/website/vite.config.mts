@@ -1,12 +1,12 @@
 /// <reference types='vitest' />
 import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
 import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin";
+import { PrimeVueResolver } from '@primevue/auto-import-resolver';
 import Vue from "@vitejs/plugin-vue";
 import { resolve } from "path";
 import AutoImports from "unplugin-auto-import/vite";
 import IconsResolver from "unplugin-icons/resolver";
 import Icons from "unplugin-icons/vite";
-import { PrimeVueResolver } from "unplugin-vue-components/resolvers";
 import Components from "unplugin-vue-components/vite";
 import { VueRouterAutoImports } from "unplugin-vue-router";
 import VueRouter from "unplugin-vue-router/vite";
@@ -41,10 +41,10 @@ export default defineConfig(({ command }) => {
             AutoImports({
                 dts: "./dts/auto-imports.d.ts",
                 imports: ["vue", "@vueuse/core", "pinia", VueRouterAutoImports, "vue-i18n"],
-                dirs: ["./src/composition", "./src/tools", "./src/stores", "./src/api", "./src/types"],
+                dirs: ["./src/composition", "./src/tools", "./src/libs", "./src/api", "./src/types"],
                 vueTemplate: true,
             }),
-            VueI18nPlugin({ include: resolve(__dirname, "./src/i18n/**") }),
+            VueI18nPlugin({ include: resolve(__dirname, "./locales/**") }),
             Icons(),
             nxViteTsPaths(),
         ],

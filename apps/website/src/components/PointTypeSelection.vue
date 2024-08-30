@@ -13,5 +13,5 @@ const pointType = defineModel<PointType>();
 </script>
 
 <template>
-    <SelectButton :unselectable="false" v-model="pointType" :options="options" option-value="value" option-label="label" class="white-space-nowrap"/>
+    <SelectButton :unselectable="false" v-model="pointType" :options="options" option-value="value" option-label="label" class="whitespace-nowrap"/>
 </template>

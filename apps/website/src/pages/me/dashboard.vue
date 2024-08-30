@@ -7,5 +7,3 @@ const { summary } = useMySummary();
         <SummaryDisplay v-if="summary" :summary="summary" />
     </div>
 </template>
-
-<style scoped></style>

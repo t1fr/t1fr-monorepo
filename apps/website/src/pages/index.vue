@@ -25,9 +25,9 @@ const scrollHintOpacity = computed(() => `${Math.max((height.value / 2 - y.value
 
 <template>
     <div id="home-root" ref="root">
-        <header class="flex justify-content-center" ref="header">
+        <header class="flex justify-center" ref="header">
             <TransitionSlide :offset="[0, '20%']" :duration="1000" @after-enter="isLogoEnter = true">
-                <div v-if="titleShow" class="flex relative align-items-center title-height">
+                <div v-if="titleShow" class="flex relative items-center title-height">
                     <img id="t1fr-logo" :src="SquadLogo" alt="T1FR logo" />
                     <TransitionExpand :duration="1500" axis="x" @after-enter="isScrollDownHintShow = true">
                         <div v-if="isLogoEnter" id="introduction">
@@ -37,13 +37,16 @@ const scrollHintOpacity = computed(() => `${Math.max((height.value / 2 - y.value
                         </div>
                     </TransitionExpand>
                     <TransitionFade>
-                        <MdiChevronDoubleDown v-if="isScrollDownHintShow" class="scroll-down-hint w-full text-center absolute text-200" />
+                        <MdiChevronDoubleDown
+                            v-if="isScrollDownHintShow"
+                            class="scroll-down-hint w-full text-center absolute text-surface-200 dark:text-surface-600"
+                        />
                     </TransitionFade>
                 </div>
             </TransitionSlide>
         </header>
         <article>
-            <ArticleSection title="關於我們">
+            <!-- <ArticleSection title="關於我們">
                 <span>
                     歡迎來到 T1FR
                     前線遊騎兵團。我們聯隊的核心目標是成為來自台灣的聯隊戰聯隊。自創隊以來，我們的隊員們在不斷的努力下，持續獲得世界前百的殊榮，使我們得以成為台灣唯一一個有持續獲得世界排名的聯隊，並且目前正朝世界前五十穩步邁進中。因此，我們非常歡迎您加入我們，共同為了台灣聯隊的榮譽奮鬥，創造台灣僅有的聯隊戰環境。
@@ -55,20 +58,20 @@ const scrollHintOpacity = computed(() => `${Math.max((height.value / 2 - y.value
                 <template #item>
                     <SquadMedalCarousel />
                 </template>
-            </ArticleSection>
-            <ArticleSection item-class="flex  gap-3 " title="我們的社群" reverse>
-                <div class="font-italic">想找人一起組隊玩遊戲嗎？想要找人聊天打屁嗎？玩遊戲太無聊想聽別人玩遊戲當背景音樂嗎？</div>
+            </ArticleSection> -->
+            <ArticleSection item-class="flex gap-4" title="我們的社群" reverse>
+                <div class="italic">想找人一起組隊玩遊戲嗎？想要找人聊天打屁嗎？玩遊戲太無聊想聽別人玩遊戲當背景音樂嗎？</div>
                 <div>
                     我們的社群有非常多活躍的隊員！無論您只是想文字聊天，或者想要和我們語音閒聊，我們都有許多隊員很樂意和您聊天、交朋友（只要您不違反我們的版規），歡迎各路好手來和我們蕉流蕉流！
                 </div>
-                <div class="text-600 mt-auto">
+                <div class="text-surface-600 dark:text-surface-200 mt-auto">
                     <strong>請注意：</strong>為了維護其他使用者的帳號安全，我們的 Discord 社群需要您的帳號進行手機驗證，造成不便敬請見諒
                 </div>
-                <ExternalLink href="https://discord.gg/t1fr" class="align-self-center bg-discord w-full mt-3">
+                <ExternalLink href="https://discord.gg/t1fr" class="self-center bg-discord w-full mt-4">
                     <template #icon>
                         <MdiDiscord />
                     </template>
-                    <span class="text-2xl line-height-1">加入我們的 Discord</span>
+                    <span class="text-2xl leading-none">加入我們的 Discord</span>
                 </ExternalLink>
                 <template #item>
                     <img :src="BlurDiscordPreview" alt="Our community" class="w-full" style="object-fit: cover" />
@@ -76,11 +79,11 @@ const scrollHintOpacity = computed(() => `${Math.max((height.value / 2 - y.value
             </ArticleSection>
         </article>
         <footer>
-            <div class="text-400 mr-auto">© Copyright by T1FR@R&D</div>
-            <ExternalLink href="https://discord.gg/t1fr" class="bg-discord border-round-2xl">
+            <div class="text-surface-400 dark:text-surface-400 mr-auto">© Copyright by T1FR@R&D</div>
+            <ExternalLink href="https://discord.gg/t1fr" class="bg-discord rounded-2xl">
                 <MdiDiscord />
             </ExternalLink>
-            <ExternalLink href="https://www.youtube.com/@t1fr.official" class="bg-youtube border-round-2xl">
+            <ExternalLink href="https://www.youtube.com/@t1fr.official" class="bg-youtube rounded-2xl">
                 <MdiYoutube />
             </ExternalLink>
         </footer>
@@ -88,8 +91,6 @@ const scrollHintOpacity = computed(() => `${Math.max((height.value / 2 - y.value
 </template>
 
 <style scoped lang="scss">
-@import "primeflex/primeflex.scss";
-
 .scroll-down-hint {
     animation: 1.2s ease-in-out 0s infinite;
     animation-name: bouncing;
@@ -98,16 +99,8 @@ const scrollHintOpacity = computed(() => `${Math.max((height.value / 2 - y.value
     opacity: v-bind(scrollHintOpacity);
 }
 
-.bg-discord {
-    background-color: #7289da;
-}
-
-.bg-youtube {
-    background-color: red;
-}
-
 #introduction {
-    @include styleclass("flex flex-column justify-content-center ml-3");
+    @apply flex flex-col justify-center ml-4;
     > div {
         overflow: hidden;
         white-space: nowrap;
@@ -119,11 +112,11 @@ const scrollHintOpacity = computed(() => `${Math.max((height.value / 2 - y.value
     }
 
     div[role="name"] {
-        @include styleclass("font-bold");
+        @apply font-bold;
         font-size: min(6rem, 10vw);
     }
     div[role="slogan"] {
-        @include styleclass("font-italic text-600");
+        @apply italic;
         font-size: min(1rem, 1.5vw);
     }
 }
@@ -134,7 +127,6 @@ const scrollHintOpacity = computed(() => `${Math.max((height.value / 2 - y.value
 }
 
 #home-root {
-    background-color: rgba(49, 49, 49, 100%);
     z-index: 2;
     overflow-y: auto;
 
@@ -155,19 +147,15 @@ const scrollHintOpacity = computed(() => `${Math.max((height.value / 2 - y.value
     }
 
     article {
-        @include styleclass("flex flex-column gap-3 align-items-center p-4");
-        background-color: rgba(49, 49, 49, 60%);
-
+        @apply flex flex-col gap-4 items-center p-6;
+        
         section {
-            width: 100%;
+            @apply w-full;
         }
     }
 
     footer {
-        @include styleclass("mt-4 flex align-items-center p-2 gap-2");
-        width: 100%;
-        height: 4rem;
-        background-color: var(--squadron-primary-color);
+        @apply mt-6 flex items-center p-2 gap-2 w-full h-[4rem];
     }
 }
 </style>

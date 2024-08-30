@@ -15,7 +15,6 @@ onErrorCaptured(error => {
     toast.error({ detail: error });
 });
 
-
 function checkPermission(route: RouteRecordRaw): boolean {
     if (route.meta?.exclude) return false;
     if (!info.value) return !(route.meta?.memberOnly ?? route.meta?.officerOnly);
@@ -52,9 +51,9 @@ const items = computed<MenuItem[]>(() =>
     </TopNavigationBar>
     <RouterView v-slot="{ Component }">
         <KeepAlive>
-            <Component :is="Component" class="flex-1 w-full min-h-0" />
+            <div class="flex-1 w-full min-h-0 overflow-y-auto">
+                <Component :is="Component" class="h-fit min-h-full" />
+            </div>
         </KeepAlive>
     </RouterView>
 </template>
-
-<style lang="scss"></style>

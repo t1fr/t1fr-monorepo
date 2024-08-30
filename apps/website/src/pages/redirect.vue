@@ -19,9 +19,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="flex align-items-center">
+    <div class="flex items-center">
         <ProgressSpinner style="inset: 0" />
     </div>
 </template>
-
-<style scoped></style>

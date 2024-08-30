@@ -1,8 +1,3 @@
-:root {
-  --squadron-primary-color: #1c1c1c;
-  --squadron-secondary-color: #363636;
-}
-
 body,
 html {
   font-family: var(--font-family);
@@ -14,11 +9,24 @@ html {
   overflow-y: hidden;
 }
 
-.clickable {
-  cursor: pointer;
 
-  &:hover {
-    filter: brightness(110%);
-    color: var(--highlight-text-color);
+@layer utilities {
+  .bg-discord {
+    background-color: #7289da;
+    color: white;
+  }
+
+  .bg-youtube {
+    background-color: red;
+    color: white;
+  }
+
+  .clickable {
+    cursor: pointer;
+
+    &:hover {
+      filter: brightness(110%);
+      color: var(--highlight-text-color);
+    }
   }
 }

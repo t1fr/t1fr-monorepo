@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import Dropdown from "primevue/dropdown";
-import { useBattleRatings } from "../useBattleRatings";
-import { watchEffect } from "vue";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
+import Select from "primevue/select";
+import { watchEffect } from "vue";
+import { useBattleRatings } from "../useBattleRatings";
 
 const { battleRatings, isSuccess } = useBattleRatings();
 
@@ -18,10 +18,10 @@ watchEffect(() => {
 <template>
     <InputGroup class="w-10rem">
         <InputGroupAddon class="font-bold">分房</InputGroupAddon>
-        <Dropdown v-model="battleRating" :options="battleRatings">
+        <Select v-model="battleRating" :options="battleRatings">
             <template #value="{ value }">
                 <div class="flex align-items-center h-full">{{ value }}</div>
             </template>
-        </Dropdown>
+        </Select>
     </InputGroup>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { DataTableProps } from "primevue/datatable";
 import type { PointType } from "@t1fr/backend/member-manage";
+import type { DataTableProps } from "primevue/datatable";
 
 const pointType = useLocalStorage<PointType>("points", "reward");
 const focusMemberId = ref<string | null>(null);
@@ -27,17 +27,17 @@ const tableProps: DataTableProps = {
             <div class="table-header-content">
                 <span role="title" class="mr-auto">點數紀錄</span>
                 <PointTypeSelection v-model="pointType" />
-                <MembersDropdown v-model="focusMemberId" class="max-w-20rem" show-clear />
+                <MembersDropdown v-model="focusMemberId" class="max-w-80" show-clear />
             </div>
         </template>
-        <Column field="dateLabel" header="日期" class="center w-12rem" />
-        <Column field="memberId" header="對象" class="w-15rem">
+        <Column field="dateLabel" header="日期" class="center w-48" />
+        <Column field="memberId" header="對象" class="w-60">
             <template #body="{ data, field }">
                 <MemberSnippet :id="data[field]" />
             </template>
         </Column>
-        <Column field="category" header="分類" class="center w-8rem" />
-        <Column field="delta" header="變化" class="center w-5rem">
+        <Column field="category" header="分類" class="center w-32" />
+        <Column field="delta" header="變化" class="center w-20">
             <template #body="{ data, field }">
                 <span v-if="data[field] >= 0" class="text-green-400">{{ data[field] }}</span>
                 <span v-else class="text-red-400">{{ data[field] }}</span>
@@ -46,5 +46,3 @@ const tableProps: DataTableProps = {
         <Column field="comment" header="備註" />
     </DataTable>
 </template>
-
-<style scoped></style>
