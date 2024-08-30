@@ -39,6 +39,7 @@ testem.log
 Thumbs.db
 
 .nx/cache
+.nx/workspace-data
 
 apps/**/config/*.json
 apps/**/config/*.yaml

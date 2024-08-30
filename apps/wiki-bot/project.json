@@ -2,8 +2,12 @@
     "name": "wiki-bot",
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
     "sourceRoot": "apps/wiki-bot/src",
-    "projectType": "application",    
-    "tags": ["backend", "bot"],
+    "projectType": "application",
+    "tags": [
+        "backend",
+        "bot",
+        "disabled"
+    ],
     "targets": {
         "build": {
             "executor": "@nx/vite:build"
